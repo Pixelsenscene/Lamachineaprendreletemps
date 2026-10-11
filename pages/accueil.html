@@ -1,4 +1,14 @@
-<div class="home-content-wrapper">
+<!-- === 1. LE CONTENU (MAIN) === -->
+<main class="home-content-wrapper">
+
+    <!-- Vidéo d'accueil tout en haut -->
+    <div id="accueil-top" class="hero-video-wrapper">
+        <video autoplay loop muted playsinline class="hero-video">
+            <source src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/Ralenti%20Verti%20et%20acce%CC%81l.mov"
+                type="video/quicktime">
+            Votre navigateur ne prend pas en charge la lecture de vidéos.
+        </video>
+    </div>
 
     <!-- Bloc 1 -->
     <div class="content-block">
@@ -9,12 +19,12 @@
                 un ou des personnages dans divers lieux et situations où le temps s’affole autour d'eux. Le procédé
                 utilisé consiste à accélérer au montage des mouvements et actions réalisés au ralenti, créant ainsi une
                 accélération de l’environnement dans lequel évolue le(s) protagoniste(s). Est ainsi mise en évidence,
-                voir révélée, la vitesse parfois folle de ce qui nous entoure et que l'on ne parvient pas forcément à
+                voire révélée, la vitesse parfois folle de ce qui nous entoure et que l'on ne parvient pas forcément à
                 observer à vitesse réelle.
             </p>
         </div>
         <div class="image-side">
-            <img src="pages/img/IMG1-cumulus.webp" alt="Illustration 1">
+            <img src="img/IMG1-cumulus.webp" alt="Illustration 1">
         </div>
     </div>
 
@@ -40,7 +50,7 @@
             </p>
         </div>
         <div class="image-side">
-            <img src="pages/img/IMG2-Tchin.webp" alt="Illustration 2">
+            <img src="img/IMG2-Tchin.webp" alt="Illustration 2">
         </div>
     </div>
 
@@ -60,7 +70,7 @@
             </p>
         </div>
         <div class="image-side">
-            <img src="pages/img/IMG3-penseur.webp" alt="Illustration 3">
+            <img src="img/IMG3-penseur.webp" alt="Illustration 3">
         </div>
     </div>
 
@@ -81,12 +91,12 @@
                 La lenteur a mauvaise réputation dans le monde que nous côtoyons. On pourrait se lasser, on pourrait
                 perdre notre temps, ne pas être performant. Pourtant ralentir n’est pas moins agir, c’est peut-être même
                 tout l’inverse. Dans la lenteur la vitesse existe encore. Les accents, les chutes, les suspensions, les
-                accélérations, les ralentissements perdurent… Tout n’est question que de référence. A quelle pulsation
+                accélérations, les ralentissements perdurent… Tout n’est question que de référence. À quelle pulsation
                 décide-t-on de voir défiler les choses ? Nous pourrions tous prendre le temps toujours infiniment plus.
             </p>
         </div>
         <div class="image-side">
-            <img src="pages/img/IMG4-rateau.webp" alt="Illustration 4">
+            <img src="img/IMG4-rateau.webp" alt="Illustration 4">
         </div>
     </div>
 
@@ -103,8 +113,105 @@
             </p>
         </div>
         <div class="image-side">
-            <img src="pages/img/IMG5-SDreflet.avif" alt="Illustration 5">
+            <img src="img/IMG5-SDreflet.avif" alt="Illustration 5">
         </div>
     </div>
 
-</div>
+</main>
+
+
+<!-- === 2. LE STYLE (CSS) === -->
+<style>
+    .home-content-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 120px;
+        padding: 0 0 100px 0;
+    }
+
+    .hero-video-wrapper {
+        width: 100%;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    }
+
+    .hero-video {
+        width: 100%;
+        display: block;
+        object-fit: cover;
+        max-height: 75vh;
+    }
+
+    .content-block {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+        align-items: center;
+
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+        min-height: 80vh;
+    }
+
+    .content-block.reverse {
+        direction: rtl;
+    }
+
+    .content-block.reverse .text-side {
+        direction: ltr;
+    }
+
+    .text-side h2 {
+        font-family: 'Avenir', sans-serif;
+        font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+        margin-bottom: 20px;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .text-side p {
+        font-family: 'Avenir', sans-serif;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: #ccc;
+    }
+
+    .image-side img {
+        width: 100%;
+        height: 80vh;
+        object-fit: contain;
+        background-color: #0d0d0d;
+        border-radius: 8px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        transition: transform 0.4s ease;
+    }
+
+    .image-side img:hover {
+        transform: scale(1.02);
+    }
+
+    @media (max-width: 900px) {
+
+        .content-block,
+        .content-block.reverse {
+            grid-template-columns: 1fr;
+            direction: ltr;
+            gap: 25px;
+            min-height: auto;
+            scroll-snap-align: none;
+            scroll-snap-stop: normal;
+        }
+
+        .image-side img {
+            height: auto;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+    }
+</style>
+
+
+<!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
+<script></script>

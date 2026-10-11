@@ -1,20 +1,56 @@
-<div class="video-container-raw" style="width: 100%; width: 100vw; margin-left: calc(-50vw + 50%); overflow: hidden;">
-    <video autoplay loop muted playsinline
-        style="width: 100%; display: block; object-fit: cover; pointer-events: none;">
-        <source src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/Ralenti%20Verti%20et%20acce%CC%81l.mov"
-            type="video/quicktime">
-        Votre navigateur ne prend pas en charge la lecture de vidéos.
-    </video>
-</div>
-
-<div class="video-item" style="margin-bottom: 40px;">
-    <div class="video-container-raw"
-        style="width: 100%; width: 100vw; margin-left: calc(-50vw + 50%); overflow: hidden;">
-        <video autoplay loop muted playsinline
-            style="width: 100%; display: block; object-fit: cover; pointer-events: none;">
-            <source src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/LeFilduTemps%20-%20Hiver1.mov"
-                type="video/quicktime">
-            Votre navigateur ne prend pas en charge la lecture de vidéos.
-        </video>
+<!-- === 1. LE CONTENU (MAIN) === -->
+<main class="galeries-container">
+    <div class="video-item">
+        <div class="video-container-raw">
+            <video autoplay loop muted playsinline>
+                <source src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/Ralenti%20Verti%20et%20acce%CC%81l.mov"
+                    type="video/quicktime">
+                Votre navigateur ne prend pas en charge la lecture de vidéos.
+            </video>
+        </div>
     </div>
-</div>
+
+    <div class="video-item">
+        <div class="video-container-raw">
+            <video autoplay loop muted playsinline>
+                <source src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/LeFilduTemps%20-%20Hiver1.mov"
+                    type="video/quicktime">
+                Votre navigateur ne prend pas en charge la lecture de vidéos.
+            </video>
+        </div>
+    </div>
+</main>
+
+
+<!-- === 2. LE SCRIPT (JAVASCRIPT) === -->
+<script>
+    // Logique spécifique à la page Galeries si nécessaire
+</script>
+
+
+<!-- === 3. LE STYLE (CSS) === -->
+<style>
+    .galeries-container {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        width: 100%;
+    }
+
+    .video-item {
+        width: 100%;
+    }
+
+    .video-container-raw {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        overflow: hidden;
+    }
+
+    .video-container-raw video {
+        width: 100%;
+        display: block;
+        object-fit: cover;
+        pointer-events: none;
+    }
+</style>

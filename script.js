@@ -1,18 +1,16 @@
-// --- GESTION DE LA VIDÉO D'ACCUEIL BUNNY.NET (15s -> 45s) ET DU CHARGEMENT ---
+// --- GESTION DE LA VIDÉO D'ACCUEIL BUNNY.NET (15s -> 45s) ---
 window.addEventListener('DOMContentLoaded', () => {
     const heroSection = document.getElementById('hero-section');
     if (heroSection) {
-        heroSection.classList.add('video-loaded'); // Force l'affichage immédiat
+        heroSection.classList.add('video-loaded');
     }
 
     const heroVideo = document.getElementById('hero-video');
     if (heroVideo) {
-        // Tente de lancer explicitement la lecture via JavaScript (contourne les sécurités strictes du navigateur)
         heroVideo.play().catch(error => {
             console.log("Lecture automatique bloquée par le navigateur : ", error);
         });
 
-        // Gestion de la boucle (15s à 45s)
         heroVideo.addEventListener('timeupdate', function () {
             if (this.currentTime >= 45 || this.currentTime < 15) {
                 this.currentTime = 15;
@@ -46,7 +44,15 @@ async function loadPageContent(pageName) {
             pageContainer.innerHTML = htmlContent;
             pageContainer.style.opacity = '1';
 
-            // Relance l'analyseur d'Instagram si besoin sur les anciennes pages
+            // --- EXÉCUTION AUTOMATIQUE DES SCRIPTS DU COMPOSANT ---
+            const scripts = pageContainer.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement('script');
+                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                newScript.textContent = oldScript.textContent;
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
+
             if (window.instgrm && window.instgrm.Embeds) {
                 window.instgrm.Embeds.process();
             }
@@ -69,7 +75,11 @@ allNavLinks.forEach(link => {
 
         if (!targetPage) return;
 
-        if (targetPage === currentActivePage && !body.classList.contains('page-mode') && body.classList.contains('home-mode')) {
+        // Clic sur Accueil alors qu'on est déjà sur Accueil
+        if (targetPage === 'accueil' && currentActivePage === 'accueil') {
+            body.classList.remove('page-mode', 'scrolled-mode');
+            body.classList.add('home-mode');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
         }
 
@@ -97,19 +107,17 @@ allNavLinks.forEach(link => {
     });
 });
 
-// --- NAVIGATION PAR IMPULSION ENGAGÉE (5 BLOCS) ---
+// --- NAVIGATION PAR IMPULSION ENGAGÉE (5 BLOCS D'ACCUEIL) ---
 let isAnimatingScroll = false;
 
 window.addEventListener('wheel', (e) => {
     if (!body.classList.contains('home-mode') || body.classList.contains('page-mode')) return;
 
-    // Empêche tout autre ordre de scroll si une transition est déjà en cours
     if (isAnimatingScroll) {
         e.preventDefault();
         return;
     }
 
-    // Seuil très léger pour détecter l'intention de mouvement
     if (Math.abs(e.deltaY) < 10) return;
 
     const scrollY = window.scrollY;
@@ -121,20 +129,24 @@ window.addEventListener('wheel', (e) => {
     const blocks = Array.from(mainContainer.querySelectorAll('.content-block'));
     if (blocks.length === 0) return;
 
-    e.preventDefault(); // On neutralise le scroll natif brutal dès l'impulsion
+    e.preventDefault();
     isAnimatingScroll = true;
 
-    // 1. Si on est dans la zone de la vidéo d'accueil
+    // Seuil de sensibilité abaissé à -20 (plus facile à déclencher en scrollant vers le haut)
+    if (e.deltaY < -20 && scrollY > windowHeight / 2) {
+        body.classList.remove('scrolled-mode');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => { isAnimatingScroll = false; }, 800);
+        return;
+    }
+
     if (scrollY < windowHeight / 2) {
         if (e.deltaY > 0) {
-            // Impulsion vers le bas : on active le mode scroll et on cible le 1er bloc
             body.classList.add('scrolled-mode');
             const firstBlock = blocks[0];
-            const targetScroll = window.scrollY + firstBlock.getBoundingClientRect().top - 120; // 120px sous le bandeau
-
+            const targetScroll = window.scrollY + firstBlock.getBoundingClientRect().top - 120;
             window.scrollTo({ top: targetScroll, behavior: 'smooth' });
         } else {
-            // Remontée vers la vidéo
             body.classList.remove('scrolled-mode');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -143,7 +155,6 @@ window.addEventListener('wheel', (e) => {
         return;
     }
 
-    // 2. À l'intérieur des 5 blocs de contenu
     let currentIndex = 0;
     let minDistance = Infinity;
 
@@ -157,7 +168,6 @@ window.addEventListener('wheel', (e) => {
     });
 
     if (e.deltaY > 0) {
-        // Descente engagée : on passe au bloc suivant (jusqu'au 5ème)
         if (currentIndex < blocks.length - 1) {
             const nextBlock = blocks[currentIndex + 1];
             const targetScroll = window.scrollY + nextBlock.getBoundingClientRect().top - 120;
@@ -167,19 +177,16 @@ window.addEventListener('wheel', (e) => {
             return;
         }
     } else {
-        // Remontée engagée : on retourne au bloc précédent
         if (currentIndex > 0) {
             const prevBlock = blocks[currentIndex - 1];
             const targetScroll = window.scrollY + prevBlock.getBoundingClientRect().top - 120;
             window.scrollTo({ top: targetScroll, behavior: 'smooth' });
         } else {
-            // Si on est au premier bloc et qu'on remonte, on libère l'accès vers la vidéo
             body.classList.remove('scrolled-mode');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 
-    // Libération du verrou après la fin de l'animation de glissement
     setTimeout(() => {
         isAnimatingScroll = false;
     }, 800);

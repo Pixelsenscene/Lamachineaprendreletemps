@@ -1,0 +1,319 @@
+<!-- === 1. LE CONTENU (MAIN) === -->
+<main class="evenements-container">
+
+    <!-- Boutons de sous-menu collés au plus haut -->
+    <nav class="sub-nav-buttons">
+        <button class="sub-btn" onclick="loadPageContent('evenements-passe')"
+            style="animation-delay: 0.1s;">Passé</button>
+        <button class="sub-btn active" onclick="loadPageContent('evenements-actualite')"
+            style="animation-delay: 0.2s;">Actualité</button>
+        <button class="sub-btn" onclick="loadPageContent('evenements-avenir')" style="animation-delay: 0.3s;">À
+            venir</button>
+    </nav>
+
+    <!-- Lien de réouverture (masqué au départ) -->
+    <div id="reopen-link-wrapper" class="reopen-hidden">
+        <a href="#" id="reopen-video-btn" class="video-link">🎥 Vidéo de présentation / Mobilis in mobile</a>
+    </div>
+
+    <!-- Zone de la vidéo interactive et de l'exposition -->
+    <div class="actualite-wrapper">
+        <div id="video-section" class="video-fullscreen">
+            <button id="close-video-btn" title="Fermer la vidéo">✕</button>
+            <video id="actu-video" controls autoplay playsinline>
+                <source src="https://MaptDiff.b-cdn.net/Ev%C3%A8nements/ITW%20SEBASTIEN%20V3.mp4" type="video/mp4">
+                Votre navigateur ne prend pas en charge la lecture de vidéos.
+            </video>
+        </div>
+
+        <div id="content-section" class="content-visible-default">
+            <div class="event-card">
+                <div class="event-image">
+                    <img src="https://MaptDiff.b-cdn.net/Ev%C3%A8nements/WhatsApp%20Image%202026-10-01%20at%2013.25.53.jpeg"
+                        alt="Exposition Mobilis in mobile à Cachan">
+                </div>
+                <div class="event-text">
+                    <p class="event-dates">24-25 octobre &gt; 21 novembre 2026</p>
+                    <h2>Exposition "Mobilis in mobile" à la Cachotterie, à Cachan.</h2>
+                    <div class="event-details">
+                        La Cachotterie, 24 rue du Dr Hénouille, 94230 Cachan<br>
+                        <a href="https://maps.google.com/?q=24+rue+du+Dr+H%C3%A9nouille+94230+Cachan" target="_blank"
+                            class="map-link">Voir sur Google Maps 📍</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<!-- === 2. LE STYLE (CSS) === -->
+<style>
+    .evenements-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0px 20px 40px 20px;
+    }
+
+    .sub-nav-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+
+    .sub-btn {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 8px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        color: #bbb;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+
+        opacity: 0;
+        transform: translateX(-30px);
+        animation: cascadeIn 0.6s ease forwards;
+    }
+
+    .sub-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+    }
+
+    .sub-btn.active {
+        background: #fff;
+        color: #111;
+        border-color: #fff;
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes cascadeIn {
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Styles du lien cliquable centré sous les boutons */
+    #reopen-link-wrapper {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .reopen-hidden {
+        display: none;
+    }
+
+    .reopen-visible {
+        display: block;
+        animation: fadeInSub 0.5s ease-in-out;
+    }
+
+    .video-link {
+        display: inline-block;
+        font-family: 'Avenir', sans-serif;
+        color: #3498db;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        padding: 8px 16px;
+        border: 1px dashed rgba(52, 152, 219, 0.4);
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .video-link:hover {
+        color: #fff;
+        background: rgba(52, 152, 219, 0.2);
+        border-color: #3498db;
+    }
+
+    /* Section Vidéo */
+    #video-section {
+        position: relative;
+        transition: opacity 0.4s ease, transform 0.4s ease;
+        background: #000;
+        border-radius: 8px;
+        overflow: hidden;
+        margin: 0 auto 30px auto;
+    }
+
+    .video-fullscreen {
+        display: block;
+        width: 100%;
+        max-height: 70vh;
+    }
+
+    .video-fullscreen video {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .video-hidden {
+        display: none;
+    }
+
+    #close-video-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 16px;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s;
+    }
+
+    #close-video-btn:hover {
+        background: rgba(231, 76, 60, 0.9);
+    }
+
+    .event-card {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .event-image img {
+        width: 260px;
+        height: auto;
+        border-radius: 6px;
+        object-fit: cover;
+    }
+
+    .event-text {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .event-dates {
+        font-weight: bold;
+        color: #e67e22;
+        margin-bottom: 8px;
+        font-size: 1.05rem;
+    }
+
+    .event-text h2 {
+        font-size: 1.4rem;
+        margin-bottom: 12px;
+        color: #fff;
+        text-align: left;
+    }
+
+    .event-details {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #ccc;
+    }
+
+    .map-link {
+        color: #3498db;
+        text-decoration: none;
+        font-weight: 500;
+        margin-top: 8px;
+        display: inline-block;
+        transition: color 0.2s;
+    }
+
+    .map-link:hover {
+        color: #1abc9c;
+        text-decoration: underline;
+    }
+
+    @keyframes fadeInSub {
+        from {
+            opacity: 0;
+            transform: translateY(-5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .event-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .event-image img {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+    }
+</style>
+
+
+<!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
+<script>
+    (function () {
+        const video = document.getElementById("actu-video");
+        const videoSection = document.getElementById("video-section");
+        const closeBtn = document.getElementById("close-video-btn");
+        const reopenWrapper = document.getElementById("reopen-link-wrapper");
+        const reopenBtn = document.getElementById("reopen-video-btn");
+
+        function hideVideoShowLink() {
+            if (video) {
+                video.pause();
+            }
+            if (videoSection) {
+                videoSection.classList.add("video-hidden");
+            }
+            if (reopenWrapper) {
+                reopenWrapper.classList.remove("reopen-hidden");
+                reopenWrapper.classList.add("reopen-visible");
+            }
+        }
+
+        function showVideoAndPlay(e) {
+            if (e) e.preventDefault();
+            if (reopenWrapper) {
+                reopenWrapper.classList.remove("reopen-visible");
+                reopenWrapper.classList.add("reopen-hidden");
+            }
+            if (videoSection) {
+                videoSection.classList.remove("video-hidden");
+            }
+            if (video) {
+                video.currentTime = 0;
+                video.play();
+            }
+        }
+
+        if (video) {
+            video.addEventListener("ended", hideVideoShowLink);
+        }
+        if (closeBtn) {
+            closeBtn.addEventListener("click", hideVideoShowLink);
+        }
+        if (reopenBtn) {
+            reopenBtn.addEventListener("click", showVideoAndPlay);
+        }
+    })();
+</script>

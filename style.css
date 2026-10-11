@@ -1,3 +1,4 @@
+/* --- RESET ET BASES GLOBALES --- */
 * {
     margin: 0;
     padding: 0;
@@ -17,7 +18,7 @@ body.page-mode {
     overflow-y: auto;
 }
 
-/* --- SECTION HERO (Accueil uniquement - Totalement fixe) --- */
+/* --- SECTION HERO (Accueil uniquement - Vidéo fixe de fond parfaitement calibrée) --- */
 #hero-section {
     position: fixed;
     top: 0;
@@ -51,15 +52,17 @@ body.page-mode #hero-section {
     opacity: 1;
 }
 
-.video-container iframe {
-    width: 100vw;
-    height: 56.25vw;
-    min-height: 100vh;
-    min-width: 177.77vh;
+.video-container video {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    min-width: 100vw;
+    min-height: 100vh;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
 }
 
 .hero-title {
@@ -70,7 +73,7 @@ body.page-mode #hero-section {
     font-size: clamp(1.8rem, 4vw, 3.5rem);
     color: #fff;
     text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5);
-    z-index: 2;
+    z-index: 5;
     font-weight: 700;
     transition: opacity 0.3s ease;
 }
@@ -125,7 +128,7 @@ body.page-mode .hero-title {
     color: #fff;
 }
 
-/* --- SOUS-MENUS --- */
+/* --- SOUS-MENUS DU HEADER --- */
 .submenu {
     position: absolute;
     left: 50%;
@@ -169,7 +172,7 @@ body.page-mode .hero-title {
     color: #fff;
 }
 
-/* Positionnement dynamique des sous-menus */
+/* Positionnement dynamique des sous-menus selon le mode */
 body.home-mode .submenu {
     bottom: calc(100% + 15px);
     transform: translateX(-50%) translateY(10px);
@@ -190,9 +193,9 @@ body.page-mode .has-submenu:hover .submenu {
     transform: translateX(-50%) translateY(0);
 }
 
-/* --- LE RETOUR DE LA LOGIQUE D'ORIGINE DU BANDEAU --- */
+/* --- LOGIQUE DE POSITIONNEMENT DU BANDEAU HEADER --- */
 
-/* 1. Sur la page d'accueil au repos : le bandeau est en bas de l'écran (sur la vidéo) */
+/* 1. Sur l'accueil au repos : le bandeau est ancré en bas de l'écran */
 body.home-mode #main-header {
     top: calc(100vh - 70px);
     bottom: auto;
@@ -200,7 +203,7 @@ body.home-mode #main-header {
     border-bottom: none;
 }
 
-/* 2. Dès qu'on scrolle ou qu'on est sur une page interne : le bandeau monte et se fixe en haut */
+/* 2. En scroll ou sur une page interne : le bandeau se fixe en haut */
 body.scrolled-mode #main-header,
 body.page-mode #main-header {
     top: 0;
@@ -209,7 +212,7 @@ body.page-mode #main-header {
     border-top: none;
 }
 
-/* --- CONTENEUR DES PAGES (Le rideau) --- */
+/* --- CONTENEUR DYNAMIQUE DES PAGES --- */
 #main-container {
     position: relative;
     width: 100%;
@@ -222,17 +225,13 @@ body.home-mode #main-container {
     margin-top: 100vh;
     min-height: 150vh;
     transition: none;
-
-    /* Ancrage strict bidirectionnel */
     scroll-snap-type: y mandatory;
-
-    /* Marge de sécurité pour que l'arrêt se fasse proprement sous le bandeau fixé en haut */
     scroll-padding-top: 140px;
 }
 
 body.page-mode #main-container {
     margin-top: 0;
-    padding-top: 100px;
+    padding-top: 40px;
     min-height: 100vh;
     transition: none;
     scroll-snap-type: none;
@@ -252,68 +251,7 @@ body.page-mode #main-container {
     opacity: 1;
 }
 
-/* --- STYLE DE LA PAGE D'ACCUEIL MODULAIRE --- */
-.home-content-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 120px;
-    padding: 20px 0 100px 0;
-}
-
-.content-block {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 50px;
-    align-items: center;
-
-    /* Alignement strict sur le haut du bloc et arrêt forcé */
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    min-height: 80vh;
-}
-
-.content-block.reverse {
-    direction: rtl;
-}
-
-.content-block.reverse .text-side {
-    direction: ltr;
-}
-
-.text-side h2 {
-    font-family: 'Avenir', sans-serif;
-    font-size: clamp(1.8rem, 2.5vw, 2.5rem);
-    margin-bottom: 20px;
-    color: #fff;
-    font-weight: 600;
-}
-
-.text-side p {
-    font-family: 'Avenir', sans-serif;
-    font-size: 1.05rem;
-    line-height: 1.7;
-    color: #ccc;
-}
-
-/* --- CONFIGURATION DES PHOTOS PORTRAIT GÉANTES --- */
-.image-side img {
-    width: 100%;
-    height: 80vh;
-    /* Prend 80% de la hauteur de l'écran */
-    object-fit: contain;
-    /* Affiche l'image en entier sans aucune coupure */
-    background-color: #0d0d0d;
-    /* Fond harmonisé */
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    transition: transform 0.4s ease;
-}
-
-.image-side img:hover {
-    transform: scale(1.02);
-}
-
-/* Media Queries (Mobile & Tablette) */
+/* --- MEDIA QUERIES GLOBALES --- */
 @media (max-width: 900px) {
     #main-header nav ul.main-menu {
         gap: 20px;
@@ -327,34 +265,5 @@ body.page-mode #main-container {
     .hero-title {
         bottom: 70px;
         left: 20px;
-    }
-
-    .content-block,
-    .content-block.reverse {
-        grid-template-columns: 1fr;
-        direction: ltr;
-        gap: 25px;
-        min-height: auto;
-        scroll-snap-align: none;
-        scroll-snap-stop: normal;
-    }
-
-    .image-side img {
-        height: auto;
-        max-height: 70vh;
-        object-fit: contain;
-    }
-
-    #hero-section.video-loaded .video-container {
-        opacity: 1 !important;
-    }
-
-    #hero-section .video-container {
-        opacity: 1 !important;
-    }
-
-    #hero-section video {
-        display: block !important;
-        opacity: 1 !important;
     }
 }
