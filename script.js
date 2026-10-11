@@ -132,7 +132,7 @@ window.addEventListener('wheel', (e) => {
     e.preventDefault();
     isAnimatingScroll = true;
 
-    // Seuil de sensibilité abaissé à -20 (plus facile à déclencher en scrollant vers le haut)
+    // Seuil de sensibilité à -20 (très sensible pour le retour haut)
     if (e.deltaY < -20 && scrollY > windowHeight / 2) {
         body.classList.remove('scrolled-mode');
         window.scrollTo({ top: 0, behavior: 'smooth' });
