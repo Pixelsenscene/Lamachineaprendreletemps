@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Machine à Prendre le Temps</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="home-mode">
+
+    <!-- Section Vidéo d'Accueil -->
+    <section id="hero-section" class="video-loaded">
+        <div class="video-container" style="opacity: 1 !important;">
+            <video id="hero-video" autoplay muted playsinline preload="auto"
+                style="width: 100vw; height: 100vh; object-fit: cover; position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1;">
+                <source
+                    src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/LeFilduTemps%20-%20Hiver1-SiteWeb%20MPEG-4.mp4"
+                    type="video/mp4">
+                Votre navigateur ne prend pas en charge la lecture de vidéos.
+            </video>
+        </div>
+        <h1 class="hero-title" style="z-index: 5;">La Machine à Prendre le Temps</h1>
+    </section>
+
+    <!-- Bandeau du Menu Principal avec sous-menus -->
+    <header id="main-header">
+        <nav>
+            <ul class="main-menu">
+                <li><a href="#" data-page="accueil" class="active">Accueil</a></li>
+
+                <!-- Menu Galeries avec sous-menus -->
+                <li class="has-submenu">
+                    <a href="#" data-page="galeries">Galeries</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-page="courtes-realisations">Courtes réalisations</a></li>
+                        <li><a href="#" data-page="par-thematiques">Par thématiques</a></li>
+                        <li><a href="#" data-page="premieres-machines">Les 1ères Machines</a></li>
+                        <li><a href="#" data-page="ralentis">Ralentis</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menu Evènements avec sous-menus -->
+                <li class="has-submenu">
+                    <a href="#" data-page="evenements">Evènements</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-page="passe">Passé</a></li>
+                        <li><a href="#" data-page="actualite">Actualité</a></li>
+                        <li><a href="#" data-page="a-venir">À venir</a></li>
+                    </ul>
+                </li>
+
+                <li><a href="#" data-page="dossiers">Dossiers</a></li>
+                <li><a href="#" data-page="contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Conteneur Principal Dynamique (Injecté via JS depuis le dossier pages/) -->
+    <main id="main-container">
+        <div id="page-content" class="page-content active"></div>
+    </main>
+
+    <!-- Script de boucle temporelle (15s à 45s) pour la vidéo d'accueil Bunny -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const heroVideo = document.getElementById('hero-video');
+            if (heroVideo) {
+                // Tente de lancer la lecture explicitement
+                heroVideo.play().catch(error => {
+                    console.log("Lecture automatique bloquée par le navigateur : ", error);
+                });
+
+                // Gestion de la boucle (15s à 45s)
+                heroVideo.addEventListener('timeupdate', function () {
+                    if (this.currentTime >= 45 || this.currentTime < 15) {
+                        this.currentTime = 15;
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
