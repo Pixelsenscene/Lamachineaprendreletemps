@@ -1,15 +1,6 @@
 <!-- === 1. LE CONTENU (MAIN) === -->
 <main class="home-content-wrapper">
 
-    <!-- Vidéo d'accueil tout en haut -->
-    <div id="accueil-top" class="hero-video-wrapper">
-        <video autoplay loop muted playsinline class="hero-video">
-            <source src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/Ralenti%20Verti%20et%20acce%CC%81l.mov"
-                type="video/quicktime">
-            Votre navigateur ne prend pas en charge la lecture de vidéos.
-        </video>
-    </div>
-
     <!-- Bloc 1 -->
     <div class="content-block">
         <div class="text-side">
@@ -24,7 +15,11 @@
             </p>
         </div>
         <div class="image-side">
-            <img src="img/IMG1-cumulus.webp" alt="Illustration 1">
+            <div class="media-container"
+                data-video="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/danse%20cumulus%201-SiteWeb%20MPEG-4.mp4"
+                data-img="img/IMG1-cumulus.webp" data-alt="Illustration 1" onclick="handleMediaClick(this)">
+                <img src="img/IMG1-cumulus.webp" alt="Illustration 1">
+            </div>
         </div>
     </div>
 
@@ -50,7 +45,11 @@
             </p>
         </div>
         <div class="image-side">
-            <img src="img/IMG2-Tchin.webp" alt="Illustration 2">
+            <div class="media-container"
+                data-video="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/TchinTchin_-SiteWeb%20MPEG-4.mp4"
+                data-img="img/IMG2-Tchin.webp" data-alt="Illustration 2" onclick="handleMediaClick(this)">
+                <img src="img/IMG2-Tchin.webp" alt="Illustration 2">
+            </div>
         </div>
     </div>
 
@@ -70,7 +69,11 @@
             </p>
         </div>
         <div class="image-side">
-            <img src="img/IMG3-penseur.webp" alt="Illustration 3">
+            <div class="media-container"
+                data-video="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Penseur-SiteWeb%20MPEG-4.mp4"
+                data-img="img/IMG3-penseur.webp" data-alt="Illustration 3" onclick="handleMediaClick(this)">
+                <img src="img/IMG3-penseur.webp" alt="Illustration 3">
+            </div>
         </div>
     </div>
 
@@ -96,7 +99,11 @@
             </p>
         </div>
         <div class="image-side">
-            <img src="img/IMG4-rateau.webp" alt="Illustration 4">
+            <div class="media-container"
+                data-video="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/N3-NappesDePlage-SiteWeb%20MPEG-4.mp4"
+                data-img="img/IMG4-plage.png" data-alt="Illustration 4" onclick="handleMediaClick(this)">
+                <img src="img/IMG4-plage.png" alt="Illustration 4">
+            </div>
         </div>
     </div>
 
@@ -113,7 +120,11 @@
             </p>
         </div>
         <div class="image-side">
-            <img src="img/IMG5-SDreflet.avif" alt="Illustration 5">
+            <div class="media-container"
+                data-video="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/mirage-SiteWeb%20MPEG-4.mp4"
+                data-img="img/IMG5-SDreflet.png" data-alt="Illustration 5" onclick="handleMediaClick(this)">
+                <img src="img/IMG5-SDreflet.png" alt="Illustration 5">
+            </div>
         </div>
     </div>
 
@@ -129,28 +140,14 @@
         padding: 0 0 100px 0;
     }
 
-    .hero-video-wrapper {
-        width: 100%;
-        margin-bottom: 20px;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-    }
-
-    .hero-video {
-        width: 100%;
-        display: block;
-        object-fit: cover;
-        max-height: 75vh;
-    }
-
     .content-block {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 50px;
         align-items: center;
 
-        scroll-snap-align: start;
+        scroll-snap-align: center;
+        /* Aligne parfaitement au centre vertical */
         scroll-snap-stop: always;
         min-height: 80vh;
     }
@@ -161,6 +158,11 @@
 
     .content-block.reverse .text-side {
         direction: ltr;
+    }
+
+    .text-side {
+        cursor: pointer;
+        user-select: none;
     }
 
     .text-side h2 {
@@ -178,18 +180,35 @@
         color: #ccc;
     }
 
-    .image-side img {
+    /* Conteneur de l'image / vidéo interactive */
+    .media-container {
+        position: relative;
         width: 100%;
         height: 80vh;
-        object-fit: contain;
         background-color: #0d0d0d;
         border-radius: 8px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .media-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
         transition: transform 0.4s ease;
     }
 
-    .image-side img:hover {
+    .media-container:hover img {
         transform: scale(1.02);
+    }
+
+    /* Style de la vidéo injectée sans contrôles */
+    .media-container video {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
     }
 
     @media (max-width: 900px) {
@@ -204,14 +223,92 @@
             scroll-snap-stop: normal;
         }
 
-        .image-side img {
+        .media-container {
             height: auto;
             max-height: 70vh;
-            object-fit: contain;
         }
     }
 </style>
 
 
 <!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
-<script></script>
+<script>
+    function handleMediaClick(container) {
+        const videoUrl = container.getAttribute('data-video');
+        const imgSrc = container.getAttribute('data-img');
+        const imgAlt = container.getAttribute('data-alt');
+        const isVideo = container.querySelector('video');
+
+        if (!isVideo) {
+            // Passer en mode vidéo
+            const isTchin = videoUrl.includes('TchinTchin');
+            container.innerHTML = `
+                <video autoplay muted playsinline disablePictureInPicture controlsList="nodownload noremoteplayback nofullscreen" ${isTchin ? '' : 'loop'}>
+                    <source src="${videoUrl}" type="video/mp4">
+                    Votre navigateur ne prend pas en charge la lecture de vidéos.
+                </video>
+            `;
+            const vid = container.querySelector('video');
+            vid.currentTime = 0;
+
+            // Gestion de l'exception TchinTchin (boucle de 0 à 29s)
+            if (isTchin) {
+                vid.addEventListener('timeupdate', function () {
+                    if (this.currentTime >= 29) {
+                        this.currentTime = 0;
+                    }
+                });
+            }
+        } else {
+            // Revenir à l'image fixe initiale
+            container.innerHTML = `
+                <img src="${imgSrc}" alt="${imgAlt}">
+            `;
+        }
+    }
+
+    // Fonction de centrage vertical sur-mesure
+    function scrollToBlockCentered(targetBlock) {
+        const header = document.getElementById('main-header');
+        const headerHeight = header ? header.offsetHeight : 0;
+
+        // Position du bloc par rapport à la page
+        const rect = targetBlock.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const blockTopRelativeToPage = rect.top + scrollTop;
+
+        // Calcul de la zone visible utile (sous le menu)
+        const availableHeight = window.innerHeight - headerHeight;
+
+        // Position idéale pour centrer le bloc exactement au milieu de l'espace disponible sous le menu
+        const targetScrollY = blockTopRelativeToPage - headerHeight - (availableHeight - rect.height) / 2;
+
+        window.scrollTo({
+            top: Math.max(0, targetScrollY),
+            behavior: 'smooth'
+        });
+    }
+
+    // Écouteur de clic sur le texte pour déclencher le défilement centré
+    document.addEventListener('click', (e) => {
+        const textSide = e.target.closest('.text-side');
+        if (!textSide) return;
+
+        const currentBlock = textSide.closest('.content-block');
+        const blocks = Array.from(document.querySelectorAll('.content-block'));
+        const index = blocks.indexOf(currentBlock);
+
+        if (index === -1) return;
+
+        let targetBlock;
+        if (index === blocks.length - 1) {
+            // Dernier bloc -> retour au 1er bloc
+            targetBlock = blocks[0];
+        } else {
+            // Aller au bloc suivant
+            targetBlock = blocks[index + 1];
+        }
+
+        scrollToBlockCentered(targetBlock);
+    });
+</script>

@@ -6,15 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La Machine à Prendre le Temps</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Transition d'opacité pour le fondu au noir (200ms) */
+        #hero-video {
+            transition: opacity 0.2s ease-in-out;
+            opacity: 1;
+        }
+    </style>
 </head>
 
 <body class="home-mode">
 
-    <!-- Section Vidéo d'Accueil (fixée tout en haut) -->
-    <section id="hero-section" class="video-loaded">
+    <!-- Section Vidéo d'Accueil (cliquable pour changer de vidéo) -->
+    <section id="hero-section" class="video-loaded" style="cursor: pointer;" onclick="switchHeroVideo()"
+        title="Cliquez pour changer de vidéo">
         <div class="video-container">
-            <video id="hero-video" autoplay muted playsinline preload="auto" disablePictureInPicture controlsList="nodownload noremoteplayback">
-                <source
+            <video id="hero-video" autoplay muted playsinline preload="auto" disablePictureInPicture
+                controlsList="nodownload noremoteplayback" loop>
+                <source id="hero-source"
                     src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/LeFilduTemps%20-%20Hiver1-SiteWeb%20MPEG-4.mp4"
                     type="video/mp4">
                 Votre navigateur ne prend pas en charge la lecture de vidéos.
@@ -61,19 +70,127 @@
         <div id="page-content" class="page-content active"></div>
     </main>
 
-    <!-- Script de boucle temporelle (15s à 45s) pour la vidéo d'accueil Bunny -->
+    <!-- Script de gestion centralisé (Carrousel, Fondu & Comportement du Menu Accueil) -->
     <script>
+        // ==========================================
+        // CONFIGURATION CENTRALE (Modifiable ici)
+        // ==========================================
+        const CONFIG = {
+            transitionDuration: 200, // Durée du fondu au noir en millisecondes (200ms)
+            videos: [
+                {
+                    src: "https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/LeFilduTemps%20-%20Hiver1-SiteWeb%20MPEG-4.mp4",
+                    customLoop: true,
+                    startTime: 16,
+                    endTime: 106
+                },
+                {
+                    src: "https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/phare%20StMathieu1%20PL%20web-SiteWeb%20MPEG-4.mp4",
+                    customLoop: false
+                },
+                {
+                    src: "https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Envole%CC%81e%20dansante-SiteWeb%20MPEG-4.mp4",
+                    customLoop: false
+                },
+                {
+                    src: "https://MaptDiff.b-cdn.net/RALENTIS%20VR%20paysage/Baie%20Mont%20Saint%20Michel%20-%20VR-SiteWeb%20MPEG-4.mp4",
+                    customLoop: false
+                }
+            ]
+        };
+
+        let currentHeroIndex = 0;
+        let isTransitioning = false;
+
+        // Fonction centralisée pour charger, positionner et lancer une vidéo
+        function loadAndPlayVideo(videoEl, sourceEl, videoData, callback) {
+            sourceEl.src = videoData.src;
+            videoEl.load();
+
+            const handleReady = () => {
+                if (videoData.customLoop) {
+                    videoEl.currentTime = videoData.startTime;
+                } else {
+                    videoEl.currentTime = 0;
+                }
+
+                videoEl.play().then(() => {
+                    setTimeout(() => {
+                        videoEl.style.opacity = '1';
+                        if (typeof callback === 'function') callback();
+                    }, 50);
+                }).catch(error => {
+                    console.log("Lecture automatique bloquée : ", error);
+                    if (typeof callback === 'function') callback();
+                });
+            };
+
+            if (videoData.customLoop) {
+                videoEl.addEventListener('loadedmetadata', handleReady, { once: true });
+            } else {
+                videoEl.addEventListener('canplay', handleReady, { once: true });
+            }
+        }
+
+        // Fonction déclenchée au clic pour changer de vidéo d'accueil
+        function switchHeroVideo() {
+            if (isTransitioning) return;
+            isTransitioning = true;
+
+            const heroVideo = document.getElementById('hero-video');
+            const heroSource = document.getElementById('hero-source');
+
+            // 1. Fondu au noir
+            heroVideo.style.opacity = '0';
+
+            // 2. Changement après 200ms
+            setTimeout(() => {
+                currentHeroIndex = (currentHeroIndex + 1) % CONFIG.videos.length;
+                const nextData = CONFIG.videos[currentHeroIndex];
+
+                loadAndPlayVideo(heroVideo, heroSource, nextData, () => {
+                    setTimeout(() => {
+                        isTransitioning = false;
+                    }, CONFIG.transitionDuration);
+                });
+            }, CONFIG.transitionDuration);
+        }
+
+        // Initialisation au chargement de la page
         window.addEventListener('DOMContentLoaded', () => {
             const heroVideo = document.getElementById('hero-video');
-            if (heroVideo) {
-                heroVideo.play().catch(error => {
-                    console.log("Lecture automatique bloquée par le navigateur : ", error);
-                });
+            const heroSource = document.getElementById('hero-source');
 
+            if (heroVideo) {
+                const initialData = CONFIG.videos[currentHeroIndex];
+                heroVideo.style.opacity = '0';
+
+                loadAndPlayVideo(heroVideo, heroSource, initialData);
+
+                // Gestion de la boucle spécifique (ex: Le fil du temps de 16s à 106s)
                 heroVideo.addEventListener('timeupdate', function () {
-                    if (this.currentTime >= 45 || this.currentTime < 15) {
-                        this.currentTime = 15;
+                    const data = CONFIG.videos[currentHeroIndex];
+                    if (data.customLoop && this.currentTime >= data.endTime) {
+                        this.currentTime = data.startTime;
                     }
+                });
+            }
+
+            // Gestion du comportement intelligent du menu "Accueil"
+            const accueilLink = document.querySelector('a[data-page="accueil"]');
+            if (accueilLink) {
+                accueilLink.addEventListener('click', (e) => {
+                    const scrollY = window.scrollY || window.pageYOffset;
+
+                    // Si on est positionné sur la vidéo d'accueil (en haut de page)
+                    if (scrollY < 300) {
+                        e.preventDefault(); // Empêche le rechargement/comportement par défaut
+                        const firstBlock = document.querySelector('.content-block');
+                        if (firstBlock) {
+                            firstBlock.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }
+                    // Sinon (si on est déjà plus bas dans le contenu), on laisse faire le comportement habituel (remontée)
                 });
             }
         });

@@ -1,28 +1,14 @@
-// --- GESTION DE LA VIDÉO D'ACCUEIL BUNNY.NET (15s -> 45s) ---
+// --- CHARGEMENT DYNAMIQUE DES COMPOSANTS ET INITIALISATION ---
 window.addEventListener('DOMContentLoaded', () => {
     const heroSection = document.getElementById('hero-section');
     if (heroSection) {
         heroSection.classList.add('video-loaded');
     }
 
-    const heroVideo = document.getElementById('hero-video');
-    if (heroVideo) {
-        heroVideo.play().catch(error => {
-            console.log("Lecture automatique bloquée par le navigateur : ", error);
-        });
-
-        heroVideo.addEventListener('timeupdate', function () {
-            if (this.currentTime >= 45 || this.currentTime < 15) {
-                this.currentTime = 15;
-            }
-        });
-    }
-
     loadPageContent('accueil');
     currentActivePage = 'accueil';
 });
 
-// --- CHARGEMENT DYNAMIQUE DES COMPOSANTS ---
 const body = document.body;
 const allNavLinks = document.querySelectorAll('#main-header nav a');
 const pageContainer = document.getElementById('page-content');
