@@ -70,10 +70,10 @@
         <div id="page-content" class="page-content active"></div>
     </main>
 
-    <!-- Script de gestion centralisé (Carrousel, Fondu & Comportement du Menu Accueil) -->
+    <!-- Script de gestion centralisé -->
     <script>
         // ==========================================
-        // CONFIGURATION CENTRALE (Modifiable ici)
+        // CONFIGURATION CENTRALE DES VIDÉOS D'ACCUEIL
         // ==========================================
         const CONFIG = {
             transitionDuration: 200, // Durée du fondu au noir en millisecondes (200ms)
@@ -102,18 +102,16 @@
         let currentHeroIndex = 0;
         let isTransitioning = false;
 
-        // Fonction centralisée pour charger, positionner et lancer une vidéo
+        // Fonction centralisée corrigée pour forcer le retour à 0 net
         function loadAndPlayVideo(videoEl, sourceEl, videoData, callback) {
             sourceEl.src = videoData.src;
             videoEl.load();
 
-            const handleReady = () => {
-                if (videoData.customLoop) {
-                    videoEl.currentTime = videoData.startTime;
-                } else {
-                    videoEl.currentTime = 0;
-                }
+            // Forçage immédiat du currentTime à 0 ou startTime
+            videoEl.currentTime = videoData.customLoop ? videoData.startTime : 0;
 
+            const handleReady = () => {
+                videoEl.currentTime = videoData.customLoop ? videoData.startTime : 0;
                 videoEl.play().then(() => {
                     setTimeout(() => {
                         videoEl.style.opacity = '1';
@@ -125,11 +123,7 @@
                 });
             };
 
-            if (videoData.customLoop) {
-                videoEl.addEventListener('loadedmetadata', handleReady, { once: true });
-            } else {
-                videoEl.addEventListener('canplay', handleReady, { once: true });
-            }
+            videoEl.addEventListener('canplay', handleReady, { once: true });
         }
 
         // Fonction déclenchée au clic pour changer de vidéo d'accueil
@@ -156,6 +150,79 @@
             }, CONFIG.transitionDuration);
         }
 
+        // ==========================================
+        // GESTION GLOBALE DE L'INTERACTIVITÉ DES BLOCS (Photo/Vidéo & Clic texte)
+        // ==========================================
+        function handleMediaClick(container) {
+            const videoUrl = container.getAttribute('data-video');
+            const imgSrc = container.getAttribute('data-img');
+            const imgAlt = container.getAttribute('data-alt');
+            const isVideo = container.querySelector('video');
+
+            if (!isVideo) {
+                const isTchin = videoUrl.includes('TchinTchin');
+                container.innerHTML = `
+                    <video autoplay muted playsinline disablePictureInPicture controlsList="nodownload noremoteplayback nofullscreen" ${isTchin ? '' : 'loop'}>
+                        <source src="${videoUrl}" type="video/mp4">
+                        Votre navigateur ne prend pas en charge la lecture de vidéos.
+                    </video>
+                `;
+                const vid = container.querySelector('video');
+                vid.currentTime = 0;
+
+                if (isTchin) {
+                    vid.addEventListener('timeupdate', function () {
+                        if (this.currentTime >= 29) {
+                            this.currentTime = 0;
+                        }
+                    });
+                }
+            } else {
+                container.innerHTML = `
+                    <img src="${imgSrc}" alt="${imgAlt}">
+                `;
+            }
+        }
+
+        // Fonction de centrage vertical sur-mesure pour les blocs d'accueil
+        function scrollToBlockCentered(targetBlock) {
+            const header = document.getElementById('main-header');
+            const headerHeight = header ? header.offsetHeight : 0;
+
+            const rect = targetBlock.getBoundingClientRect();
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const blockTopRelativeToPage = rect.top + scrollTop;
+
+            const availableHeight = window.innerHeight - headerHeight;
+            const targetScrollY = blockTopRelativeToPage - headerHeight - (availableHeight - rect.height) / 2;
+
+            window.scrollTo({
+                top: Math.max(0, targetScrollY),
+                behavior: 'smooth'
+            });
+        }
+
+        // Écouteur global pour le clic sur le texte (fonctionne même après chargement dynamique)
+        document.addEventListener('click', (e) => {
+            const textSide = e.target.closest('.text-side');
+            if (!textSide) return;
+
+            const currentBlock = textSide.closest('.content-block');
+            const blocks = Array.from(document.querySelectorAll('.content-block'));
+            const index = blocks.indexOf(currentBlock);
+
+            if (index === -1) return;
+
+            let targetBlock;
+            if (index === blocks.length - 1) {
+                targetBlock = blocks[0]; // Bouclage vers le 1er bloc
+            } else {
+                targetBlock = blocks[index + 1]; // Bloc suivant
+            }
+
+            scrollToBlockCentered(targetBlock);
+        });
+
         // Initialisation au chargement de la page
         window.addEventListener('DOMContentLoaded', () => {
             const heroVideo = document.getElementById('hero-video');
@@ -167,7 +234,6 @@
 
                 loadAndPlayVideo(heroVideo, heroSource, initialData);
 
-                // Gestion de la boucle spécifique (ex: Le fil du temps de 16s à 106s)
                 heroVideo.addEventListener('timeupdate', function () {
                     const data = CONFIG.videos[currentHeroIndex];
                     if (data.customLoop && this.currentTime >= data.endTime) {
@@ -181,16 +247,13 @@
             if (accueilLink) {
                 accueilLink.addEventListener('click', (e) => {
                     const scrollY = window.scrollY || window.pageYOffset;
-
-                    // Si on est positionné sur la vidéo d'accueil (en haut de page)
                     if (scrollY < 300) {
-                        e.preventDefault(); // Empêche le rechargement/comportement par défaut
+                        e.preventDefault();
                         const firstBlock = document.querySelector('.content-block');
                         if (firstBlock) {
-                            firstBlock.scrollIntoView({ behavior: 'smooth' });
+                            scrollToBlockCentered(firstBlock);
                         }
                     }
-                    // Sinon (si on est déjà plus bas dans le contenu), on laisse faire le comportement habituel (remontée)
                 });
             }
         });

@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <!-- Bloc 2 -->
+    <!-- Bloc 2 (Corrigé : Pas de rectangle blanc rigide, juste le fond adapté si besoin, ou structure identique) -->
     <div class="content-block reverse">
         <div class="text-side">
             <h2>Rendre visibles nos temporalités</h2>
@@ -45,6 +45,7 @@
             </p>
         </div>
         <div class="image-side">
+            <!-- On retire la classe white-bg-container du conteneur pour retrouver le comportement exact des autres blocs -->
             <div class="media-container"
                 data-video="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/TchinTchin_-SiteWeb%20MPEG-4.mp4"
                 data-img="img/IMG2-Tchin.webp" data-alt="Illustration 2" onclick="handleMediaClick(this)">
@@ -147,7 +148,6 @@
         align-items: center;
 
         scroll-snap-align: center;
-        /* Aligne parfaitement au centre vertical */
         scroll-snap-stop: always;
         min-height: 80vh;
     }
@@ -180,7 +180,6 @@
         color: #ccc;
     }
 
-    /* Conteneur de l'image / vidéo interactive */
     .media-container {
         position: relative;
         width: 100%;
@@ -203,7 +202,6 @@
         transform: scale(1.02);
     }
 
-    /* Style de la vidéo injectée sans contrôles */
     .media-container video {
         width: 100%;
         height: 100%;
@@ -229,86 +227,3 @@
         }
     }
 </style>
-
-
-<!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
-<script>
-    function handleMediaClick(container) {
-        const videoUrl = container.getAttribute('data-video');
-        const imgSrc = container.getAttribute('data-img');
-        const imgAlt = container.getAttribute('data-alt');
-        const isVideo = container.querySelector('video');
-
-        if (!isVideo) {
-            // Passer en mode vidéo
-            const isTchin = videoUrl.includes('TchinTchin');
-            container.innerHTML = `
-                <video autoplay muted playsinline disablePictureInPicture controlsList="nodownload noremoteplayback nofullscreen" ${isTchin ? '' : 'loop'}>
-                    <source src="${videoUrl}" type="video/mp4">
-                    Votre navigateur ne prend pas en charge la lecture de vidéos.
-                </video>
-            `;
-            const vid = container.querySelector('video');
-            vid.currentTime = 0;
-
-            // Gestion de l'exception TchinTchin (boucle de 0 à 29s)
-            if (isTchin) {
-                vid.addEventListener('timeupdate', function () {
-                    if (this.currentTime >= 29) {
-                        this.currentTime = 0;
-                    }
-                });
-            }
-        } else {
-            // Revenir à l'image fixe initiale
-            container.innerHTML = `
-                <img src="${imgSrc}" alt="${imgAlt}">
-            `;
-        }
-    }
-
-    // Fonction de centrage vertical sur-mesure
-    function scrollToBlockCentered(targetBlock) {
-        const header = document.getElementById('main-header');
-        const headerHeight = header ? header.offsetHeight : 0;
-
-        // Position du bloc par rapport à la page
-        const rect = targetBlock.getBoundingClientRect();
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const blockTopRelativeToPage = rect.top + scrollTop;
-
-        // Calcul de la zone visible utile (sous le menu)
-        const availableHeight = window.innerHeight - headerHeight;
-
-        // Position idéale pour centrer le bloc exactement au milieu de l'espace disponible sous le menu
-        const targetScrollY = blockTopRelativeToPage - headerHeight - (availableHeight - rect.height) / 2;
-
-        window.scrollTo({
-            top: Math.max(0, targetScrollY),
-            behavior: 'smooth'
-        });
-    }
-
-    // Écouteur de clic sur le texte pour déclencher le défilement centré
-    document.addEventListener('click', (e) => {
-        const textSide = e.target.closest('.text-side');
-        if (!textSide) return;
-
-        const currentBlock = textSide.closest('.content-block');
-        const blocks = Array.from(document.querySelectorAll('.content-block'));
-        const index = blocks.indexOf(currentBlock);
-
-        if (index === -1) return;
-
-        let targetBlock;
-        if (index === blocks.length - 1) {
-            // Dernier bloc -> retour au 1er bloc
-            targetBlock = blocks[0];
-        } else {
-            // Aller au bloc suivant
-            targetBlock = blocks[index + 1];
-        }
-
-        scrollToBlockCentered(targetBlock);
-    });
-</script>
