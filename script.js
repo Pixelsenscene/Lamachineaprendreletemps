@@ -53,6 +53,59 @@ async function loadPageContent(pageName) {
     }
 }
 
+// --- CLIC SUR LE TITRE MANUSCRIT (Logo principal dans le bandeau) ---
+document.addEventListener('click', (e) => {
+    const brandLink = e.target.closest('.header-brand-title');
+    if (!brandLink) return;
+    e.preventDefault();
+
+    // Met le lien Accueil en actif dans le menu
+    allNavLinks.forEach(l => l.classList.remove('active'));
+    const accueilNavLink = document.querySelector('#main-header nav a[data-page="accueil"]');
+    if (accueilNavLink) accueilNavLink.classList.add('active');
+
+    // Repasse en mode Accueil tout en haut (menu en bas sur la vidéo)
+    body.classList.remove('page-mode', 'scrolled-mode');
+    body.classList.add('home-mode');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (currentActivePage !== 'accueil') {
+        loadPageContent('accueil');
+        currentActivePage = 'accueil';
+    }
+});
+
+// --- CLIC SUR LA FLÈCHE VERS LE BAS ---
+document.addEventListener('click', (e) => {
+    const arrowLink = e.target.closest('[data-action="scroll-down"]');
+    if (!arrowLink) return;
+    e.preventDefault();
+
+    body.classList.add('scrolled-mode');
+    const firstBlock = document.querySelector('.content-block');
+    if (typeof scrollToBlockCentered === 'function' && firstBlock) {
+        scrollToBlockCentered(firstBlock);
+    } else if (firstBlock) {
+        firstBlock.scrollIntoView({ behavior: 'smooth' });
+    }
+});
+
+// --- CLIC SUR LE TITRE MANUSCRIT (Retour en haut) ---
+document.addEventListener('click', (e) => {
+    const brandLink = e.target.closest('.header-brand-title');
+    if (!brandLink) return;
+    e.preventDefault();
+
+    body.classList.remove('page-mode', 'scrolled-mode');
+    body.classList.add('home-mode');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (currentActivePage !== 'accueil') {
+        loadPageContent('accueil');
+        currentActivePage = 'accueil';
+    }
+});
+
 // Navigation et clics sur les menus
 allNavLinks.forEach(link => {
     link.addEventListener('click', (e) => {
@@ -65,11 +118,12 @@ allNavLinks.forEach(link => {
         if (targetPage === 'accueil' && currentActivePage === 'accueil') {
             const scrollY = window.scrollY || window.pageYOffset;
             if (scrollY < 300) {
-                // Si on est en haut sur la vidéo -> descendre au 1er bloc
+                // Si on est en haut sur la vidéo -> descendre au 1er bloc (le menu remonte et active le titre manuscrit)
+                body.classList.add('scrolled-mode');
                 const firstBlock = document.querySelector('.content-block');
                 if (firstBlock) scrollToBlockCentered(firstBlock);
             } else {
-                // Si on est dans les blocs -> remonter en haut
+                // Si on est dans les blocs -> remonter tout en haut (le menu redescend sur la vidéo)
                 body.classList.remove('page-mode', 'scrolled-mode');
                 body.classList.add('home-mode');
                 window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -6,11 +6,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La Machine à Prendre le Temps</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Import de la police manuscrite pour le titre du bandeau -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
     <style>
         /* Transition d'opacité pour le fondu au noir (200ms) */
         #hero-video {
             transition: opacity 0.2s ease-in-out;
             opacity: 1;
+        }
+
+        #main-header nav {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            gap: 40px;
+            /* Ajuste cet espace entre l'élément de gauche et les menus si besoin */
+        }
+
+        /* --- TITRE MANUSCRIT (À gauche, décalé vers la droite) --- */
+        .header-brand-title {
+            display: none;
+            font-family: 'Caveat', cursive, sans-serif;
+            font-size: 1.8rem;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            transition: opacity 0.2s ease;
+            margin-left: 40px;
+            /* Décale le titre manuscrit vers la droite */
+        }
+
+        .header-brand-title:hover {
+            opacity: 0.75;
+        }
+
+        /* --- SYMBOLE ORIENTÉ VERS LE BAS (Décalé vers la droite) --- */
+        .nav-eject-down-container {
+            display: inline-block;
+            margin-left: 40px;
+            /* Décale le symbole vers la droite (même valeur que le titre) */
+        }
+
+        .nav-eject-down {
+            display: inline-block;
+            font-size: 1.4rem;
+            text-decoration: none;
+            color: #ffffff;
+            transform: rotate(180deg);
+            transition: transform 0.3s ease, opacity 0.2s ease;
+            line-height: 1;
+        }
+
+        .nav-eject-down:hover {
+            transform: rotate(180deg) translateY(-3px);
+            opacity: 0.8;
+        }
+
+        /* --- STYLE DES MENUS --- */
+        .main-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* En haut de l'accueil : aligné à gauche avec un espacement équilibré */
+        #main-header nav {
+            justify-content: flex-start;
+        }
+
+        /* --- QUAND ON DÉFILE OU QU'ON CHANGE DE PAGE --- */
+        body.scrolled-mode .header-brand-title,
+        body.page-mode .header-brand-title {
+            display: inline-block;
+        }
+
+        body.scrolled-mode .nav-eject-down-container,
+        body.page-mode .nav-eject-down-container {
+            display: none !important;
+        }
+
+        /* Quand le titre manuscrit est là, on espace le titre et les menus aux extrémités */
+        body.scrolled-mode #main-header nav,
+        body.page-mode #main-header nav {
+            justify-content: space-between;
+        }
+
+        @media (max-width: 900px) {
+            #main-header nav {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+                justify-content: center !important;
+            }
+
+            .header-brand-title,
+            .nav-eject-down-container {
+                margin-left: 0 !important;
+            }
+
+            .header-brand-title {
+                font-size: 1.5rem;
+            }
+
+            .main-menu {
+                margin: 0 auto !important;
+            }
         }
     </style>
 </head>
@@ -32,13 +139,20 @@
         <h1 class="hero-title">La Machine à Prendre le Temps</h1>
     </section>
 
-    <!-- Bandeau du Menu Principal avec sous-menus -->
+    <!-- Bandeau du Menu Principal -->
+    <!-- Bandeau du Menu Principal -->
     <header id="main-header">
         <nav>
-            <ul class="main-menu">
-                <li><a href="#" data-page="accueil" class="active">Accueil</a></li>
+            <!-- Titre manuscrit à gauche (apparaît quand on descend) -->
+            <a href="#" data-page="accueil" class="header-brand-title">La Machine à Prendre le Temps</a>
 
-                <!-- Menu Galeries avec sous-menus en minuscules -->
+            <!-- Conteneur du symbole orienté vers le bas (visible uniquement en haut de la vidéo) -->
+            <div class="nav-eject-down-container">
+                <a href="#" data-action="scroll-down" class="nav-eject-down" title="Descendre vers le contenu">⏏︎</a>
+            </div>
+
+            <ul class="main-menu">
+                <!-- Menu Galeries avec sous-menus -->
                 <li class="has-submenu">
                     <a href="#" data-page="galerie-courtes-realisations">Galeries</a>
                     <ul class="submenu">
@@ -70,7 +184,7 @@
         <div id="page-content" class="page-content active"></div>
     </main>
 
-    <!-- Script de gestion centralisé -->
+    <!-- Script de gestion centralisé (Carrousel, Fondu & Média) -->
     <script>
         // ==========================================
         // CONFIGURATION CENTRALE DES VIDÉOS D'ACCUEIL
@@ -102,12 +216,11 @@
         let currentHeroIndex = 0;
         let isTransitioning = false;
 
-        // Fonction centralisée corrigée pour forcer le retour à 0 net
+        // Fonction centralisée pour charger et lancer la vidéo d'accueil
         function loadAndPlayVideo(videoEl, sourceEl, videoData, callback) {
             sourceEl.src = videoData.src;
             videoEl.load();
 
-            // Forçage immédiat du currentTime à 0 ou startTime
             videoEl.currentTime = videoData.customLoop ? videoData.startTime : 0;
 
             const handleReady = () => {
@@ -150,79 +263,6 @@
             }, CONFIG.transitionDuration);
         }
 
-        // ==========================================
-        // GESTION GLOBALE DE L'INTERACTIVITÉ DES BLOCS (Photo/Vidéo & Clic texte)
-        // ==========================================
-        function handleMediaClick(container) {
-            const videoUrl = container.getAttribute('data-video');
-            const imgSrc = container.getAttribute('data-img');
-            const imgAlt = container.getAttribute('data-alt');
-            const isVideo = container.querySelector('video');
-
-            if (!isVideo) {
-                const isTchin = videoUrl.includes('TchinTchin');
-                container.innerHTML = `
-                    <video autoplay muted playsinline disablePictureInPicture controlsList="nodownload noremoteplayback nofullscreen" ${isTchin ? '' : 'loop'}>
-                        <source src="${videoUrl}" type="video/mp4">
-                        Votre navigateur ne prend pas en charge la lecture de vidéos.
-                    </video>
-                `;
-                const vid = container.querySelector('video');
-                vid.currentTime = 0;
-
-                if (isTchin) {
-                    vid.addEventListener('timeupdate', function () {
-                        if (this.currentTime >= 29) {
-                            this.currentTime = 0;
-                        }
-                    });
-                }
-            } else {
-                container.innerHTML = `
-                    <img src="${imgSrc}" alt="${imgAlt}">
-                `;
-            }
-        }
-
-        // Fonction de centrage vertical sur-mesure pour les blocs d'accueil
-        function scrollToBlockCentered(targetBlock) {
-            const header = document.getElementById('main-header');
-            const headerHeight = header ? header.offsetHeight : 0;
-
-            const rect = targetBlock.getBoundingClientRect();
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const blockTopRelativeToPage = rect.top + scrollTop;
-
-            const availableHeight = window.innerHeight - headerHeight;
-            const targetScrollY = blockTopRelativeToPage - headerHeight - (availableHeight - rect.height) / 2;
-
-            window.scrollTo({
-                top: Math.max(0, targetScrollY),
-                behavior: 'smooth'
-            });
-        }
-
-        // Écouteur global pour le clic sur le texte (fonctionne même après chargement dynamique)
-        document.addEventListener('click', (e) => {
-            const textSide = e.target.closest('.text-side');
-            if (!textSide) return;
-
-            const currentBlock = textSide.closest('.content-block');
-            const blocks = Array.from(document.querySelectorAll('.content-block'));
-            const index = blocks.indexOf(currentBlock);
-
-            if (index === -1) return;
-
-            let targetBlock;
-            if (index === blocks.length - 1) {
-                targetBlock = blocks[0]; // Bouclage vers le 1er bloc
-            } else {
-                targetBlock = blocks[index + 1]; // Bloc suivant
-            }
-
-            scrollToBlockCentered(targetBlock);
-        });
-
         // Initialisation au chargement de la page
         window.addEventListener('DOMContentLoaded', () => {
             const heroVideo = document.getElementById('hero-video');
@@ -234,25 +274,11 @@
 
                 loadAndPlayVideo(heroVideo, heroSource, initialData);
 
+                // Gestion de la boucle spécifique
                 heroVideo.addEventListener('timeupdate', function () {
                     const data = CONFIG.videos[currentHeroIndex];
                     if (data.customLoop && this.currentTime >= data.endTime) {
                         this.currentTime = data.startTime;
-                    }
-                });
-            }
-
-            // Gestion du comportement intelligent du menu "Accueil"
-            const accueilLink = document.querySelector('a[data-page="accueil"]');
-            if (accueilLink) {
-                accueilLink.addEventListener('click', (e) => {
-                    const scrollY = window.scrollY || window.pageYOffset;
-                    if (scrollY < 300) {
-                        e.preventDefault();
-                        const firstBlock = document.querySelector('.content-block');
-                        if (firstBlock) {
-                            scrollToBlockCentered(firstBlock);
-                        }
                     }
                 });
             }
