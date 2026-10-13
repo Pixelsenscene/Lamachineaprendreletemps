@@ -18,29 +18,28 @@ body.page-mode {
     overflow-y: auto;
 }
 
-/* --- SECTION HERO --- */
+/* --- SECTION HERO (Accueil uniquement) --- */
 #hero-section {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    /* Secours */
+    /* Valeur de secours pour navigateurs anciens */
     height: 100dvh;
-    /* S'adapte dynamiquement sur mobile */
+    /* S'adapte au viewport mobile réel */
     z-index: 1;
     overflow: hidden;
     background-color: #000;
     transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* --- BANDEAU HEADER EN MODE ACCUEIL --- */
+/* --- BANDEAU HEADER EN MODE ACCUEIL (Toujours en bas au démarrage) --- */
 body.home-mode #main-header {
-    top: calc(100vh - 70px);
-    /* Secours */
-    top: calc(100dvh - 70px);
-    /* S'ajuste parfaitement au bas de l'écran visible */
-    bottom: auto;
+    top: auto !important;
+    bottom: 0 !important;
+    /* On l'ancre strictement en bas de l'écran */
+    height: 70px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     border-bottom: none;
 }
@@ -50,7 +49,7 @@ body.home-mode #main-container {
     margin-top: 100vh;
     /* Secours */
     margin-top: 100dvh;
-    /* Colle exactement sous le hero dynamique */
+    /* Commence exactement après la hauteur de la vidéo hero */
     min-height: 150vh;
     transition: none;
     scroll-snap-type: y mandatory;
