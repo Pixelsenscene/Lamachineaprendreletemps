@@ -112,7 +112,7 @@
         <!-- Épisode 6 -->
         <div class="video-item">
             <div class="custom-video-wrapper" onclick="playCustomVideo(this)">
-                <img src="img/1eremachines/Ep6 ok.jpeg" alt="Episode 6" class="video-poster">
+                <img src="img/1eremachines/Ep6 ok.JPG" alt="Episode 6" class="video-poster">
                 <div class="play-button"></div>
                 <video class="gallery-video" playsinline preload="none">
                     <source
@@ -128,7 +128,7 @@
         <!-- Épisode 7 -->
         <div class="video-item">
             <div class="custom-video-wrapper" onclick="playCustomVideo(this)">
-                <img src="img/1eremachines/Ep7 ok.jpeg" alt="Episode 7" class="video-poster">
+                <img src="img/1eremachines/Ep7 ok.JPG" alt="Episode 7" class="video-poster">
                 <div class="play-button"></div>
                 <video class="gallery-video" playsinline preload="none">
                     <source
@@ -144,7 +144,7 @@
         <!-- Épisode 8 -->
         <div class="video-item">
             <div class="custom-video-wrapper" onclick="playCustomVideo(this)">
-                <img src="img/1eremachines/Ep8 ok.jpeg" alt="Episode 8" class="video-poster">
+                <img src="img/1eremachines/Ep8 ok.JPG" alt="Episode 8" class="video-poster">
                 <div class="play-button"></div>
                 <video class="gallery-video" playsinline preload="none">
                     <source
@@ -160,7 +160,7 @@
         <!-- Épisode 9 -->
         <div class="video-item">
             <div class="custom-video-wrapper" onclick="playCustomVideo(this)">
-                <img src="img/1eremachines/Ep9 ok.jpeg" alt="Episode 9" class="video-poster">
+                <img src="img/1eremachines/Ep9 ok.JPG" alt="Episode 9" class="video-poster">
                 <div class="play-button"></div>
                 <video class="gallery-video" playsinline preload="none">
                     <source
@@ -176,7 +176,7 @@
         <!-- Épisode 10 -->
         <div class="video-item">
             <div class="custom-video-wrapper" onclick="playCustomVideo(this)">
-                <img src="img/1eremachines/Ep10 ok.jpeg" alt="Episode 10" class="video-poster">
+                <img src="img/1eremachines/Ep10 ok.JPG" alt="Episode 10" class="video-poster">
                 <div class="play-button"></div>
                 <video class="gallery-video" playsinline preload="none">
                     <source
@@ -193,16 +193,12 @@
     <!-- Section Making of centrée en bas de page -->
     <div id="making-of-section" class="making-of-wrapper">
         <div class="making-of-card">
-            <div class="custom-video-wrapper" onclick="playCustomVideo(this)">
-                <img src="img/1eremachines/Ep1 ok.png" alt="Making of" class="video-poster" style="display: none;">
-                <!-- Optionnel ou avec une autre image si besoin -->
-                <video class="gallery-video" controls playsinline preload="metadata">
-                    <source
-                        src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/Making%20of%20%20La%20machine%20a%CC%80%20prendre%20le%20temps-SiteWeb%20MPEG-4.mp4"
-                        type="video/mp4">
-                    Votre navigateur ne prend pas en charge la lecture de vidéos.
-                </video>
-            </div>
+            <video class="gallery-video" controls playsinline preload="metadata">
+                <source
+                    src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/Making%20of%20%20La%20machine%20a%CC%80%20prendre%20le%20temps-SiteWeb%20MPEG-4.mp4"
+                    type="video/mp4">
+                Votre navigateur ne prend pas en charge la lecture de vidéos.
+            </video>
             <div class="video-info">
                 <h3>Making of des premières machines</h3>
             </div>
@@ -326,7 +322,6 @@
         border-color: rgba(255, 255, 255, 0.2);
     }
 
-    /* --- NOUVEAU STYLE POUR LE CONTENEUR DE VIGNETTE --- */
     .custom-video-wrapper {
         position: relative;
         width: 100%;
@@ -340,7 +335,6 @@
         object-fit: cover;
     }
 
-    /* Joli bouton "Play" centré sur l'image */
     .play-button {
         position: absolute;
         top: 50%;
@@ -378,7 +372,6 @@
         object-fit: cover;
     }
 
-    /* Masquer la vidéo au départ */
     .custom-video-wrapper video {
         display: none;
     }
@@ -422,7 +415,6 @@
 
 <!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
 <script>
-    // Fonction magique : au clic sur la vignette, on cache l'image, on affiche la vidéo et on lance la lecture instantanément
     function playCustomVideo(wrapper) {
         const img = wrapper.querySelector('.video-poster');
         const playBtn = wrapper.querySelector('.play-button');
@@ -437,7 +429,6 @@
         }
     }
 
-    // Fonction de défilement fluide vers la section Making of
     function scrollToMakingOf(e) {
         e.preventDefault();
         const section = document.getElementById('making-of-section');
