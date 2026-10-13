@@ -355,7 +355,10 @@ body.page-mode #main-container {
         gap: 20px;
     }
 
-    .header-brand-title,
+    .header-brand-title {
+        margin-left: 15px;
+    }
+
     .nav-eject-down-container {
         margin-left: 15px;
     }
@@ -369,36 +372,31 @@ body.page-mode #main-container {
 @media (max-width: 900px) and (orientation: portrait) {
     #main-header nav {
         flex-direction: row !important;
-        /* Force l'affichage sur une seule ligne horizontale */
         height: 60px;
-        /* Hauteur fixe compacte */
         padding: 0 15px;
         justify-content: space-between !important;
         gap: 10px;
     }
 
     .header-brand-title {
-        font-size: 1.3rem;
-        margin-left: 10px !important;
+        font-size: 1.2rem;
+        margin-left: 5px !important;
     }
 
     .nav-eject-down-container {
-        margin-left: 10px !important;
+        margin-left: 5px !important;
     }
 
     #main-header nav ul.main-menu {
         flex-direction: row !important;
         flex-wrap: nowrap !important;
-        /* Interdit absolument le passage sur 2 lignes */
         justify-content: flex-end;
-        gap: 12px;
-        /* Espace réduit entre les liens pour que tout rentre */
+        gap: 10px;
         padding: 0;
     }
 
     #main-header nav ul.main-menu li a {
-        font-size: 0.68rem;
-        /* Police légèrement plus fine pour tenir en largeur */
+        font-size: 0.65rem;
         letter-spacing: 0.5px;
         padding: 4px 0;
     }
@@ -407,6 +405,51 @@ body.page-mode #main-container {
         bottom: 70px;
         left: 20px;
         font-size: clamp(1.5rem, 5vw, 2.5rem);
+    }
+}
+
+/* --- SMARTPHONES & TABLETTES EN MODE PAYSAGE (Landscape) --- */
+@media (max-height: 600px) and (orientation: landscape) {
+    body.home-mode #main-header {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        height: 50px;
+    }
+
+    body.home-mode #main-header nav {
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        padding: 0 20px;
+        height: 50px;
+        gap: 15px;
+    }
+
+    #main-header nav ul.main-menu {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        gap: 15px;
+        padding: 0;
+    }
+
+    #main-header nav ul.main-menu li a {
+        font-size: 0.7rem;
+        padding: 4px 0;
+    }
+
+    .header-brand-title {
+        font-size: 1.1rem;
+        margin-left: 10px !important;
+    }
+
+    .nav-eject-down-container {
+        margin-left: 10px !important;
+    }
+
+    .hero-title {
+        bottom: 60px;
+        left: 25px;
+        font-size: 1.3rem;
     }
 }
 
