@@ -365,33 +365,42 @@ body.page-mode #main-container {
     }
 }
 
-/* Smartphones / Petits écrans portrait (< 900px) */
+/* --- Smartphones / Petits écrans PORTRAIT (< 900px) --- */
 @media (max-width: 900px) and (orientation: portrait) {
     #main-header nav {
-        flex-direction: column;
-        height: auto;
-        padding: 15px;
-        justify-content: center !important;
-        gap: 12px;
-    }
-
-    .header-brand-title,
-    .nav-eject-down-container {
-        margin-left: 0 !important;
+        flex-direction: row !important;
+        /* Force l'affichage sur une seule ligne horizontale */
+        height: 60px;
+        /* Hauteur fixe compacte */
+        padding: 0 15px;
+        justify-content: space-between !important;
+        gap: 10px;
     }
 
     .header-brand-title {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
+        margin-left: 10px !important;
+    }
+
+    .nav-eject-down-container {
+        margin-left: 10px !important;
     }
 
     #main-header nav ul.main-menu {
-        justify-content: center;
-        gap: 15px;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        /* Interdit absolument le passage sur 2 lignes */
+        justify-content: flex-end;
+        gap: 12px;
+        /* Espace réduit entre les liens pour que tout rentre */
+        padding: 0;
     }
 
     #main-header nav ul.main-menu li a {
-        font-size: 0.75rem;
-        letter-spacing: 1px;
+        font-size: 0.68rem;
+        /* Police légèrement plus fine pour tenir en largeur */
+        letter-spacing: 0.5px;
+        padding: 4px 0;
     }
 
     .hero-title {
