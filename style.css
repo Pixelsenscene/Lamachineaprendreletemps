@@ -18,17 +18,43 @@ body.page-mode {
     overflow-y: auto;
 }
 
-/* --- SECTION HERO (Accueil uniquement - Vidéo fixe de fond parfaitement calibrée) --- */
+/* --- SECTION HERO --- */
 #hero-section {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
+    /* Secours */
+    height: 100dvh;
+    /* S'adapte dynamiquement sur mobile */
     z-index: 1;
     overflow: hidden;
     background-color: #000;
     transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* --- BANDEAU HEADER EN MODE ACCUEIL --- */
+body.home-mode #main-header {
+    top: calc(100vh - 70px);
+    /* Secours */
+    top: calc(100dvh - 70px);
+    /* S'ajuste parfaitement au bas de l'écran visible */
+    bottom: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: none;
+}
+
+/* --- CONTENEUR PRINCIPAL SUR L'ACCUEIL --- */
+body.home-mode #main-container {
+    margin-top: 100vh;
+    /* Secours */
+    margin-top: 100dvh;
+    /* Colle exactement sous le hero dynamique */
+    min-height: 150vh;
+    transition: none;
+    scroll-snap-type: y mandatory;
+    scroll-padding-top: 140px;
 }
 
 body.scrolled-mode #hero-section,
