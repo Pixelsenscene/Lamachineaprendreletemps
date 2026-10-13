@@ -25,9 +25,7 @@ body.page-mode {
     left: 0;
     width: 100vw;
     height: 100vh;
-    /* Secours */
     height: 100dvh;
-    /* S'adapte dynamiquement sur mobile */
     z-index: 1;
     overflow: hidden;
     background-color: #000;
@@ -37,9 +35,7 @@ body.page-mode {
 /* --- BANDEAU HEADER EN MODE ACCUEIL --- */
 body.home-mode #main-header {
     top: calc(100vh - 70px);
-    /* Secours */
     top: calc(100dvh - 70px);
-    /* S'ajuste parfaitement au bas de l'écran visible */
     bottom: auto;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     border-bottom: none;
@@ -48,9 +44,7 @@ body.home-mode #main-header {
 /* --- CONTENEUR PRINCIPAL SUR L'ACCUEIL --- */
 body.home-mode #main-container {
     margin-top: 100vh;
-    /* Secours */
     margin-top: 100dvh;
-    /* Colle exactement sous le hero dynamique */
     min-height: 150vh;
     transition: none;
     scroll-snap-type: y mandatory;
@@ -131,7 +125,7 @@ body.page-mode .hero-title {
     height: 70px;
 }
 
-/* --- TITRE MANUSCRIT (À gauche, décalé vers la droite) --- */
+/* --- TITRE MANUSCRIT --- */
 .header-brand-title {
     display: none;
     font-family: 'Caveat', cursive, sans-serif;
@@ -149,7 +143,7 @@ body.page-mode .hero-title {
     opacity: 0.75;
 }
 
-/* --- SYMBOLE ORIENTÉ VERS LE BAS (Décalé vers la droite) --- */
+/* --- SYMBOLE ORIENTÉ VERS LE BAS --- */
 .nav-eject-down-container {
     display: inline-block;
     margin-left: 40px;
@@ -182,7 +176,6 @@ body.page-mode .hero-title {
     gap: 40px;
 }
 
-/* Éléments du menu principal */
 #main-header nav ul.main-menu>li {
     position: relative;
 }
@@ -269,7 +262,6 @@ body.page-mode .nav-eject-down-container {
     color: #fff;
 }
 
-/* Positionnement dynamique des sous-menus selon le mode */
 body.home-mode .submenu {
     bottom: calc(100% + 15px);
     transform: translateX(-50%) translateY(10px);
@@ -288,14 +280,6 @@ body.page-mode .submenu {
 body.scrolled-mode .has-submenu:hover .submenu,
 body.page-mode .has-submenu:hover .submenu {
     transform: translateX(-50%) translateY(0);
-}
-
-/* --- LOGIQUE DE POSITIONNEMENT DU BANDEAU HEADER --- */
-body.home-mode #main-header {
-    top: calc(100vh - 70px);
-    bottom: auto;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom: none;
 }
 
 body.scrolled-mode #main-header,
@@ -346,10 +330,9 @@ body.page-mode #main-container {
 }
 
 /* ========================================== */
-/* --- GESTION RESPONSIVE & ORIENTATIONS --- */
+/* --- GESTION RESPONSIVE GLOBALE (HEADER) --- */
 /* ========================================== */
 
-/* Tablettes / iPad (≤ 1024px) */
 @media (max-width: 1024px) {
     #main-header nav {
         padding: 0 20px;
@@ -364,24 +347,8 @@ body.page-mode #main-container {
     #main-header nav ul.main-menu {
         gap: 25px;
     }
-
-    /* --- CORRECTION PROPORTIONS ET CROPPING SUR IPAD / TABLETTES --- */
-    .content-block img,
-    .content-block video,
-    .media-side img,
-    .media-side video {
-        max-width: 100% !important;
-        height: auto !important;
-        object-fit: contain !important;
-    }
-
-    .content-block {
-        box-sizing: border-box;
-        overflow: hidden;
-    }
 }
 
-/* Smartphones / Petits écrans (< 900px) */
 @media (max-width: 900px) {
     #main-header nav {
         flex-direction: column;
@@ -417,19 +384,12 @@ body.page-mode #main-container {
     }
 }
 
-/* Tablettes & Smartphones en mode PAYSAGE (Landscape) */
 @media (max-height: 600px) and (orientation: landscape) {
     #main-header {
         position: relative;
-        /* Évite les superpositions de hauteur fixe gênantes en paysage mobile */
     }
 
     body.home-mode #main-header {
         top: 0;
-    }
-
-    .content-block {
-        min-height: auto !important;
-        padding: 40px 0;
     }
 }

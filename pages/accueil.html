@@ -209,6 +209,28 @@
         display: block;
     }
 
+    /* --- CORRECTION SPÉCIFIQUE IPAD / TABLETTES (768px à 1024px) --- */
+    @media (min-width: 768px) and (max-width: 1024px) {
+        .content-block {
+            min-height: auto;
+            gap: 30px;
+            padding: 40px 0;
+        }
+
+        .media-container {
+            height: auto;
+            max-height: 55vh;
+        }
+
+        .media-container img,
+        .media-container video {
+            height: auto;
+            max-height: 55vh;
+            object-fit: contain;
+        }
+    }
+
+    /* --- SMARTPHONES (≤ 900px) --- */
     @media (max-width: 900px) {
 
         .content-block,
