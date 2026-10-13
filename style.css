@@ -95,14 +95,65 @@ body.page-mode .hero-title {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+#main-header nav {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 30px;
+    height: 70px;
+}
+
+/* --- TITRE MANUSCRIT (À gauche, décalé vers la droite) --- */
+.header-brand-title {
+    display: none;
+    font-family: 'Caveat', cursive, sans-serif;
+    font-size: 1.8rem;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+    margin-left: 40px;
+}
+
+.header-brand-title:hover {
+    opacity: 0.75;
+}
+
+/* --- SYMBOLE ORIENTÉ VERS LE BAS (Décalé vers la droite) --- */
+.nav-eject-down-container {
+    display: inline-block;
+    margin-left: 40px;
+}
+
+.nav-eject-down {
+    display: inline-block;
+    font-size: 1.4rem;
+    text-decoration: none;
+    color: #ffffff;
+    transform: rotate(180deg);
+    transition: transform 0.3s ease, opacity 0.2s ease;
+    line-height: 1;
+}
+
+.nav-eject-down:hover {
+    transform: rotate(180deg) translateY(-3px);
+    opacity: 0.8;
+}
+
+/* --- LISTE DES MENUS --- */
 #main-header nav ul.main-menu {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     list-style: none;
     flex-wrap: wrap;
-    padding: 20px 30px;
-    gap: 45px;
+    padding: 0;
+    margin: 0;
+    gap: 40px;
 }
 
 /* Éléments du menu principal */
@@ -126,6 +177,26 @@ body.page-mode .hero-title {
 #main-header nav ul.main-menu li a:hover,
 #main-header nav ul.main-menu li a.active {
     color: #fff;
+}
+
+/* --- LOGIQUE D'ALTERNANCE ET ESPACEMENT DU HEADER --- */
+body.home-mode #main-header nav {
+    justify-content: flex-start;
+}
+
+body.scrolled-mode #main-header nav,
+body.page-mode #main-header nav {
+    justify-content: space-between;
+}
+
+body.scrolled-mode .header-brand-title,
+body.page-mode .header-brand-title {
+    display: inline-block;
+}
+
+body.scrolled-mode .nav-eject-down-container,
+body.page-mode .nav-eject-down-container {
+    display: none !important;
 }
 
 /* --- SOUS-MENUS DU HEADER --- */
@@ -194,8 +265,6 @@ body.page-mode .has-submenu:hover .submenu {
 }
 
 /* --- LOGIQUE DE POSITIONNEMENT DU BANDEAU HEADER --- */
-
-/* 1. Sur l'accueil au repos : le bandeau est ancré en bas de l'écran */
 body.home-mode #main-header {
     top: calc(100vh - 70px);
     bottom: auto;
@@ -203,7 +272,6 @@ body.home-mode #main-header {
     border-bottom: none;
 }
 
-/* 2. En scroll ou sur une page interne : le bandeau se fixe en haut */
 body.scrolled-mode #main-header,
 body.page-mode #main-header {
     top: 0;
@@ -251,19 +319,76 @@ body.page-mode #main-container {
     opacity: 1;
 }
 
-/* --- MEDIA QUERIES GLOBALES --- */
-@media (max-width: 900px) {
-    #main-header nav ul.main-menu {
+/* ========================================== */
+/* --- GESTION RESPONSIVE & ORIENTATIONS --- */
+/* ========================================== */
+
+/* Tablettes / iPad (≤ 1024px) */
+@media (max-width: 1024px) {
+    #main-header nav {
+        padding: 0 20px;
         gap: 20px;
+    }
+
+    .header-brand-title,
+    .nav-eject-down-container {
+        margin-left: 15px;
+    }
+
+    #main-header nav ul.main-menu {
+        gap: 25px;
+    }
+}
+
+/* Smartphones / Petits écrans (< 900px) */
+@media (max-width: 900px) {
+    #main-header nav {
+        flex-direction: column;
+        height: auto;
         padding: 15px;
+        justify-content: center !important;
+        gap: 12px;
+    }
+
+    .header-brand-title,
+    .nav-eject-down-container {
+        margin-left: 0 !important;
+    }
+
+    .header-brand-title {
+        font-size: 1.5rem;
+    }
+
+    #main-header nav ul.main-menu {
+        justify-content: center;
+        gap: 15px;
     }
 
     #main-header nav ul.main-menu li a {
         font-size: 0.75rem;
+        letter-spacing: 1px;
     }
 
     .hero-title {
         bottom: 70px;
         left: 20px;
+        font-size: clamp(1.5rem, 5vw, 2.5rem);
+    }
+}
+
+/* Tablettes & Smartphones en mode PAYSAGE (Landscape) */
+@media (max-height: 600px) and (orientation: landscape) {
+    #main-header {
+        position: relative;
+        /* Évite les superpositions de hauteur fixe gênantes en paysage mobile */
+    }
+
+    body.home-mode #main-header {
+        top: 0;
+    }
+
+    .content-block {
+        min-height: auto !important;
+        padding: 40px 0;
     }
 }
