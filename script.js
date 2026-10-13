@@ -138,7 +138,6 @@ allNavLinks.forEach(link => {
         currentActivePage = targetPage;
     });
 });
-
 // --- GESTION INTERACTIVE DES MÉDIAS (Photo <-> Vidéo) ---
 function handleMediaClick(container) {
     const videoUrl = container.getAttribute('data-video');
@@ -237,6 +236,7 @@ window.addEventListener('wheel', (e) => {
 
     if (e.deltaY < -20 && scrollY > windowHeight / 2) {
         body.classList.remove('scrolled-mode');
+        body.classList.add('home-mode');
         window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(() => { isAnimatingScroll = false; }, 800);
         return;
