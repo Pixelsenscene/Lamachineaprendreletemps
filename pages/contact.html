@@ -1,21 +1,135 @@
 <!-- === 1. LE CONTENU (MAIN) === -->
 <main class="dossiers-container">
-    <p class="construction-text">Site actuellement en construction</p>
+    <div class="contact-box">
+        <!-- Image de fond en filigrane dans la box -->
+        <img src="img/IMG53-Logo MAPT détour.png" alt="" class="bg-watermark">
+
+        <div class="contact-content">
+            <h2>Contact & Informations</h2>
+            <p class="construction-text">Site actuellement en construction</p>
+
+            <div class="contact-info">
+                <p class="association-name"><strong>Pixels en scène</strong></p>
+                <p>Association Loi 1901</p>
+                <p>Située à Fontenay-sous-Bois (94)</p>
+                <p style="margin-top: 15px;">
+                    Contact : <a href="mailto:pixelsenscene94@gmail.com">pixelsenscene94@gmail.com</a>
+                </p>
+
+                <p class="instagram-container" style="margin-top: 15px;">
+                    Instagram :
+                    <a href="https://www.instagram.com/la.machine.a.prendre.le.temps/" target="_blank"
+                        rel="noopener noreferrer" class="instagram-link">
+                        <!-- Logo Instagram SVG -->
+                        <svg class="instagram-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                        la.machine.a.prendre.le.temps
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
 </main>
 
 
 <!-- === 2. LE STYLE (CSS) === -->
 <style>
     .dossiers-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 65vh;
+        padding: 40px 20px;
+    }
+
+    .contact-box {
+        position: relative;
+        background-color: rgba(22, 22, 22, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 40px;
+        max-width: 550px;
+        width: 100%;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
         text-align: center;
-        padding: 60px 20px;
+        font-family: 'Avenir', sans-serif;
+        overflow: hidden;
+    }
+
+    /* Image détourée en filigrane derrière le texte */
+    .bg-watermark {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 70%;
+        max-height: 70%;
+        opacity: 0.08;
+        /* Ajuste la transparence selon ton goût (entre 0.05 et 0.15) */
+        pointer-events: none;
+        z-index: 1;
+        object-fit: contain;
+    }
+
+    .contact-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .contact-box h2 {
+        font-size: 2rem;
+        color: #fff;
+        margin-bottom: 8px;
+        font-weight: 600;
     }
 
     .construction-text {
         font-family: 'Avenir', sans-serif;
         color: #888;
-        font-size: 1.1rem;
-        letter-spacing: 1px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 30px;
+    }
+
+    .contact-info {
+        color: #ccc;
+        font-size: 1rem;
+        line-height: 1.8;
+    }
+
+    .association-name {
+        color: #fff;
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+
+    .contact-info a {
+        color: #fff;
+        text-decoration: underline;
+        transition: opacity 0.2s;
+    }
+
+    .contact-info a:hover {
+        opacity: 0.75;
+    }
+
+    .instagram-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        vertical-align: middle;
+    }
+
+    .instagram-icon {
+        stroke: #fff;
+        fill: none;
     }
 </style>
 

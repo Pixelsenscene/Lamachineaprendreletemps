@@ -1,7 +1,7 @@
 <!-- === 1. LE CONTENU (MAIN) === -->
 <main class="galerie-container">
 
-    <!-- Sous-menu en cascade collé tout en haut -->
+    <!-- Sous-menu en cascade (uniquement les catégories) -->
     <nav class="sub-nav-buttons">
         <button class="sub-btn" onclick="loadPageContent('galerie-courtes-realisations')"
             style="animation-delay: 0.1s;">Courtes réalisations</button>
@@ -13,135 +13,164 @@
             style="animation-delay: 0.4s;">Ralentis</button>
     </nav>
 
+    <!-- Texte d'introduction & raccourci vers le Making of -->
+    <div class="header-intro-container">
+        <p class="intro-text">Les premières machines ont vu le jour courant 2018...</p>
+        <a href="#making-of-section" onclick="scrollToMakingOf(event)" class="making-of-inline-link">
+            <!-- Icône vidéo SVG -->
+            <svg class="making-of-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+            </svg>
+            Making of
+        </a>
+    </div>
+
     <!-- Grille des épisodes -->
     <div class="videos-grid">
-        <!-- Épisode 1 : Cerises -->
+        <!-- Épisode 1 -->
         <div class="video-item">
-            <video class="gallery-video" controls playsinline preload="metadata">
+            <video class="gallery-video" controls playsinline preload="metadata" poster="img/1eremachines/Ep1 ok.png">
                 <source
                     src="https://MaptDiff.b-cdn.net/1%C3%A8res%20machines/Ma%CC%80PT%20-%20Ep1%20-%20Cerises-SiteWeb%20MPEG-4.mp4#t=7"
                     type="video/mp4">
                 Votre navigateur ne prend pas en charge la lecture de vidéos.
             </video>
             <div class="video-info">
-                <h3>Épisode 1 : Cerises</h3>
+                <h3>Episode 1 : Le temps des cerises</h3>
             </div>
         </div>
 
-        <!-- Épisode 2 : JEMA19 -->
+        <!-- Épisode 2 -->
         <div class="video-item">
-            <video class="gallery-video" controls playsinline preload="metadata">
+            <video class="gallery-video" controls playsinline preload="metadata" poster="img/1eremachines/Ep2 ok.png">
                 <source
                     src="https://MaptDiff.b-cdn.net/1%C3%A8res%20machines/Ma%CC%80PT%20-%20Ep2%20-%20JEMA19-SiteWeb%20MPEG-4.mp4#t=7"
                     type="video/mp4">
                 Votre navigateur ne prend pas en charge la lecture de vidéos.
             </video>
             <div class="video-info">
-                <h3>Épisode 2 : JEMA19</h3>
+                <h3>Episode 2 : Autant en emporte le temps</h3>
             </div>
         </div>
 
-        <!-- Épisode 3 : Autant pour moi -->
+        <!-- Épisode 3 -->
         <div class="video-item">
-            <video class="gallery-video" controls playsinline preload="metadata">
+            <video class="gallery-video" controls playsinline preload="metadata" poster="img/1eremachines/Ep3 ok.png">
                 <source
                     src="https://MaptDiff.b-cdn.net/1%C3%A8res%20machines/Ma%CC%80PT%20-%20Ep3%20-%20Autant%20pour%20moi-SiteWeb%20MPEG-4.mp4#t=7"
                     type="video/mp4">
                 Votre navigateur ne prend pas en charge la lecture de vidéos.
             </video>
             <div class="video-info">
-                <h3>Épisode 3 : Autant pour moi</h3>
+                <h3>Episode 3 : Au temps pour moi</h3>
             </div>
         </div>
 
-        <!-- Épisode 4 : Daniel -->
+        <!-- Épisode 4 -->
         <div class="video-item">
-            <video class="gallery-video" controls playsinline preload="metadata">
+            <video class="gallery-video" controls playsinline preload="metadata" poster="img/1eremachines/Ep4 ok.png">
                 <source
                     src="https://MaptDiff.b-cdn.net/1%C3%A8res%20machines/Ma%CC%80PT%20-%20Ep4%20-%20Daniel-SiteWeb%20MPEG-4.mp4#t=7"
                     type="video/mp4">
                 Votre navigateur ne prend pas en charge la lecture de vidéos.
             </video>
             <div class="video-info">
-                <h3>Épisode 4 : Daniel</h3>
+                <h3>Episode 4 : Laisser le temps au temps</h3>
             </div>
         </div>
 
-        <!-- Épisode 5 : Pi -->
+        <!-- Épisode 5 -->
         <div class="video-item">
-            <video class="gallery-video" controls playsinline preload="metadata">
+            <video class="gallery-video" controls playsinline preload="metadata" poster="img/1eremachines/Ep5 ok.png">
                 <source
                     src="https://MaptDiff.b-cdn.net/1%C3%A8res%20machines/Ma%CC%80PT%20-%20Ep5%20-%20Pi-SiteWeb%20MPEG-4.mp4#t=7"
                     type="video/mp4">
                 Votre navigateur ne prend pas en charge la lecture de vidéos.
             </video>
             <div class="video-info">
-                <h3>Épisode 5 : Pi</h3>
+                <h3>Episode 5 : Temps Pi</h3>
             </div>
         </div>
 
-        <!-- Épisode 6 : Emporté -->
+        <!-- Épisode 6 -->
         <div class="video-item">
-            <video class="gallery-video" controls playsinline preload="metadata">
+            <video class="gallery-video" controls playsinline preload="metadata" poster="img/1eremachines/Ep6 ok.png">
                 <source
                     src="https://MaptDiff.b-cdn.net/1%C3%A8res%20machines/Ma%CC%80PT%20-%20Ep6%20-%20Emporte%CC%81-SiteWeb%20MPEG-4.mp4#t=7"
                     type="video/mp4">
                 Votre navigateur ne prend pas en charge la lecture de vidéos.
             </video>
             <div class="video-info">
-                <h3>Épisode 6 : Emporté</h3>
+                <h3>Episode 6 : Si le temps vous emporte ?...</h3>
             </div>
         </div>
 
-        <!-- Épisode 7 : Temps danse -->
+        <!-- Épisode 7 -->
         <div class="video-item">
-            <video class="gallery-video" controls playsinline preload="metadata">
+            <video class="gallery-video" controls playsinline preload="metadata" poster="img/1eremachines/Ep7 ok.png">
                 <source
                     src="https://MaptDiff.b-cdn.net/1%C3%A8res%20machines/Ma%CC%80PT%20-%20Ep7%20-%20temps%20danse-SiteWeb%20MPEG-4.mp4#t=7"
                     type="video/mp4">
                 Votre navigateur ne prend pas en charge la lecture de vidéos.
             </video>
             <div class="video-info">
-                <h3>Épisode 7 : Temps danse</h3>
+                <h3>Episode 7 : Temps danse et chant temps</h3>
             </div>
         </div>
 
-        <!-- Épisode 8 : Temps de la mer -->
+        <!-- Épisode 8 -->
         <div class="video-item">
-            <video class="gallery-video" controls playsinline preload="metadata">
+            <video class="gallery-video" controls playsinline preload="metadata" poster="img/1eremachines/Ep8 ok.png">
                 <source
                     src="https://MaptDiff.b-cdn.net/1%C3%A8res%20machines/Ma%CC%80PT%20-%20Ep8%20-%20Temps%20de%20la%20mer-SiteWeb%20MPEG-4.mp4#t=7"
                     type="video/mp4">
                 Votre navigateur ne prend pas en charge la lecture de vidéos.
             </video>
             <div class="video-info">
-                <h3>Épisode 8 : Temps de la mer</h3>
+                <h3>Episode 8 : Les temps de la Mer</h3>
             </div>
         </div>
 
-        <!-- Épisode 9 : La fin des Temps -->
+        <!-- Épisode 9 -->
         <div class="video-item">
-            <video class="gallery-video" controls playsinline preload="metadata">
+            <video class="gallery-video" controls playsinline preload="metadata" poster="img/1eremachines/Ep9 ok.png">
                 <source
                     src="https://MaptDiff.b-cdn.net/1%C3%A8res%20machines/Ma%CC%80PT%20-%20Ep9%20-%20La%20fin%20des%20Temps-SiteWeb%20MPEG-4.mp4#t=7"
                     type="video/mp4">
                 Votre navigateur ne prend pas en charge la lecture de vidéos.
             </video>
             <div class="video-info">
-                <h3>Épisode 9 : La fin des Temps</h3>
+                <h3>Episode 9 : La fin des Temps</h3>
             </div>
         </div>
 
-        <!-- Épisode 10 : Le Mirage du temps -->
+        <!-- Épisode 10 -->
         <div class="video-item">
-            <video class="gallery-video" controls playsinline preload="metadata">
+            <video class="gallery-video" controls playsinline preload="metadata" poster="img/1eremachines/Ep10 ok.png">
                 <source
                     src="https://MaptDiff.b-cdn.net/1%C3%A8res%20machines/Ma%CC%80PT%20-%20Ep10%20-%20Le%20Mirage%20du%20temps-SiteWeb%20MPEG-4.mp4#t=7"
                     type="video/mp4">
                 Votre navigateur ne prend pas en charge la lecture de vidéos.
             </video>
             <div class="video-info">
-                <h3>Épisode 10 : Le Mirage du temps</h3>
+                <h3>Episode 10 : Le mirage du temps</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Making of centrée en bas de page -->
+    <div id="making-of-section" class="making-of-wrapper">
+        <div class="making-of-card">
+            <video class="gallery-video" controls playsinline preload="metadata">
+                <source
+                    src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/Making%20of%20%20La%20machine%20a%CC%80%20prendre%20le%20temps-SiteWeb%20MPEG-4.mp4"
+                    type="video/mp4">
+                Votre navigateur ne prend pas en charge la lecture de vidéos.
+            </video>
+            <div class="video-info">
+                <h3>Making of des premières machines</h3>
             </div>
         </div>
     </div>
@@ -153,17 +182,16 @@
     .galerie-container {
         max-width: 1100px;
         margin: 0 auto;
-        padding: 0px 20px 40px 20px;
-        /* Padding haut à 0 pour coller au menu */
+        padding: 0px 20px 60px 20px;
     }
 
-    /* Styles des boutons de sous-menu en cascade */
+    /* Styles des boutons de sous-menu */
     .sub-nav-buttons {
         display: flex;
         justify-content: center;
         gap: 15px;
         margin-top: 0;
-        margin-bottom: 30px;
+        margin-bottom: 25px;
         flex-wrap: wrap;
     }
 
@@ -204,11 +232,54 @@
         }
     }
 
+    /* Container d'introduction & lien Making of */
+    .header-intro-container {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .intro-text {
+        font-family: 'Avenir', sans-serif;
+        font-size: 1.05rem;
+        color: #ccc;
+        font-style: italic;
+        margin-bottom: 15px;
+    }
+
+    .making-of-inline-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Avenir', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #ccc;
+        text-decoration: none;
+        padding: 8px 18px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px dashed rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+
+    .making-of-inline-link:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .making-of-icon {
+        stroke: currentColor;
+    }
+
     /* Disposition en grille pour les vidéos */
     .videos-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 30px;
+        margin-bottom: 60px;
     }
 
     .video-item {
@@ -242,6 +313,25 @@
         font-weight: 600;
     }
 
+    /* Section Making of en bas, centrée */
+    .making-of-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+        padding-top: 40px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .making-of-card {
+        background: #161616;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        width: 100%;
+        max-width: 650px;
+    }
+
     @media (max-width: 768px) {
         .videos-grid {
             grid-template-columns: 1fr;
@@ -252,6 +342,7 @@
 
 <!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
 <script>
+    // Gestion de la lecture initiale des vidéos (remise au début)
     (function () {
         document.querySelectorAll('.gallery-video').forEach(video => {
             let hasStarted = false;
@@ -263,4 +354,21 @@
             });
         });
     })();
+
+    // Fonction de défilement fluide vers la section Making of
+    function scrollToMakingOf(e) {
+        e.preventDefault();
+        const section = document.getElementById('making-of-section');
+        if (section) {
+            const header = document.getElementById('main-header');
+            const headerHeight = header ? header.offsetHeight : 0;
+            const elementPosition = section.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
+    }
 </script>
