@@ -364,6 +364,21 @@ body.page-mode #main-container {
     #main-header nav ul.main-menu {
         gap: 25px;
     }
+
+    /* --- CORRECTION PROPORTIONS ET CROPPING SUR IPAD / TABLETTES --- */
+    .content-block img,
+    .content-block video,
+    .media-side img,
+    .media-side video {
+        max-width: 100% !important;
+        height: auto !important;
+        object-fit: contain !important;
+    }
+
+    .content-block {
+        box-sizing: border-box;
+        overflow: hidden;
+    }
 }
 
 /* Smartphones / Petits écrans (< 900px) */
