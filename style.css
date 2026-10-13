@@ -18,28 +18,29 @@ body.page-mode {
     overflow-y: auto;
 }
 
-/* --- SECTION HERO (Accueil uniquement) --- */
+/* --- SECTION HERO --- */
 #hero-section {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    /* Valeur de secours pour navigateurs anciens */
+    /* Secours */
     height: 100dvh;
-    /* S'adapte au viewport mobile réel */
+    /* S'adapte dynamiquement sur mobile */
     z-index: 1;
     overflow: hidden;
     background-color: #000;
     transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* --- BANDEAU HEADER EN MODE ACCUEIL (Toujours en bas au démarrage) --- */
+/* --- BANDEAU HEADER EN MODE ACCUEIL --- */
 body.home-mode #main-header {
-    top: auto !important;
-    bottom: 0 !important;
-    /* On l'ancre strictement en bas de l'écran */
-    height: 70px;
+    top: calc(100vh - 70px);
+    /* Secours */
+    top: calc(100dvh - 70px);
+    /* S'ajuste parfaitement au bas de l'écran visible */
+    bottom: auto;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     border-bottom: none;
 }
@@ -49,7 +50,7 @@ body.home-mode #main-container {
     margin-top: 100vh;
     /* Secours */
     margin-top: 100dvh;
-    /* Commence exactement après la hauteur de la vidéo hero */
+    /* Colle exactement sous le hero dynamique */
     min-height: 150vh;
     transition: none;
     scroll-snap-type: y mandatory;
@@ -355,10 +356,7 @@ body.page-mode #main-container {
         gap: 20px;
     }
 
-    .header-brand-title {
-        margin-left: 15px;
-    }
-
+    .header-brand-title,
     .nav-eject-down-container {
         margin-left: 15px;
     }
@@ -368,131 +366,39 @@ body.page-mode #main-container {
     }
 }
 
-/* --- Smartphones / Petits écrans PORTRAIT (< 900px) --- */
-@media (max-width: 900px) and (orientation: portrait) {
+/* Smartphones / Petits écrans (< 900px) */
+@media (max-width: 900px) {
     #main-header nav {
-        flex-direction: row !important;
-        height: 60px;
-        padding: 0 15px;
-        justify-content: space-between !important;
-        gap: 10px;
+        flex-direction: column;
+        height: auto;
+        padding: 15px;
+        justify-content: center !important;
+        gap: 12px;
+    }
+
+    .header-brand-title,
+    .nav-eject-down-container {
+        margin-left: 0 !important;
     }
 
     .header-brand-title {
-        font-size: 1.2rem;
-        margin-left: 5px !important;
-    }
-
-    .nav-eject-down-container {
-        margin-left: 5px !important;
+        font-size: 1.5rem;
     }
 
     #main-header nav ul.main-menu {
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        justify-content: flex-end;
-        gap: 10px;
-        padding: 0;
+        justify-content: center;
+        gap: 15px;
     }
 
     #main-header nav ul.main-menu li a {
-        font-size: 0.65rem;
-        letter-spacing: 0.5px;
-        padding: 4px 0;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
     }
 
     .hero-title {
         bottom: 70px;
         left: 20px;
         font-size: clamp(1.5rem, 5vw, 2.5rem);
-    }
-}
-
-/* --- SMARTPHONES & TABLETTES EN MODE PAYSAGE (Landscape) --- */
-@media (max-height: 600px) and (orientation: landscape) {
-    body.home-mode #main-header {
-        position: fixed !important;
-        top: auto !important;
-        bottom: 0 !important;
-        height: 50px;
-    }
-
-    body.home-mode #main-header nav {
-        flex-direction: row !important;
-        justify-content: space-between !important;
-        padding: 0 20px;
-        height: 50px;
-        gap: 15px;
-    }
-
-    #main-header nav ul.main-menu {
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        gap: 15px;
-        padding: 0;
-    }
-
-    #main-header nav ul.main-menu li a {
-        font-size: 0.7rem;
-        padding: 4px 0;
-    }
-
-    .header-brand-title {
-        font-size: 1.1rem;
-        margin-left: 10px !important;
-    }
-
-    .nav-eject-down-container {
-        margin-left: 10px !important;
-    }
-
-    .hero-title {
-        bottom: 60px;
-        left: 25px;
-        font-size: 1.3rem;
-    }
-}
-
-/* --- SMARTPHONES & TABLETTES EN MODE PAYSAGE (Landscape) --- */
-@media (max-height: 600px) and (orientation: landscape) {
-
-    /* Le header reste ancré en bas de la vidéo, même sur petit écran paysage */
-    body.home-mode #main-header {
-        position: fixed !important;
-        top: auto !important;
-        bottom: 0 !important;
-        height: 50px;
-        /* Plus compact pour laisser de la place à la vidéo */
-    }
-
-    body.home-mode #main-header nav {
-        flex-direction: row !important;
-        /* Force les éléments sur une seule ligne */
-        justify-content: flex-start;
-        padding: 0 20px;
-        height: 50px;
-        gap: 20px;
-    }
-
-    #main-header nav ul.main-menu {
-        flex-direction: row !important;
-        gap: 20px;
-        padding: 0;
-    }
-
-    #main-header nav ul.main-menu li a {
-        font-size: 0.75rem;
-        padding: 4px 0;
-    }
-
-    .nav-eject-down-container {
-        margin-left: 20px;
-    }
-
-    .hero-title {
-        bottom: 60px;
-        left: 25px;
-        font-size: 1.5rem;
     }
 }
 

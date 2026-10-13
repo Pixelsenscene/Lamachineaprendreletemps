@@ -26,7 +26,6 @@
             margin: 0 auto;
             padding: 0 30px;
             gap: 40px;
-            /* Ajuste cet espace entre l'élément de gauche et les menus si besoin */
         }
 
         /* --- TITRE MANUSCRIT (À gauche, décalé vers la droite) --- */
@@ -41,7 +40,6 @@
             white-space: nowrap;
             transition: opacity 0.2s ease;
             margin-left: 40px;
-            /* Décale le titre manuscrit vers la droite */
         }
 
         .header-brand-title:hover {
@@ -52,7 +50,6 @@
         .nav-eject-down-container {
             display: inline-block;
             margin-left: 40px;
-            /* Décale le symbole vers la droite (même valeur que le titre) */
         }
 
         .nav-eject-down {
@@ -70,13 +67,19 @@
             opacity: 0.8;
         }
 
-        /* --- STYLE DES MENUS --- */
+        /* --- STYLE DES MENUS ET ÉTATS ACTIFS --- */
         .main-menu {
             display: flex;
             gap: 30px;
             list-style: none;
             margin: 0;
             padding: 0;
+        }
+
+        .main-menu li a.active,
+        .main-menu li a:hover {
+            color: #ffffff !important;
+            border-bottom: 2px solid #ffffff;
         }
 
         /* En haut de l'accueil : aligné à gauche avec un espacement équilibré */
@@ -101,12 +104,15 @@
             justify-content: space-between;
         }
 
+        /* --- GESTION RESPONSIVE MOBILE / TABLETTE --- */
         @media (max-width: 900px) {
             #main-header nav {
-                flex-direction: column;
-                gap: 15px;
-                padding: 15px;
-                justify-content: center !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                gap: 12px;
+                padding: 0 15px;
+                justify-content: space-between !important;
+                height: 60px;
             }
 
             .header-brand-title,
@@ -115,11 +121,19 @@
             }
 
             .header-brand-title {
-                font-size: 1.5rem;
+                font-size: 1.2rem;
             }
 
             .main-menu {
-                margin: 0 auto !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                gap: 10px;
+                margin: 0 !important;
+            }
+
+            .main-menu li a {
+                font-size: 0.7rem;
+                letter-spacing: 0.5px;
             }
         }
     </style>
@@ -142,7 +156,6 @@
         <h1 class="hero-title">La Machine à Prendre le Temps</h1>
     </section>
 
-    <!-- Bandeau du Menu Principal -->
     <!-- Bandeau du Menu Principal -->
     <header id="main-header">
         <nav>
@@ -224,10 +237,11 @@
             sourceEl.src = videoData.src;
             videoEl.load();
 
-            videoEl.currentTime = videoData.customLoop ? videoData.startTime : 0;
+            const startPos = videoData.customLoop ? videoData.startTime : 0;
+            videoEl.currentTime = startPos;
 
             const handleReady = () => {
-                videoEl.currentTime = videoData.customLoop ? videoData.startTime : 0;
+                videoEl.currentTime = startPos;
                 videoEl.play().then(() => {
                     setTimeout(() => {
                         videoEl.style.opacity = '1';
