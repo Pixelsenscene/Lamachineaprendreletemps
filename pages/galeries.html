@@ -1,56 +1,82 @@
 <!-- === 1. LE CONTENU (MAIN) === -->
-<main class="galeries-container">
-    <div class="video-item">
-        <div class="video-container-raw">
-            <video autoplay loop muted playsinline>
-                <source src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/Ralenti%20Verti%20et%20acce%CC%81l.mov"
-                    type="video/quicktime">
-                Votre navigateur ne prend pas en charge la lecture de vidéos.
-            </video>
-        </div>
-    </div>
+<main class="galeries-section-wrapper">
 
-    <div class="video-item">
-        <div class="video-container-raw">
-            <video autoplay loop muted playsinline>
-                <source src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/LeFilduTemps%20-%20Hiver1.mov"
-                    type="video/quicktime">
-                Votre navigateur ne prend pas en charge la lecture de vidéos.
-            </video>
-        </div>
-    </div>
+    <!-- Barre de sous-menus fixe (Jamais de fondu ni de mouvement) -->
+    <nav class="sub-nav-buttons">
+        <button class="sub-btn" data-subpage="galerie-courtes-realisations"
+            onclick="loadSubPage('galerie-courtes-realisations')">Courtes réalisations</button>
+        <button class="sub-btn" data-subpage="galerie-par-thematiques"
+            onclick="loadSubPage('galerie-par-thematiques')">Par thématiques</button>
+        <button class="sub-btn" data-subpage="galerie-premieres-machines"
+            onclick="loadSubPage('galerie-premieres-machines')">Les 1ères Machines</button>
+        <button class="sub-btn" data-subpage="galerie-ralentis"
+            onclick="loadSubPage('galerie-ralentis')">Ralentis</button>
+    </nav>
+
+    <!-- Conteneur de la sous-page (Lui subit le fondu au noir de 200ms) -->
+    <div id="sub-page-content" class="sub-page-content"></div>
+
 </main>
 
 
-<!-- === 2. LE SCRIPT (JAVASCRIPT) === -->
-<script>
-    // Logique spécifique à la page Galeries si nécessaire
-</script>
-
-
-<!-- === 3. LE STYLE (CSS) === -->
+<!-- === 2. LE STYLE (CSS) === -->
 <style>
-    .galeries-container {
+    .galeries-section-wrapper {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0px 20px 60px 20px;
+    }
+
+    .sub-nav-buttons {
         display: flex;
-        flex-direction: column;
-        gap: 40px;
-        width: 100%;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 0;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
     }
 
-    .video-item {
-        width: 100%;
+    .sub-btn {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 8px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        color: #bbb;
+        text-transform: uppercase;
+        transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
 
-    .video-container-raw {
-        width: 100vw;
-        margin-left: calc(-50vw + 50%);
-        overflow: hidden;
+    .sub-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
     }
 
-    .video-container-raw video {
-        width: 100%;
-        display: block;
-        object-fit: cover;
-        pointer-events: none;
+    .sub-btn.active {
+        background: #fff;
+        color: #111;
+        border-color: #fff;
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+    }
+
+    /* Transition d'opacité uniquement sur le contenu interne */
+    .sub-page-content {
+        transition: opacity 0.2s ease-in-out;
+        opacity: 1;
     }
 </style>
+
+
+<!-- === 3. LE SCRIPT === -->
+<script>
+    // Au chargement de la page Galeries, on charge par défaut "Courtes réalisations" (ou la sous-page mémorisée)
+    if (typeof window.pendingSubPage === 'string' && window.pendingSubPage) {
+        loadSubPage(window.pendingSubPage);
+        window.pendingSubPage = ''; // Reset
+    } else {
+        loadSubPage('galerie-courtes-realisations');
+    }
+</script>

@@ -1,16 +1,6 @@
 <!-- === 1. LE CONTENU (MAIN) === -->
 <main class="evenements-container">
 
-    <!-- Sous-menu en cascade collé tout en haut -->
-    <nav class="sub-nav-buttons">
-        <button class="sub-btn" onclick="loadPageContent('evenements-passe')"
-            style="animation-delay: 0.1s;">Passé</button>
-        <button class="sub-btn" onclick="loadPageContent('evenements-actualite')"
-            style="animation-delay: 0.2s;">Actualité</button>
-        <button class="sub-btn active" onclick="loadPageContent('evenements-avenir')" style="animation-delay: 0.3s;">À
-            venir</button>
-    </nav>
-
     <div class="events-list">
         <p class="placeholder-text">Prochains rendez-vous et programmation à venir.</p>
         <p class="construction-text">Site actuellement en construction</p>
@@ -25,51 +15,6 @@
         max-width: 1000px;
         margin: 0 auto;
         padding: 0px 20px 40px 20px;
-    }
-
-    .sub-nav-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 0;
-        margin-bottom: 30px;
-    }
-
-    .sub-btn {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        padding: 8px 20px;
-        border-radius: 30px;
-        cursor: pointer;
-        font-size: 0.85rem;
-        font-weight: 600;
-        letter-spacing: 1px;
-        color: #bbb;
-        text-transform: uppercase;
-        transition: all 0.3s ease;
-
-        opacity: 0;
-        transform: translateX(-30px);
-        animation: cascadeIn 0.6s ease forwards;
-    }
-
-    .sub-btn:hover {
-        background: rgba(255, 255, 255, 0.15);
-        color: #fff;
-    }
-
-    .sub-btn.active {
-        background: #fff;
-        color: #111;
-        border-color: #fff;
-        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-    }
-
-    @keyframes cascadeIn {
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
     }
 
     .events-list {

@@ -1,96 +1,264 @@
 <!-- === 1. LE CONTENU (MAIN) === -->
-<main class="galerie-container">
-
-    <!-- Sous-menu en cascade collé tout en haut -->
-    <nav class="sub-nav-buttons">
-        <button class="sub-btn" onclick="loadPageContent('galerie-courtes-realisations')"
-            style="animation-delay: 0.1s;">Courtes réalisations</button>
-        <button class="sub-btn active" onclick="loadPageContent('galerie-par-thematiques')"
-            style="animation-delay: 0.2s;">Par thématiques</button>
-        <button class="sub-btn" onclick="loadPageContent('galerie-premieres-machines')"
-            style="animation-delay: 0.3s;">Les 1ères Machines</button>
-        <button class="sub-btn" onclick="loadPageContent('galerie-ralentis')"
-            style="animation-delay: 0.4s;">Ralentis</button>
-    </nav>
-
-    <div class="content-placeholder">
-        <p class="placeholder-text">Sélection de vidéos classées par thématiques.</p>
-        <p class="construction-text">Site actuellement en construction</p>
-    </div>
+<main class="dossiers-container">
+    <p class="construction-text">Site actuellement en construction</p>
 </main>
+
+<!-- === CARROUSEL 1 (7 Vidéos) === -->
+<div class="vr-carousel-container" id="vrCarouselContainer1">
+    <button class="carousel-btn prev-btn" onclick="moveCarousel(1, -1, event)">&#10094;</button>
+
+    <div class="carousel-viewport">
+        <div class="carousel-track" id="vrCarouselTrack1">
+
+            <!-- 1. Danse cumulus 1 -->
+            <div class="carousel-slide">
+                <video class="gallery-video" autoplay muted loop playsinline preload="auto"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/danse%20cumulus%201-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 2. Danse cumulus 2 -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/danse%20cumulus%202-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 3. Emprise du temps -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/emprise%20du%20temps-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 4. Envolée dansante -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Envole%CC%81e%20dansante-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 5. Eolienne souffle fort -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Eolienne%20souffle%20fort-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 6. Etretat -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Etretat-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 7. Fondre le temps -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Fondre%20le%20temps-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+        </div>
+    </div>
+
+    <button class="carousel-btn next-btn" onclick="moveCarousel(1, 1, event)">&#10095;</button>
+</div>
+
+
+<!-- === CARROUSEL 2 (7 Vidéos) === -->
+<div class="vr-carousel-container" id="vrCarouselContainer2">
+    <button class="carousel-btn prev-btn" onclick="moveCarousel(2, -1, event)">&#10094;</button>
+
+    <div class="carousel-viewport">
+        <div class="carousel-track" id="vrCarouselTrack2">
+
+            <!-- 8. Griffe -->
+            <div class="carousel-slide">
+                <video class="gallery-video" autoplay muted loop playsinline preload="auto"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/griffe-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 9. Harpe fenêtre -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Harpe%20fene%CC%82tre-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 10. MAPT Râto1 -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/MAPT%20Ra%CC%82to1-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 11. MAPT Râto6 -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/MAPT%20Ra%CC%82to6-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 12. MAPT&LesGensDeLaVoix -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/MAPT%26LesGensDeLaVoix-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 13. Marteler nuage -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/marteler%20nuage%20-%20copie-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 14. Mirage -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/mirage-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+        </div>
+    </div>
+
+    <button class="carousel-btn next-btn" onclick="moveCarousel(2, 1, event)">&#10095;</button>
+</div>
+
+
+<!-- === CARROUSEL 3 (6 Vidéos) === -->
+<div class="vr-carousel-container" id="vrCarouselContainer3">
+    <button class="carousel-btn prev-btn" onclick="moveCarousel(3, -1, event)">&#10094;</button>
+
+    <div class="carousel-viewport">
+        <div class="carousel-track" id="vrCarouselTrack3">
+
+            <!-- 15. N1-FaceAlaMer -->
+            <div class="carousel-slide">
+                <video class="gallery-video" autoplay muted loop playsinline preload="auto"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/N1-FaceAlaMer-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 16. N3-NappesDePlage -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/N3-NappesDePlage-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 17. NeigeC1 -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/NeigeC1-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 18. Penseur -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Penseur-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 19. Phare StMathieu -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/phare%20StMathieu1%20PL%20web-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 20. TchinTchin -->
+            <div class="carousel-slide">
+                <video class="gallery-video" muted loop playsinline preload="metadata"
+                    onclick="handleCarouselVideoClick(this, event)">
+                    <source
+                        src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/TchinTchin_-SiteWeb%20MPEG-4.mp4"
+                        type="video/mp4">
+                </video>
+            </div>
+
+        </div>
+    </div>
+
+    <button class="carousel-btn next-btn" onclick="moveCarousel(3, 1, event)">&#10095;</button>
+</div>
 
 <!-- === 2. LE STYLE (CSS) === -->
 <style>
-    .galerie-container {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 0px 20px 40px 20px;
-    }
-
-    .sub-nav-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 0;
-        margin-bottom: 30px;
-        flex-wrap: wrap;
-    }
-
-    .sub-btn {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        padding: 8px 20px;
-        border-radius: 30px;
-        cursor: pointer;
-        font-size: 0.85rem;
-        font-weight: 600;
-        letter-spacing: 1px;
-        color: #bbb;
-        text-transform: uppercase;
-        transition: all 0.3s ease;
-        opacity: 0;
-        transform: translateX(-30px);
-        animation: cascadeIn 0.6s ease forwards;
-    }
-
-    .sub-btn:hover {
-        background: rgba(255, 255, 255, 0.15);
-        color: #fff;
-    }
-
-    .sub-btn.active {
-        background: #fff;
-        color: #111;
-        border-color: #fff;
-        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-    }
-
-    @keyframes cascadeIn {
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
-    .content-placeholder {
+    .dossiers-container {
         text-align: center;
-        margin-top: 40px;
-    }
-
-    .placeholder-text {
-        font-family: 'Avenir', sans-serif;
-        color: #ccc;
-        font-size: 1.1rem;
-        margin-bottom: 12px;
+        padding: 60px 20px;
     }
 
     .construction-text {
         font-family: 'Avenir', sans-serif;
-        color: #777;
-        font-size: 0.95rem;
+        color: #888;
+        font-size: 1.1rem;
         letter-spacing: 1px;
     }
 </style>
+
 
 <!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
 <script></script>

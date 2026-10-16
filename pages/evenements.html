@@ -1,0 +1,79 @@
+<!-- === 1. LE CONTENU (MAIN) === -->
+<main class="evenements-section-wrapper">
+
+    <!-- Barre de sous-menus fixe (Jamais de fondu ni de mouvement) -->
+    <nav class="sub-nav-buttons">
+        <button class="sub-btn" data-subpage="evenements-passe" onclick="loadSubPage('evenements-passe')">Passé</button>
+        <button class="sub-btn" data-subpage="evenements-actualite"
+            onclick="loadSubPage('evenements-actualite')">Actualité</button>
+        <button class="sub-btn" data-subpage="evenements-avenir" onclick="loadSubPage('evenements-avenir')">À
+            venir</button>
+    </nav>
+
+    <!-- Conteneur de la sous-page (Lui subit le fondu au noir de 200ms) -->
+    <div id="sub-page-content" class="sub-page-content"></div>
+
+</main>
+
+
+<!-- === 2. LE STYLE (CSS) === -->
+<style>
+    .evenements-section-wrapper {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0px 20px 60px 20px;
+    }
+
+    .sub-nav-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 0;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+    }
+
+    .sub-btn {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 8px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        color: #bbb;
+        text-transform: uppercase;
+        transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .sub-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+    }
+
+    .sub-btn.active {
+        background: #fff;
+        color: #111;
+        border-color: #fff;
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+    }
+
+    /* Transition d'opacité uniquement sur le contenu interne */
+    .sub-page-content {
+        transition: opacity 0.2s ease-in-out;
+        opacity: 1;
+    }
+</style>
+
+
+<!-- === 3. LE SCRIPT === -->
+<script>
+    // Au chargement de la page Événements, on charge par défaut la sous-page mémorisée ou "evenements-passe"
+    if (typeof window.pendingSubPage === 'string' && window.pendingSubPage) {
+        loadSubPage(window.pendingSubPage);
+        window.pendingSubpage = ''; // Reset
+    } else {
+        loadSubPage('evenements-passe');
+    }
+</script>

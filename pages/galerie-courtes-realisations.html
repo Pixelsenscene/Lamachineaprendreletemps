@@ -1,113 +1,25 @@
 <!-- === 1. LE CONTENU (MAIN) === -->
-<main class="galerie-container">
-
-    <!-- Sous-menu en cascade collé tout en haut -->
-    <nav class="sub-nav-buttons">
-        <button class="sub-btn active" onclick="loadPageContent('galerie-courtes-realisations')"
-            style="animation-delay: 0.1s;">Courtes réalisations</button>
-        <button class="sub-btn" onclick="loadPageContent('galerie-par-thematiques')" style="animation-delay: 0.2s;">Par
-            thématiques</button>
-        <button class="sub-btn" onclick="loadPageContent('galerie-premieres-machines')"
-            style="animation-delay: 0.3s;">Les 1ères Machines</button>
-        <button class="sub-btn" onclick="loadPageContent('galerie-ralentis')"
-            style="animation-delay: 0.4s;">Ralentis</button>
-    </nav>
-
-    <!-- Vidéo d'introduction issue du montage d'origine -->
-    <div class="featured-video-wrapper">
-        <video autoplay loop muted playsinline class="featured-video">
-            <source
-                src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/LeFilduTemps%20-%20Hiver1-SiteWeb%20MPEG-4.mp4"
-                type="video/mp4">
-            Votre navigateur ne prend pas en charge la lecture de vidéos.
-        </video>
-    </div>
-
-    <!-- Mention de construction sous la vidéo -->
-    <div class="construction-wrapper">
-        <p class="construction-text">Site actuellement en construction</p>
-    </div>
+<main class="dossiers-container">
+    <p class="construction-text">Site actuellement en construction</p>
 </main>
+
+
 
 <!-- === 2. LE STYLE (CSS) === -->
 <style>
-    .galerie-container {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 0px 20px 40px 20px;
-    }
-
-    .sub-nav-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 0;
-        margin-bottom: 30px;
-        flex-wrap: wrap;
-    }
-
-    .sub-btn {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        padding: 8px 20px;
-        border-radius: 30px;
-        cursor: pointer;
-        font-size: 0.85rem;
-        font-weight: 600;
-        letter-spacing: 1px;
-        color: #bbb;
-        text-transform: uppercase;
-        transition: all 0.3s ease;
-        opacity: 0;
-        transform: translateX(-30px);
-        animation: cascadeIn 0.6s ease forwards;
-    }
-
-    .sub-btn:hover {
-        background: rgba(255, 255, 255, 0.15);
-        color: #fff;
-    }
-
-    .sub-btn.active {
-        background: #fff;
-        color: #111;
-        border-color: #fff;
-        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-    }
-
-    @keyframes cascadeIn {
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
-    .featured-video-wrapper {
-        width: 100%;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-        margin-bottom: 25px;
-    }
-
-    .featured-video {
-        width: 100%;
-        display: block;
-        object-fit: cover;
-    }
-
-    .construction-wrapper {
+    .dossiers-container {
         text-align: center;
-        margin-top: 20px;
+        padding: 60px 20px;
     }
 
     .construction-text {
         font-family: 'Avenir', sans-serif;
-        color: #777;
-        font-size: 0.95rem;
+        color: #888;
+        font-size: 1.1rem;
         letter-spacing: 1px;
     }
 </style>
+
 
 <!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
 <script></script>

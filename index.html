@@ -1,3 +1,29 @@
+<!-- 
+  ======================================================================
+  RAPPEL ARCHITECTURE & INTERACTIONS (GUIDE DE NAVIGATION)
+  ======================================================================
+  1. index.html : 
+     - La coquille globale fixe (Bandeau de navigation principal + #page-content).
+
+  2. script.js : 
+     - Le chef d'orchestre.
+       • loadPageContent() : Charge le fichier parent ("pages").
+       • loadSubPage() : Charge la sous-page ("sous-pages") avec fondu au noir.
+
+  3. style.css (et styles intégrés) : 
+     - Styles globaux, modes (home-mode, page-mode) et transitions.
+
+  4. pages/accueil.html :
+     - La page d'accueil complète : Vidéo Hero (Vidéo principale d'en-tête) + 5 Blocs interactifs + scrolling.
+
+  5. "pages".html (Parents, ex: galeries.html, evenements.html) : 
+     - Hébergent la barre de sous-menus FIXE et la zone (#sub-page-content).
+
+  6. "sous-pages".html (Enfants, ex: galerie-ralentis.html, evenements-actualite.html) : 
+     - Contenu pur injecté dynamiquement dans #sub-page-content avec fondu au noir.
+  ======================================================================
+-->
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -168,28 +194,31 @@
             </div>
 
             <ul class="main-menu">
-                <!-- Menu Galeries avec sous-menus -->
+                <!-- Menu Galeries -->
+                <!-- Menu Galeries -->
                 <li class="has-submenu">
-                    <a href="#" data-page="galerie-courtes-realisations">Galeries</a>
+                    <a href="#" data-page="galeries">Galeries</a>
                     <ul class="submenu">
-                        <li><a href="#" data-page="galerie-courtes-realisations">Courtes réalisations</a></li>
-                        <li><a href="#" data-page="galerie-par-thematiques">Par thématiques</a></li>
-                        <li><a href="#" data-page="galerie-premieres-machines">Les 1ères Machines</a></li>
-                        <li><a href="#" data-page="galerie-ralentis">Ralentis</a></li>
+                        <li><a href="#" data-page="galeries" data-sub="galerie-courtes-realisations">Courtes
+                                réalisations</a></li>
+                        <li><a href="#" data-page="galeries" data-sub="galerie-par-thematiques">Par thématiques</a></li>
+                        <li><a href="#" data-page="galeries" data-sub="galerie-premieres-machines">Les 1ères
+                                Machines</a></li>
+                        <li><a href="#" data-page="galeries" data-sub="galerie-ralentis">Ralentis</a></li>
                     </ul>
                 </li>
 
-                <!-- Menu Evènements avec sous-menus -->
+                <!-- Menu Evènements -->
                 <li class="has-submenu">
-                    <a href="#" data-page="evenements-actualite">Evènements</a>
+                    <a href="#" data-page="evenements">Evènements</a>
                     <ul class="submenu">
-                        <li><a href="#" data-page="evenements-passe">Passé</a></li>
-                        <li><a href="#" data-page="evenements-actualite">Actualité</a></li>
-                        <li><a href="#" data-page="evenements-avenir">À venir</a></li>
+                        <li><a href="#" data-page="evenements" data-sub="evenements-passe">Passé</a></li>
+                        <li><a href="#" data-page="evenements" data-sub="evenements-actualite">Actualité</a></li>
+                        <li><a href="#" data-page="evenements" data-sub="evenements-avenir">À venir</a></li>
                     </ul>
                 </li>
 
-                <li><a href="#" data-page="dossiers">Dossiers</a></li>
+                <li><a href="#" data-page="dossier">Dossiers</a></li>
                 <li><a href="#" data-page="contact">Contact</a></li>
             </ul>
         </nav>
@@ -206,7 +235,7 @@
         // CONFIGURATION CENTRALE DES VIDÉOS D'ACCUEIL
         // ==========================================
         const CONFIG = {
-            transitionDuration: 200, // Durée du fondu au noir en millisecondes (200ms)
+            transitionDuration: 200,
             videos: [
                 {
                     src: "https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/LeFilduTemps%20-%20Hiver1-SiteWeb%20MPEG-4.mp4",
@@ -232,7 +261,6 @@
         let currentHeroIndex = 0;
         let isTransitioning = false;
 
-        // Fonction centralisée pour charger et lancer la vidéo d'accueil
         function loadAndPlayVideo(videoEl, sourceEl, videoData, callback) {
             sourceEl.src = videoData.src;
             videoEl.load();
@@ -256,7 +284,6 @@
             videoEl.addEventListener('canplay', handleReady, { once: true });
         }
 
-        // Fonction déclenchée au clic pour changer de vidéo d'accueil
         function switchHeroVideo() {
             if (isTransitioning) return;
             isTransitioning = true;
@@ -264,10 +291,8 @@
             const heroVideo = document.getElementById('hero-video');
             const heroSource = document.getElementById('hero-source');
 
-            // 1. Fondu au noir
             heroVideo.style.opacity = '0';
 
-            // 2. Changement après 200ms
             setTimeout(() => {
                 currentHeroIndex = (currentHeroIndex + 1) % CONFIG.videos.length;
                 const nextData = CONFIG.videos[currentHeroIndex];
@@ -280,7 +305,6 @@
             }, CONFIG.transitionDuration);
         }
 
-        // Initialisation au chargement de la page
         window.addEventListener('DOMContentLoaded', () => {
             const heroVideo = document.getElementById('hero-video');
             const heroSource = document.getElementById('hero-source');
@@ -291,7 +315,6 @@
 
                 loadAndPlayVideo(heroVideo, heroSource, initialData);
 
-                // Gestion de la boucle spécifique
                 heroVideo.addEventListener('timeupdate', function () {
                     const data = CONFIG.videos[currentHeroIndex];
                     if (data.customLoop && this.currentTime >= data.endTime) {

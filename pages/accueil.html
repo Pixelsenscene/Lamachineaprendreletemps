@@ -1,6 +1,8 @@
 <!-- === 1. LE CONTENU (MAIN) === -->
 <main class="home-content-wrapper">
 
+    <!-- === LES 5 BLOCS D'ACCUEIL (Le Hero est déjà géré globalement dans index.html) === -->
+
     <!-- Bloc 1 -->
     <div class="content-block">
         <div class="text-side">
@@ -23,7 +25,7 @@
         </div>
     </div>
 
-    <!-- Bloc 2 (Corrigé : Pas de rectangle blanc rigide, juste le fond adapté si besoin, ou structure identique) -->
+    <!-- Bloc 2 -->
     <div class="content-block reverse">
         <div class="text-side">
             <h2>Rendre visibles nos temporalités</h2>
@@ -45,7 +47,6 @@
             </p>
         </div>
         <div class="image-side">
-            <!-- On retire la classe white-bg-container du conteneur pour retrouver le comportement exact des autres blocs -->
             <div class="media-container"
                 data-video="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/TchinTchin_-SiteWeb%20MPEG-4.mp4"
                 data-img="img/IMG2-Tchin.webp" data-alt="Illustration 2" onclick="handleMediaClick(this)">
@@ -141,6 +142,7 @@
         padding: 0 0 100px 0;
     }
 
+    /* Styles des 5 blocs */
     .content-block {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -209,7 +211,7 @@
         display: block;
     }
 
-    /* --- CORRECTION SPÉCIFIQUE IPAD / TABLETTES (768px à 1024px) --- */
+    /* --- RESPONSIVE TABLETTES (768px à 1024px) --- */
     @media (min-width: 768px) and (max-width: 1024px) {
         .content-block {
             min-height: auto;
@@ -230,7 +232,7 @@
         }
     }
 
-    /* --- SMARTPHONES (≤ 900px) --- */
+    /* --- RESPONSIVE SMARTPHONES (≤ 900px) --- */
     @media (max-width: 900px) {
 
         .content-block,
