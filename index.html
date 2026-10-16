@@ -1,175 +1,60 @@
-<!-- 
+<!DOCTYPE html>
+<!--
   ======================================================================
   RAPPEL ARCHITECTURE & INTERACTIONS (GUIDE DE NAVIGATION)
   ======================================================================
-  1. index.html : 
+  1. index.html :
      - La coquille globale fixe (Bandeau de navigation principal + #page-content).
 
-  2. script.js : 
+  2. script.js :
      - Le chef d'orchestre.
+       • Carrousel vidéo du Hero (switchHeroVideo, boucles personnalisées).
+       • Routage par hash (#/galeries/galerie-ralentis) : navigate().
        • loadPageContent() : Charge le fichier parent ("pages").
        • loadSubPage() : Charge la sous-page ("sous-pages") avec fondu au noir.
 
-  3. style.css (et styles intégrés) : 
-     - Styles globaux, modes (home-mode, page-mode) et transitions.
+  3. style.css :
+     - TOUS les styles globaux (plus de <style> intégré dans index.html),
+       modes (home-mode, page-mode, scrolled-mode) et transitions.
 
   4. pages/accueil.html :
-     - La page d'accueil complète : Vidéo Hero (Vidéo principale d'en-tête) + 5 Blocs interactifs + scrolling.
+     - La page d'accueil complète : 5 Blocs interactifs + scrolling
+       (la vidéo Hero est gérée globalement ici, dans index.html).
 
-  5. "pages".html (Parents, ex: galeries.html, evenements.html) : 
+  5. "pages".html (Parents, ex: galeries.html, evenements.html) :
      - Hébergent la barre de sous-menus FIXE et la zone (#sub-page-content).
 
-  6. "sous-pages".html (Enfants, ex: galerie-ralentis.html, evenements-actualite.html) : 
+  6. "sous-pages".html (Enfants, ex: galerie-ralentis.html, evenements-actualite.html) :
      - Contenu pur injecté dynamiquement dans #sub-page-content avec fondu au noir.
   ======================================================================
 -->
-
-<!DOCTYPE html>
 <html lang="fr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Indique à iOS de masquer la barre de navigation du navigateur -->
+    <title>La Machine à Prendre le Temps</title>
+
+    <!-- Couleur de la barre du navigateur mobile (se fond dans le fond sombre) -->
+    <meta name="theme-color" content="#111111">
+
+    <!-- Mode "application" (ajout à l'écran d'accueil / PWA) -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>La Machine à Prendre le Temps</title>
+
     <link rel="stylesheet" href="style.css">
-    <!-- Import de la police manuscrite pour le titre du bandeau -->
+
+    <!-- Police manuscrite pour le titre du bandeau -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
-    <style>
-        /* Transition d'opacité pour le fondu au noir (200ms) */
-        #hero-video {
-            transition: opacity 0.2s ease-in-out;
-            opacity: 1;
-        }
-
-        #main-header nav {
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 30px;
-            gap: 40px;
-        }
-
-        /* --- TITRE MANUSCRIT (À gauche, décalé vers la droite) --- */
-        .header-brand-title {
-            display: none;
-            font-family: 'Caveat', cursive, sans-serif;
-            font-size: 1.8rem;
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-            transition: opacity 0.2s ease;
-            margin-left: 40px;
-        }
-
-        .header-brand-title:hover {
-            opacity: 0.75;
-        }
-
-        /* --- SYMBOLE ORIENTÉ VERS LE BAS (Décalé vers la droite) --- */
-        .nav-eject-down-container {
-            display: inline-block;
-            margin-left: 40px;
-        }
-
-        .nav-eject-down {
-            display: inline-block;
-            font-size: 1.4rem;
-            text-decoration: none;
-            color: #ffffff;
-            transform: rotate(180deg);
-            transition: transform 0.3s ease, opacity 0.2s ease;
-            line-height: 1;
-        }
-
-        .nav-eject-down:hover {
-            transform: rotate(180deg) translateY(-3px);
-            opacity: 0.8;
-        }
-
-        /* --- STYLE DES MENUS ET ÉTATS ACTIFS --- */
-        .main-menu {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .main-menu li a.active,
-        .main-menu li a:hover {
-            color: #ffffff !important;
-            border-bottom: 2px solid #ffffff;
-        }
-
-        /* En haut de l'accueil : aligné à gauche avec un espacement équilibré */
-        #main-header nav {
-            justify-content: flex-start;
-        }
-
-        /* --- QUAND ON DÉFILE OU QU'ON CHANGE DE PAGE --- */
-        body.scrolled-mode .header-brand-title,
-        body.page-mode .header-brand-title {
-            display: inline-block;
-        }
-
-        body.scrolled-mode .nav-eject-down-container,
-        body.page-mode .nav-eject-down-container {
-            display: none !important;
-        }
-
-        /* Quand le titre manuscrit est là, on espace le titre et les menus aux extrémités */
-        body.scrolled-mode #main-header nav,
-        body.page-mode #main-header nav {
-            justify-content: space-between;
-        }
-
-        /* --- GESTION RESPONSIVE MOBILE / TABLETTE --- */
-        @media (max-width: 900px) {
-            #main-header nav {
-                flex-direction: row !important;
-                flex-wrap: nowrap !important;
-                gap: 12px;
-                padding: 0 15px;
-                justify-content: space-between !important;
-                height: 60px;
-            }
-
-            .header-brand-title,
-            .nav-eject-down-container {
-                margin-left: 0 !important;
-            }
-
-            .header-brand-title {
-                font-size: 1.2rem;
-            }
-
-            .main-menu {
-                flex-direction: row !important;
-                flex-wrap: nowrap !important;
-                gap: 10px;
-                margin: 0 !important;
-            }
-
-            .main-menu li a {
-                font-size: 0.7rem;
-                letter-spacing: 0.5px;
-            }
-        }
-    </style>
 </head>
 
 <body class="home-mode">
 
-    <!-- Section Vidéo d'Accueil (cliquable pour changer de vidéo) -->
-    <section id="hero-section" class="video-loaded" style="cursor: pointer;" onclick="switchHeroVideo()"
-        title="Cliquez pour changer de vidéo">
+    <!-- Section Vidéo d'Accueil (cliquable pour changer de vidéo : écouteur dans script.js) -->
+    <section id="hero-section" class="video-loaded" title="Cliquez pour changer de vidéo">
         <div class="video-container">
             <video id="hero-video" autoplay muted playsinline preload="auto" disablePictureInPicture
                 controlsList="nodownload noremoteplayback" loop>
@@ -186,40 +71,44 @@
     <header id="main-header">
         <nav>
             <!-- Titre manuscrit à gauche (apparaît quand on descend) -->
-            <a href="#" data-page="accueil" class="header-brand-title">La Machine à Prendre le Temps</a>
+            <a href="#/" data-page="accueil" class="header-brand-title">La Machine à Prendre le Temps</a>
 
-            <!-- Conteneur du symbole orienté vers le bas (visible uniquement en haut de la vidéo) -->
+            <!-- Symbole orienté vers le bas (visible uniquement en haut de la vidéo) -->
             <div class="nav-eject-down-container">
                 <a href="#" data-action="scroll-down" class="nav-eject-down" title="Descendre vers le contenu">⏏︎</a>
             </div>
 
             <ul class="main-menu">
                 <!-- Menu Galeries -->
-                <!-- Menu Galeries -->
                 <li class="has-submenu">
-                    <a href="#" data-page="galeries">Galeries</a>
+                    <a href="#/galeries" data-page="galeries">Galeries</a>
                     <ul class="submenu">
-                        <li><a href="#" data-page="galeries" data-sub="galerie-courtes-realisations">Courtes
-                                réalisations</a></li>
-                        <li><a href="#" data-page="galeries" data-sub="galerie-par-thematiques">Par thématiques</a></li>
-                        <li><a href="#" data-page="galeries" data-sub="galerie-premieres-machines">Les 1ères
-                                Machines</a></li>
-                        <li><a href="#" data-page="galeries" data-sub="galerie-ralentis">Ralentis</a></li>
+                        <li><a href="#/galeries/galerie-courtes-realisations" data-page="galeries"
+                                data-sub="galerie-courtes-realisations">Courtes réalisations</a></li>
+                        <li><a href="#/galeries/galerie-par-thematiques" data-page="galeries"
+                                data-sub="galerie-par-thematiques">Par thématiques</a></li>
+                        <li><a href="#/galeries/galerie-premieres-machines" data-page="galeries"
+                                data-sub="galerie-premieres-machines">Les 1ères Machines</a></li>
+                        <li><a href="#/galeries/galerie-ralentis" data-page="galeries"
+                                data-sub="galerie-ralentis">Ralentis</a></li>
                     </ul>
                 </li>
 
                 <!-- Menu Evènements -->
                 <li class="has-submenu">
-                    <a href="#" data-page="evenements">Evènements</a>
+                    <a href="#/evenements" data-page="evenements">Evènements</a>
                     <ul class="submenu">
-                        <li><a href="#" data-page="evenements" data-sub="evenements-passe">Passé</a></li>
-                        <li><a href="#" data-page="evenements" data-sub="evenements-actualite">Actualité</a></li>
-                        <li><a href="#" data-page="evenements" data-sub="evenements-avenir">À venir</a></li>
+                        <li><a href="#/evenements/evenements-passe" data-page="evenements"
+                                data-sub="evenements-passe">Passé</a></li>
+                        <li><a href="#/evenements/evenements-actualite" data-page="evenements"
+                                data-sub="evenements-actualite">Actualité</a></li>
+                        <li><a href="#/evenements/evenements-avenir" data-page="evenements"
+                                data-sub="evenements-avenir">À venir</a></li>
                     </ul>
                 </li>
 
-                <li><a href="#" data-page="dossier">Dossiers</a></li>
-                <li><a href="#" data-page="contact">Contact</a></li>
+                <li><a href="#/dossiers" data-page="dossiers">Dossiers</a></li>
+                <li><a href="#/contact" data-page="contact">Contact</a></li>
             </ul>
         </nav>
     </header>
@@ -228,102 +117,6 @@
     <main id="main-container">
         <div id="page-content" class="page-content active"></div>
     </main>
-
-    <!-- Script de gestion centralisé (Carrousel, Fondu & Média) -->
-    <script>
-        // ==========================================
-        // CONFIGURATION CENTRALE DES VIDÉOS D'ACCUEIL
-        // ==========================================
-        const CONFIG = {
-            transitionDuration: 200,
-            videos: [
-                {
-                    src: "https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/LeFilduTemps%20-%20Hiver1-SiteWeb%20MPEG-4.mp4",
-                    customLoop: true,
-                    startTime: 16,
-                    endTime: 106
-                },
-                {
-                    src: "https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/phare%20StMathieu1%20PL%20web-SiteWeb%20MPEG-4.mp4",
-                    customLoop: false
-                },
-                {
-                    src: "https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Envole%CC%81e%20dansante-SiteWeb%20MPEG-4.mp4",
-                    customLoop: false
-                },
-                {
-                    src: "https://MaptDiff.b-cdn.net/RALENTIS%20VR%20paysage/Baie%20Mont%20Saint%20Michel%20-%20VR-SiteWeb%20MPEG-4.mp4",
-                    customLoop: false
-                }
-            ]
-        };
-
-        let currentHeroIndex = 0;
-        let isTransitioning = false;
-
-        function loadAndPlayVideo(videoEl, sourceEl, videoData, callback) {
-            sourceEl.src = videoData.src;
-            videoEl.load();
-
-            const startPos = videoData.customLoop ? videoData.startTime : 0;
-            videoEl.currentTime = startPos;
-
-            const handleReady = () => {
-                videoEl.currentTime = startPos;
-                videoEl.play().then(() => {
-                    setTimeout(() => {
-                        videoEl.style.opacity = '1';
-                        if (typeof callback === 'function') callback();
-                    }, 50);
-                }).catch(error => {
-                    console.log("Lecture automatique bloquée : ", error);
-                    if (typeof callback === 'function') callback();
-                });
-            };
-
-            videoEl.addEventListener('canplay', handleReady, { once: true });
-        }
-
-        function switchHeroVideo() {
-            if (isTransitioning) return;
-            isTransitioning = true;
-
-            const heroVideo = document.getElementById('hero-video');
-            const heroSource = document.getElementById('hero-source');
-
-            heroVideo.style.opacity = '0';
-
-            setTimeout(() => {
-                currentHeroIndex = (currentHeroIndex + 1) % CONFIG.videos.length;
-                const nextData = CONFIG.videos[currentHeroIndex];
-
-                loadAndPlayVideo(heroVideo, heroSource, nextData, () => {
-                    setTimeout(() => {
-                        isTransitioning = false;
-                    }, CONFIG.transitionDuration);
-                });
-            }, CONFIG.transitionDuration);
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const heroVideo = document.getElementById('hero-video');
-            const heroSource = document.getElementById('hero-source');
-
-            if (heroVideo) {
-                const initialData = CONFIG.videos[currentHeroIndex];
-                heroVideo.style.opacity = '0';
-
-                loadAndPlayVideo(heroVideo, heroSource, initialData);
-
-                heroVideo.addEventListener('timeupdate', function () {
-                    const data = CONFIG.videos[currentHeroIndex];
-                    if (data.customLoop && this.currentTime >= data.endTime) {
-                        this.currentTime = data.startTime;
-                    }
-                });
-            }
-        });
-    </script>
 
     <script src="script.js"></script>
 </body>

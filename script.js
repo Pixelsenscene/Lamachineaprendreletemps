@@ -1,129 +1,351 @@
+// =====================================================================
+// SCRIPT.JS : le chef d'orchestre
+//   1. Références globales
+//   2. Carrousel vidéo du Hero
+//   3. Modes (home / page), menu actif, URL (hash)
+//   4. Chargement des pages et sous-pages
+//   5. Navigation (clics, historique)
+//   6. Accueil : médias, blocs, molette, scroll
+//   7. Carrousels vidéo des galeries
+// =====================================================================
 
-// --- CHARGEMENT DYNAMIQUE DES COMPOSANTS ET INITIALISATION ---
-window.addEventListener('DOMContentLoaded', () => {
-    const heroSection = document.getElementById('hero-section');
-    if (heroSection) {
-        heroSection.classList.add('video-loaded');
-    }
-
-    loadPageContent('accueil');
-    currentActivePage = 'accueil';
-});
-
+// ---------------------------------------------------------------------
+// 1. RÉFÉRENCES GLOBALES
+// ---------------------------------------------------------------------
 const body = document.body;
 const allNavLinks = document.querySelectorAll('#main-header nav a');
 const pageContainer = document.getElementById('page-content');
-let currentActivePage = '';
+const validPages = new Set(
+    Array.from(allNavLinks).map(l => l.dataset.page).filter(Boolean)
+);
 
-// --- GESTION DU CHARGEMENT DES SOUS-PAGES ---
+const FADE_MS = 200; // durée du fondu au noir des pages / sous-pages
+
+let currentActivePage = '';
+let currentMode = 'home';
+let pageRequestId = 0; // pour ignorer les réponses obsolètes (clics rapides)
+let subRequestId = 0;
+
+// Le navigateur ne doit pas restaurer lui-même la position de scroll
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+
+// ---------------------------------------------------------------------
+// 2. CARROUSEL VIDÉO DU HERO
+// ---------------------------------------------------------------------
+const CONFIG = {
+    transitionDuration: 200,
+    videos: [
+        {
+            src: "https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/LeFilduTemps%20-%20Hiver1-SiteWeb%20MPEG-4.mp4",
+            customLoop: true,
+            startTime: 16,
+            endTime: 106
+        },
+        {
+            src: "https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/phare%20StMathieu1%20PL%20web-SiteWeb%20MPEG-4.mp4",
+            customLoop: false
+        },
+        {
+            src: "https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Envole%CC%81e%20dansante-SiteWeb%20MPEG-4.mp4",
+            customLoop: false
+        },
+        {
+            src: "https://MaptDiff.b-cdn.net/RALENTIS%20VR%20paysage/Baie%20Mont%20Saint%20Michel%20-%20VR-SiteWeb%20MPEG-4.mp4",
+            customLoop: false
+        }
+    ]
+};
+
+let currentHeroIndex = 0;
+let isTransitioning = false;
+
+function loadAndPlayVideo(videoEl, sourceEl, videoData, callback) {
+    sourceEl.src = videoData.src;
+    videoEl.load();
+
+    const startPos = videoData.customLoop ? videoData.startTime : 0;
+    videoEl.currentTime = startPos;
+
+    const handleReady = () => {
+        videoEl.currentTime = startPos;
+
+        // Si on est déjà sur une autre page (lien direct), on ne lance pas la lecture :
+        // elle démarrera au retour à l'accueil (voir setMode).
+        if (body.classList.contains('page-mode')) {
+            videoEl.style.opacity = '1';
+            if (typeof callback === 'function') callback();
+            return;
+        }
+
+        videoEl.play().then(() => {
+            setTimeout(() => {
+                videoEl.style.opacity = '1';
+                if (typeof callback === 'function') callback();
+            }, 50);
+        }).catch(error => {
+            console.log("Lecture automatique bloquée : ", error);
+            if (typeof callback === 'function') callback();
+        });
+    };
+
+    videoEl.addEventListener('canplay', handleReady, { once: true });
+}
+
+function switchHeroVideo() {
+    if (isTransitioning) return;
+    isTransitioning = true;
+
+    const heroVideo = document.getElementById('hero-video');
+    const heroSource = document.getElementById('hero-source');
+
+    heroVideo.style.opacity = '0';
+
+    setTimeout(() => {
+        currentHeroIndex = (currentHeroIndex + 1) % CONFIG.videos.length;
+        const nextData = CONFIG.videos[currentHeroIndex];
+
+        loadAndPlayVideo(heroVideo, heroSource, nextData, () => {
+            setTimeout(() => {
+                isTransitioning = false;
+            }, CONFIG.transitionDuration);
+        });
+    }, CONFIG.transitionDuration);
+}
+window.switchHeroVideo = switchHeroVideo;
+
+function initHero() {
+    const heroSection = document.getElementById('hero-section');
+    const heroVideo = document.getElementById('hero-video');
+    const heroSource = document.getElementById('hero-source');
+
+    if (heroSection) {
+        heroSection.classList.add('video-loaded');
+        heroSection.addEventListener('click', switchHeroVideo);
+    }
+    if (!heroVideo || !heroSource) return;
+
+    heroVideo.style.opacity = '0';
+    loadAndPlayVideo(heroVideo, heroSource, CONFIG.videos[currentHeroIndex]);
+
+    // Boucle personnalisée (ex : la 1ère vidéo tourne entre startTime et endTime)
+    heroVideo.addEventListener('timeupdate', function () {
+        const data = CONFIG.videos[currentHeroIndex];
+        if (data.customLoop && this.currentTime >= data.endTime) {
+            this.currentTime = data.startTime;
+        }
+    });
+}
+
+
+// ---------------------------------------------------------------------
+// 3. MODES, MENU ACTIF, URL
+// ---------------------------------------------------------------------
+
+// Bascule home-mode / page-mode et met la vidéo du Hero en pause quand elle est cachée
+function setMode(mode) {
+    body.classList.remove('home-mode', 'page-mode', 'scrolled-mode');
+    body.classList.add(mode === 'page' ? 'page-mode' : 'home-mode');
+
+    if (mode === currentMode) return;
+    currentMode = mode;
+
+    const heroVideo = document.getElementById('hero-video');
+    if (!heroVideo) return;
+    if (mode === 'page') {
+        heroVideo.pause();
+    } else {
+        const p = heroVideo.play();
+        if (p && typeof p.catch === 'function') p.catch(() => { });
+    }
+}
+
+// Met en surbrillance le lien du menu (et son parent pour les sous-menus)
+function setActiveNav(page, sub) {
+    allNavLinks.forEach(l => l.classList.remove('active'));
+
+    let link = null;
+    if (sub) {
+        link = document.querySelector(`#main-header nav a[data-page="${page}"][data-sub="${sub}"]`);
+    }
+    if (!link) {
+        link = document.querySelector(`#main-header nav a[data-page="${page}"]:not([data-sub])`);
+    }
+    if (!link) return;
+
+    link.classList.add('active');
+    const parentLi = link.closest('.has-submenu');
+    if (parentLi) {
+        const parentLink = parentLi.querySelector('a');
+        if (parentLink) parentLink.classList.add('active');
+    }
+}
+
+// Routage par hash : #/galeries/galerie-ralentis  ->  { page: 'galeries', sub: 'galerie-ralentis' }
+function parseHash() {
+    const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+    return { page: parts[0] || 'accueil', sub: parts[1] || '' };
+}
+
+function updateUrl(page, sub, replace = false) {
+    const hash = page === 'accueil' ? '' : `#/${page}${sub ? '/' + sub : ''}`;
+    if ((location.hash || '') === hash) return;
+    const url = hash || (location.pathname + location.search);
+    try {
+        history[replace ? 'replaceState' : 'pushState'](null, '', url);
+    } catch (e) {
+        // Certains contextes (ex : file://) refusent l'API History : on ignore
+    }
+}
+
+
+// ---------------------------------------------------------------------
+// 4. CHARGEMENT DES PAGES ET SOUS-PAGES
+// ---------------------------------------------------------------------
+async function fetchHTML(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`${url} introuvable.`);
+        return await response.text();
+    } catch (error) {
+        console.error(error);
+        return `<h2>Contenu en cours de création</h2>`;
+    }
+}
+
+// Injecte du HTML, ré-exécute les <script> qu'il contient et relance Instagram
+function injectHTML(container, html) {
+    container.innerHTML = html;
+
+    container.querySelectorAll('script').forEach(oldScript => {
+        const newScript = document.createElement('script');
+        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+        newScript.textContent = oldScript.textContent;
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+
+    if (window.instgrm && window.instgrm.Embeds) {
+        window.instgrm.Embeds.process();
+    }
+
+    initCarousels(container);
+}
+
 async function loadSubPage(subPageName) {
     const subContainer = document.getElementById('sub-page-content');
     if (!subContainer) return;
 
+    const requestId = ++subRequestId;
     subContainer.style.opacity = '0';
 
-    try {
-        const response = await fetch(`pages/${subPageName}.html`);
-        if (!response.ok) throw new Error(`Sous-page introuvable.`);
-        const htmlContent = await response.text();
+    // Le chargement et le fondu au noir se font en parallèle
+    const [html] = await Promise.all([fetchHTML(`pages/${subPageName}.html`), wait(FADE_MS)]);
 
-        setTimeout(() => {
-            subContainer.innerHTML = htmlContent;
-            subContainer.style.opacity = '1';
+    // Un clic plus récent a pris le relais (ou la page a changé) : on abandonne
+    if (requestId !== subRequestId || !subContainer.isConnected) return;
 
-            const scripts = subContainer.querySelectorAll('script');
-            scripts.forEach(oldScript => {
-                const newScript = document.createElement('script');
-                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                newScript.textContent = oldScript.textContent;
-                oldScript.parentNode.replaceChild(newScript, oldScript);
-            });
+    injectHTML(subContainer, html);
+    subContainer.style.opacity = '1';
 
-            if (window.instgrm && window.instgrm.Embeds) {
-                window.instgrm.Embeds.process();
-            }
+    document.querySelectorAll('.sub-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-subpage') === subPageName);
+    });
 
-            document.querySelectorAll('.sub-btn').forEach(btn => {
-                if (btn.getAttribute('data-subpage') === subPageName) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-        }, 200);
-
-    } catch (error) {
-        console.error(error);
-        setTimeout(() => {
-            subContainer.innerHTML = `<h2>Contenu en cours de création</h2>`;
-            subContainer.style.opacity = '1';
-        }, 200);
+    // Garde l'URL et le menu synchronisés (sans ajouter d'entrée à l'historique)
+    if (currentActivePage && currentActivePage !== 'accueil') {
+        setActiveNav(currentActivePage, subPageName);
+        updateUrl(currentActivePage, subPageName, true);
     }
 }
 window.loadSubPage = loadSubPage;
 
 async function loadPageContent(pageName) {
     if (!pageContainer) return;
+
+    const requestId = ++pageRequestId;
+    subRequestId++; // toute sous-page en cours de chargement devient obsolète
     pageContainer.style.opacity = '0';
 
-    try {
-        const response = await fetch(`pages/${pageName}.html`);
-        if (!response.ok) throw new Error(`Page introuvable.`);
-        const htmlContent = await response.text();
+    const [html] = await Promise.all([fetchHTML(`pages/${pageName}.html`), wait(FADE_MS)]);
+    if (requestId !== pageRequestId) return;
 
-        setTimeout(() => {
-            pageContainer.innerHTML = htmlContent;
-            pageContainer.style.opacity = '1';
+    injectHTML(pageContainer, html);
+    pageContainer.style.opacity = '1';
 
-            const scripts = pageContainer.querySelectorAll('script');
-            scripts.forEach(oldScript => {
-                const newScript = document.createElement('script');
-                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                newScript.textContent = oldScript.textContent;
-                oldScript.parentNode.replaceChild(newScript, oldScript);
-            });
-
-            if (window.instgrm && window.instgrm.Embeds) {
-                window.instgrm.Embeds.process();
-            }
-
-            if (window.pendingSubPage) {
-                const subToLoad = window.pendingSubPage;
-                window.pendingSubPage = '';
-                loadSubPage(subToLoad);
-            }
-        }, 200);
-
-    } catch (error) {
-        console.error(error);
-        setTimeout(() => {
-            pageContainer.innerHTML = `<h2>Contenu en cours de création</h2>`;
-            pageContainer.style.opacity = '1';
-        }, 200);
+    if (window.pendingSubPage) {
+        const subToLoad = window.pendingSubPage;
+        window.pendingSubPage = '';
+        loadSubPage(subToLoad);
     }
 }
 
-// --- CLIC SUR LE TITRE MANUSCRIT (Retour en haut) ---
-document.addEventListener('click', (e) => {
-    const brandLink = e.target.closest('.header-brand-title');
-    if (!brandLink) return;
-    e.preventDefault();
 
-    allNavLinks.forEach(l => l.classList.remove('active'));
-    const accueilNavLink = document.querySelector('#main-header nav a[data-page="accueil"]');
-    if (accueilNavLink) accueilNavLink.classList.add('active');
+// ---------------------------------------------------------------------
+// 5. NAVIGATION
+// ---------------------------------------------------------------------
+function navigate(page, sub = '', { push = true } = {}) {
+    if (!validPages.has(page)) { page = 'accueil'; sub = ''; }
 
-    body.classList.remove('page-mode', 'scrolled-mode');
-    body.classList.add('home-mode');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setActiveNav(page, sub);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (push) updateUrl(page, sub);
 
-    if (currentActivePage !== 'accueil') {
-        loadPageContent('accueil');
-        currentActivePage = 'accueil';
+    // Même page parent, autre sous-page : on ne recharge que la sous-page
+    if (sub && page === currentActivePage && document.getElementById('sub-page-content')) {
+        window.pendingSubPage = '';
+        loadSubPage(sub);
+        return;
     }
+
+    window.pendingSubPage = sub;
+    setMode(page === 'accueil' ? 'home' : 'page');
+    loadPageContent(page);
+    currentActivePage = page;
+}
+
+// Retour à l'accueil (clic sur le titre manuscrit)
+function goHome() {
+    if (currentActivePage === 'accueil') {
+        setActiveNav('accueil', '');
+        setMode('home');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        navigate('accueil');
+    }
+}
+
+// Clics sur le menu
+allNavLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        if (link.classList.contains('header-brand-title')) {
+            goHome();
+            return;
+        }
+
+        const targetPage = link.getAttribute('data-page');
+        if (!targetPage) return; // ex : flèche "descendre", gérée plus bas
+
+        navigate(targetPage, link.getAttribute('data-sub') || '');
+    });
 });
 
-// --- CLIC SUR LA FLÈCHE VERS LE BAS (Symbole ⏏︎) ---
+// Boutons précédent / suivant du navigateur (et hash modifié à la main)
+window.addEventListener('popstate', () => {
+    const { page, sub } = parseHash();
+
+    if (page === 'accueil' && currentActivePage === 'accueil') {
+        setMode('home');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        return;
+    }
+    navigate(page, sub, { push: false });
+});
+
+// Clic sur la flèche vers le bas (Symbole ⏏︎)
 document.addEventListener('click', (e) => {
     const arrowLink = e.target.closest('[data-action="scroll-down"]');
     if (!arrowLink) return;
@@ -133,65 +355,26 @@ document.addEventListener('click', (e) => {
     const firstBlock = document.querySelector('.content-block');
 
     if (heroSection) {
-        // On scrolle exactement à la hauteur du Hero pour que le Bloc 1 vienne se caler sous le bandeau fixé en haut
-        const targetY = heroSection.offsetHeight;
-        window.scrollTo({
-            top: targetY,
-            behavior: 'smooth'
-        });
+        // On scrolle exactement à la hauteur du Hero pour que le Bloc 1 se cale sous le bandeau
+        window.scrollTo({ top: heroSection.offsetHeight, behavior: 'smooth' });
     } else if (firstBlock) {
         firstBlock.scrollIntoView({ behavior: 'smooth' });
     }
-
-});
-// --- NAVIGATION ET CLICS SUR LES MENUS ---
-allNavLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const targetPage = link.getAttribute('data-page');
-        const targetSub = link.getAttribute('data-sub');
-
-        if (!targetPage) return;
-
-        window.pendingSubPage = targetSub || '';
-
-        if (targetPage === 'accueil' && currentActivePage === 'accueil') {
-            const scrollY = window.scrollY || window.pageYOffset;
-            if (scrollY < 300) {
-                const firstBlock = document.querySelector('.content-block');
-                if (firstBlock) scrollToBlockCentered(firstBlock);
-            } else {
-                body.classList.remove('page-mode', 'scrolled-mode');
-                body.classList.add('home-mode');
-                window.scrollTo({ top: 0, behavior: 'auto' }); // Instantané
-            }
-            return;
-        }
-
-        allNavLinks.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-
-        const parentLi = link.closest('.has-submenu');
-        if (parentLi) {
-            const parentLink = parentLi.querySelector('a');
-            if (parentLink) parentLink.classList.add('active');
-        }
-
-        if (targetPage === 'accueil') {
-            body.classList.remove('page-mode', 'scrolled-mode');
-            body.classList.add('home-mode');
-        } else {
-            body.classList.remove('home-mode', 'scrolled-mode');
-            body.classList.add('page-mode');
-        }
-
-        window.scrollTo({ top: 0, behavior: 'auto' }); // Instantané
-        loadPageContent(targetPage);
-        currentActivePage = targetPage;
-    });
 });
 
-// --- GESTION INTERACTIVE DES MÉDIAS ---
+// Initialisation
+window.addEventListener('DOMContentLoaded', () => {
+    initHero();
+    const { page, sub } = parseHash();
+    navigate(page, sub, { push: false });
+});
+
+
+// ---------------------------------------------------------------------
+// 6. ACCUEIL : MÉDIAS, BLOCS, MOLETTE, SCROLL
+// ---------------------------------------------------------------------
+
+// Clic sur une image/vidéo d'un bloc : alterne image <-> vidéo
 function handleMediaClick(container) {
     const videoUrl = container.getAttribute('data-video');
     const imgSrc = container.getAttribute('data-img');
@@ -199,6 +382,7 @@ function handleMediaClick(container) {
     const isVideo = container.querySelector('video');
 
     if (!isVideo) {
+        if (!videoUrl) return;
         const isTchin = videoUrl.includes('TchinTchin');
         container.innerHTML = `
             <video autoplay muted playsinline disablePictureInPicture controlsList="nodownload noremoteplayback nofullscreen" ${isTchin ? '' : 'loop'}>
@@ -217,8 +401,9 @@ function handleMediaClick(container) {
         container.innerHTML = `<img src="${imgSrc}" alt="${imgAlt}">`;
     }
 }
+window.handleMediaClick = handleMediaClick; // appelée par onclick="" dans accueil.html
 
-// --- CENTRAGE VERTICAL ---
+// Centrage vertical d'un bloc dans l'espace sous le bandeau
 function scrollToBlockCentered(targetBlock) {
     const header = document.getElementById('main-header');
     const headerHeight = header ? header.offsetHeight : 0;
@@ -236,7 +421,7 @@ function scrollToBlockCentered(targetBlock) {
     });
 }
 
-// --- CLIC SUR LE TEXTE D'UN BLOC ---
+// Clic sur le texte d'un bloc : passe au bloc suivant (boucle sur le Bloc 1 à la fin)
 document.addEventListener('click', (e) => {
     const textSide = e.target.closest('.text-side');
     if (!textSide) return;
@@ -247,25 +432,20 @@ document.addEventListener('click', (e) => {
 
     if (index === -1) return;
 
-    // Si on est sur le dernier bloc, on boucle vers le Bloc 1 avec le calibrage exact
     if (index === blocks.length - 1) {
         const heroSection = document.getElementById('hero-section');
         if (heroSection) {
             body.classList.add('scrolled-mode');
-            window.scrollTo({
-                top: heroSection.offsetHeight,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: heroSection.offsetHeight, behavior: 'smooth' });
         } else {
             scrollToBlockCentered(blocks[0]);
         }
     } else {
-        // Sinon, on passe au bloc suivant normalement en le centrant
         scrollToBlockCentered(blocks[index + 1]);
     }
 });
 
-// --- NAVIGATION PAR SCROLL (WHEEL) ---
+// Navigation par molette (accueil uniquement)
 let isAnimatingScroll = false;
 
 window.addEventListener('wheel', (e) => {
@@ -306,10 +486,7 @@ window.addEventListener('wheel', (e) => {
     if (scrollY < windowHeight / 2) {
         const heroSection = document.getElementById('hero-section');
         if (heroSection) {
-            window.scrollTo({
-                top: heroSection.offsetHeight,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: heroSection.offsetHeight, behavior: 'smooth' });
         } else {
             scrollToBlockCentered(blocks[0]);
         }
@@ -340,7 +517,7 @@ window.addEventListener('wheel', (e) => {
 
 }, { passive: false });
 
-// --- SYNCHRONISATION FLUIDE : LE BANDOIRE ET LE BLOC 1 SONT LIÉS ---
+// Synchronisation du bandeau : "scrolled-mode" dès que le bandeau atteint le haut de l'écran
 window.addEventListener('scroll', () => {
     if (!body.classList.contains('home-mode') || body.classList.contains('page-mode')) return;
 
@@ -348,15 +525,104 @@ window.addEventListener('scroll', () => {
     const header = document.getElementById('main-header');
     if (!heroSection || !header) return;
 
-    const heroHeight = heroSection.offsetHeight;
-    const headerHeight = header.offsetHeight;
-
-    // Seuil exact : au moment précis où le bandeau atteint le haut de l'écran
-    const threshold = heroHeight - headerHeight;
+    const threshold = heroSection.offsetHeight - header.offsetHeight;
 
     if (window.scrollY >= threshold) {
         body.classList.add('scrolled-mode');
     } else {
         body.classList.remove('scrolled-mode');
     }
+}, { passive: true });
+
+
+// ---------------------------------------------------------------------
+// 7. CARROUSELS VIDÉO (partagés par toutes les galeries)
+//    Le code vit ICI et non dans chaque sous-page : une seule définition,
+//    plus de conflit de "const" quand on revisite une page, et les flèches
+//    marchent quelle que soit la sous-page ouverte en premier.
+//    Une seule slide est active à la fois (classe .is-active) ; le CSS donne à
+//    la vidéo affichée son propre format. L'index actif est stocké sur le DOM
+//    (track.dataset.index) : il repart à 0 à chaque injection de la page.
+// ---------------------------------------------------------------------
+
+// Lance la lecture et, si le navigateur l'interrompt (vidéo pas encore prête),
+// réessaie dès qu'elle peut démarrer.
+function playSafe(video) {
+    if (!video) return;
+    const p = video.play();
+    if (p && typeof p.catch === 'function') {
+        p.catch(() => {
+            video.addEventListener('canplay', () => {
+                const slide = video.closest('.carousel-slide');
+                if (!slide || slide.classList.contains('is-active')) {
+                    video.play().catch(() => { });
+                }
+            }, { once: true });
+        });
+    }
+}
+
+// Appelée après chaque injection de page / sous-page
+function initCarousels(root) {
+    root.querySelectorAll('.carousel-track').forEach(track => {
+        const slides = track.querySelectorAll('.carousel-slide');
+        track.dataset.index = '0';
+        slides.forEach((slide, i) => slide.classList.toggle('is-active', i === 0));
+        playSafe(track.querySelector('.carousel-slide.is-active video'));
+    });
+}
+
+// Clic sur une vidéo : bascule plein écran
+function handleCarouselVideoClick(video, event) {
+    if (event) event.stopPropagation();
+    const container = video.closest('.vr-carousel-container');
+    if (!container) return;
+
+    if (!container.classList.contains('fullscreen-mode')) {
+        container.classList.add('fullscreen-mode');
+        playSafe(video);
+    } else {
+        container.classList.remove('fullscreen-mode');
+    }
+}
+
+// Flèches : déplacement dans un carrousel précis (1, 2 ou 3)
+function moveCarousel(carouselId, direction, event) {
+    if (event) event.stopPropagation();
+
+    const track = document.getElementById(`vrCarouselTrack${carouselId}`);
+    if (!track) return;
+
+    const slides = Array.from(track.querySelectorAll('.carousel-slide'));
+    if (slides.length === 0) return;
+
+    let index = (Number(track.dataset.index) || 0) + direction;
+    if (index < 0) index = slides.length - 1;
+    else if (index >= slides.length) index = 0;
+    track.dataset.index = String(index);
+
+    // Pause de toutes les vidéos, puis on n'affiche que la slide active
+    slides.forEach((slide, i) => {
+        const v = slide.querySelector('video');
+        if (v) v.pause();
+        slide.classList.toggle('is-active', i === index);
+    });
+
+    playSafe(slides[index].querySelector('video'));
+}
+
+// Clavier en plein écran : Échap pour sortir, ← → pour naviguer
+document.addEventListener('keydown', (e) => {
+    const open = document.querySelector('.vr-carousel-container.fullscreen-mode');
+    if (!open) return;
+
+    if (e.key === 'Escape') {
+        open.classList.remove('fullscreen-mode');
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        const id = open.id.replace('vrCarouselContainer', '');
+        moveCarousel(id, e.key === 'ArrowLeft' ? -1 : 1);
+    }
 });
+
+window.moveCarousel = moveCarousel;
+window.handleCarouselVideoClick = handleCarouselVideoClick;

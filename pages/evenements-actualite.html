@@ -1,5 +1,5 @@
-<!-- === 1. LE CONTENU (MAIN) === -->
-<main class="evenements-container">
+<!-- === 1. LE CONTENU === -->
+<section class="evenements-container">
 
     <!-- Lien de réouverture (masqué au départ) -->
     <div id="reopen-link-wrapper" class="reopen-hidden">
@@ -9,7 +9,7 @@
     <!-- Zone de la vidéo interactive et de l'exposition -->
     <div class="actualite-wrapper">
         <div id="video-section" class="video-fullscreen">
-            <button id="close-video-btn" title="Fermer la vidéo">✕</button>
+            <button type="button" id="close-video-btn" title="Fermer la vidéo">✕</button>
             <video id="actu-video" controls autoplay playsinline>
                 <source src="https://MaptDiff.b-cdn.net/Ev%C3%A8nements/ITW%20SEBASTIEN%20V3.mp4" type="video/mp4">
                 Votre navigateur ne prend pas en charge la lecture de vidéos.
@@ -28,13 +28,13 @@
                     <div class="event-details">
                         La Cachotterie, 24 rue du Dr Hénouille, 94230 Cachan<br>
                         <a href="https://maps.google.com/?q=24+rue+du+Dr+H%C3%A9nouille+94230+Cachan" target="_blank"
-                            class="map-link">Voir sur Google Maps 📍</a>
+                            rel="noopener noreferrer" class="map-link">Voir sur Google Maps 📍</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</main>
+</section>
 
 
 <!-- === 2. LE STYLE (CSS) === -->
@@ -45,7 +45,7 @@
         padding: 0px 20px 40px 20px;
     }
 
-    /* Styles du lien cliquable centré sous les boutons */
+    /* Lien cliquable centré (réouverture de la vidéo) */
     #reopen-link-wrapper {
         text-align: center;
         margin-bottom: 30px;
@@ -92,12 +92,16 @@
     .video-fullscreen {
         display: block;
         width: 100%;
-        max-height: 70vh;
     }
 
+    /* La limite de hauteur s'applique à la VIDÉO (et non au conteneur) :
+       elle est réduite en entier, sans que le bas ni les contrôles soient coupés. */
     .video-fullscreen video {
         width: 100%;
         height: auto;
+        max-height: 70vh;
+        max-height: 70dvh;
+        object-fit: contain;
         display: block;
     }
 
@@ -216,6 +220,8 @@
 
 <!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
 <script>
+    // Enveloppé dans une fonction : rien ne fuit dans l'espace global,
+    // donc aucun conflit quand la sous-page est rechargée.
     (function () {
         const video = document.getElementById("actu-video");
         const videoSection = document.getElementById("video-section");
@@ -223,13 +229,16 @@
         const reopenWrapper = document.getElementById("reopen-link-wrapper");
         const reopenBtn = document.getElementById("reopen-video-btn");
 
+        // Lecture "sûre" : le navigateur peut refuser (ex : son non coupé sur Safari)
+        function safePlay() {
+            if (!video) return;
+            const p = video.play();
+            if (p && typeof p.catch === "function") p.catch(() => { });
+        }
+
         function hideVideoShowLink() {
-            if (video) {
-                video.pause();
-            }
-            if (videoSection) {
-                videoSection.classList.add("video-hidden");
-            }
+            if (video) video.pause();
+            if (videoSection) videoSection.classList.add("video-hidden");
             if (reopenWrapper) {
                 reopenWrapper.classList.remove("reopen-hidden");
                 reopenWrapper.classList.add("reopen-visible");
@@ -242,23 +251,15 @@
                 reopenWrapper.classList.remove("reopen-visible");
                 reopenWrapper.classList.add("reopen-hidden");
             }
-            if (videoSection) {
-                videoSection.classList.remove("video-hidden");
-            }
+            if (videoSection) videoSection.classList.remove("video-hidden");
             if (video) {
                 video.currentTime = 0;
-                video.play();
+                safePlay();
             }
         }
 
-        if (video) {
-            video.addEventListener("ended", hideVideoShowLink);
-        }
-        if (closeBtn) {
-            closeBtn.addEventListener("click", hideVideoShowLink);
-        }
-        if (reopenBtn) {
-            reopenBtn.addEventListener("click", showVideoAndPlay);
-        }
+        if (video) video.addEventListener("ended", hideVideoShowLink);
+        if (closeBtn) closeBtn.addEventListener("click", hideVideoShowLink);
+        if (reopenBtn) reopenBtn.addEventListener("click", showVideoAndPlay);
     })();
 </script>
