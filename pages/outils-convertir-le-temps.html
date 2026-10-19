@@ -1,0 +1,389 @@
+<!-- === 1. LE CONTENU === -->
+<!-- Outil repris de l'appli Python "AppliRalentir" (page "Convertir le temps") -->
+<section class="tool-convertir" id="tool-convertir">
+
+    <h2 class="titreConvertir">Convertir le temps</h2>
+
+    <div class="zone2cols">
+
+        <!-- Colonne 1 -->
+        <div class="col1">
+            <label for="cv-sec">Secondes</label>
+            <input id="cv-sec" type="number" min="0">
+
+            <label for="cv-min">Minutes</label>
+            <input id="cv-min" type="number" min="0">
+
+            <label for="cv-hr">Heures</label>
+            <input id="cv-hr" type="number" min="0">
+        </div>
+
+        <!-- Colonne 2 (grisée) -->
+        <div class="col2">
+            <label class="gris" for="cv-day">Jours</label>
+            <input id="cv-day" type="number" min="0" class="gris">
+
+            <label class="gris" for="cv-month">Mois</label>
+            <input id="cv-month" type="number" min="0" class="gris">
+
+            <label class="gris" for="cv-year">Années</label>
+            <input id="cv-year" type="number" min="0" class="gris">
+
+            <label class="gris" for="cv-century">Siècles</label>
+            <input id="cv-century" type="number" min="0" class="gris">
+        </div>
+
+    </div>
+
+    <button type="button" id="cv-btnCalculer">Calculer</button>
+    <button type="button" id="cv-btnClear">Effacer tout</button>
+
+    <div class="resultLine">
+        <span class="egal">=</span>
+        <div id="cv-resultDefault" class="result"></div>
+    </div>
+
+    <h3>Résultat selon l’unité</h3>
+    <div class="unitButtons">
+        <button type="button" data-unit="sec">Secondes</button>
+        <button type="button" data-unit="min">Minutes</button>
+        <button type="button" data-unit="hr">Heures</button>
+        <button type="button" data-unit="day">Jours</button>
+        <button type="button" data-unit="month">Mois</button>
+        <button type="button" data-unit="year">Années</button>
+        <button type="button" data-unit="century">Siècles</button>
+    </div>
+
+    <div class="result2cols">
+        <div id="cv-resultUnitLeft" class="result"></div>
+        <div class="soit">soit :</div>
+        <div id="cv-resultUnitRight" class="result"></div>
+    </div>
+
+</section>
+
+
+<!-- === 2. LE STYLE (CSS) === -->
+<style>
+    /* Tout est limité à .tool-convertir : rien ne déborde sur le reste du site.
+       Le site utilise "box-sizing: border-box", "margin: 0" et "line-height: 1.6" partout ;
+       l'appli d'origine utilisait les valeurs par défaut du navigateur. On les rétablit
+       à l'intérieur de l'outil pour obtenir EXACTEMENT le même rendu. */
+    .tool-convertir {
+        box-sizing: border-box;
+        max-width: 375px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+        color: #000;
+        font-family: Arial, sans-serif;
+        line-height: normal;
+        text-align: center;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .tool-convertir *,
+    .tool-convertir *::before,
+    .tool-convertir *::after {
+        box-sizing: content-box;
+    }
+
+    .tool-convertir button {
+        width: 80%;
+        padding: 10px;
+        margin: 6px auto;
+        font-size: 16px;
+        border-radius: 10px;
+        border: none;
+        background: #ddd;
+        color: #000;
+        cursor: pointer;
+    }
+
+    .tool-convertir input {
+        height: 32px;
+        font-size: 16px;
+        padding: 4px;
+        text-align: center;
+    }
+
+    .tool-convertir .titreConvertir {
+        font-size: 26px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .tool-convertir h3 {
+        margin: 1em 0;
+    }
+
+    .tool-convertir .zone2cols {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .tool-convertir .col1,
+    .tool-convertir .col2 {
+        width: 48%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tool-convertir .col2 {
+        background: #eee;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    .tool-convertir .gris {
+        color: #888;
+    }
+
+    .tool-convertir input.gris {
+        background: #f5f5f5;
+    }
+
+    .tool-convertir #cv-btnCalculer {
+        width: 100px;
+        padding: 10px;
+        margin: 20px auto;
+        font-size: 16px;
+        border-radius: 10px;
+        border: none;
+        background: #ddd;
+        transition: background 0.2s;
+    }
+
+    .tool-convertir #cv-btnClear {
+        width: 120px;
+        padding: 10px;
+        margin: 10px auto;
+        font-size: 16px;
+        border-radius: 10px;
+        border: none;
+        background: #f06a6a;
+        color: white;
+    }
+
+    .tool-convertir .resultLine {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .tool-convertir .egal {
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .tool-convertir .result {
+        background: white;
+        padding: 15px;
+        margin: 10px auto;
+        width: 80%;
+        border-radius: 10px;
+        font-size: 18px;
+    }
+
+    .tool-convertir .unitButtons button {
+        width: auto;
+        padding: 10px 15px;
+        margin: 5px;
+        font-size: 14px;
+    }
+
+    .tool-convertir .unitButtons button.activeUnit {
+        background: #c3d9d5;
+    }
+
+    .tool-convertir .result2cols {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 90%;
+        margin: auto;
+        gap: 10px;
+        /* Au clic sur "Calculer", la page défile jusqu'ici : on laisse la place
+           au bandeau fixe (70px) et à la barre de sous-menus collée en haut */
+        scroll-margin-top: 150px;
+    }
+
+    .tool-convertir .result2cols .result {
+        width: 45%;
+    }
+
+    .tool-convertir .soit {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: black;
+        width: 10%;
+        text-align: center;
+        font-size: 9px;
+    }
+</style>
+
+
+<!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
+<script>
+    // Enveloppé dans une fonction : aucune variable globale (l'appli d'origine en créait),
+    // et tous les écouteurs sont limités à l'outil (le "Entrée" ne se déclenche plus sur tout le site).
+    (function () {
+        const root = document.getElementById('tool-convertir');
+        if (!root) return;
+
+        const FIELDS = ['sec', 'min', 'hr', 'day', 'month', 'year', 'century'];
+        const ORDER = ['century', 'year', 'month', 'day', 'hr', 'min', 'sec'];
+        // Valeur de chaque unité en secondes (mois = 30 jours, année = 365 jours)
+        const UNITS = {
+            century: 100 * 365 * 86400,
+            year: 365 * 86400,
+            month: 30 * 86400,
+            day: 86400,
+            hr: 3600,
+            min: 60,
+            sec: 1
+        };
+
+        const el = (id) => document.getElementById('cv-' + id);
+
+        let totalSeconds = null; // null tant qu'on n'a pas cliqué sur "Calculer"
+        let currentUnit = null;  // unité choisie dans "Résultat selon l'unité"
+
+        function convertTime() {
+            const val = (id) => Number(el(id).value || 0);
+
+            totalSeconds =
+                val('sec') +
+                val('min') * 60 +
+                val('hr') * 3600 +
+                val('day') * 86400 +
+                val('month') * UNITS.month +
+                val('year') * UNITS.year +
+                val('century') * UNITS.century;
+
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = Math.round((totalSeconds % 60) * 100) / 100; // évite 5.300000000000001
+
+            el('resultDefault').innerText = `${h} h, ${m} min, ${s} sec`;
+
+            updateUnitResult();
+
+            // Défilement vers les résultats
+            root.querySelector('.result2cols').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        function setUnit(unit) {
+            currentUnit = unit;
+
+            root.querySelectorAll('.unitButtons button').forEach(btn => {
+                btn.classList.toggle('activeUnit', btn.dataset.unit === unit);
+            });
+
+            updateUnitResult();
+        }
+
+        // Décompose les secondes à partir de l'unité choisie (ex : 2 j 3 h 4 min)
+        function decomposeRelative(seconds, unit) {
+            let s = seconds;
+            const relevantUnits = ORDER.slice(ORDER.indexOf(unit));
+            const parts = [];
+
+            for (const u of relevantUnits) {
+                const value = Math.floor(s / UNITS[u]);
+                s %= UNITS[u];
+
+                if (value > 0) {
+                    let label = '';
+                    switch (u) {
+                        case 'century': label = value + ' siècle' + (value > 1 ? 's' : ''); break;
+                        case 'year': label = value + ' an' + (value > 1 ? 's' : ''); break;
+                        case 'month': label = value + ' mois'; break;
+                        case 'day': label = value + ' j'; break;
+                        case 'hr': label = value + ' h'; break;
+                        case 'min': label = value + ' min'; break;
+                        case 'sec': label = value + ' s'; break;
+                    }
+                    parts.push(label);
+                }
+            }
+
+            return parts.join(' ');
+        }
+
+        function updateUnitResult() {
+            // Rien à afficher tant qu'il n'y a ni calcul ni unité choisie
+            // (l'appli d'origine affichait alors "0.00 undefined")
+            if (totalSeconds === null || !currentUnit) {
+                el('resultUnitLeft').innerText = '';
+                el('resultUnitRight').innerText = '';
+                return;
+            }
+
+            const result = totalSeconds / UNITS[currentUnit];
+
+            // Case de gauche : résultat dans l'unité choisie
+            el('resultUnitLeft').innerText = `${result.toFixed(2)} ${currentUnit}`;
+
+            // Case de droite : décomposition
+            el('resultUnitRight').innerText = decomposeRelative(totalSeconds, currentUnit);
+        }
+
+        // Le bouton "Calculer" devient vert dès qu'un champ est rempli
+        function updateButtonState() {
+            const filled = FIELDS.some(id => el(id).value !== '');
+            el('btnCalculer').style.background = filled ? '#3ac74f' : '#ddd';
+        }
+
+        function clearAll() {
+            FIELDS.forEach(id => { el(id).value = ''; });
+            el('resultDefault').innerText = '';
+            totalSeconds = null; // sinon un clic sur une unité réaffichait l'ancien résultat
+            updateUnitResult();
+            updateButtonState();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- Écouteurs ---
+        FIELDS.forEach(id => el(id).addEventListener('input', updateButtonState));
+
+        el('btnCalculer').addEventListener('click', convertTime);
+        el('btnClear').addEventListener('click', clearAll);
+
+        root.querySelectorAll('.unitButtons button').forEach(btn => {
+            btn.addEventListener('click', () => setUnit(btn.dataset.unit));
+        });
+
+        root.addEventListener('keydown', (e) => {
+            // Entrée dans un champ = lancer le calcul
+            if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+                convertTime();
+                return;
+            }
+
+            // Cmd (ou Ctrl) + flèches = passer d'un champ à l'autre
+            if (!(e.metaKey || e.ctrlKey)) return;
+
+            const index = FIELDS.indexOf((document.activeElement.id || '').replace('cv-', ''));
+            if (index === -1) return;
+
+            if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                const prev = FIELDS[index - 1];
+                if (prev) { e.preventDefault(); el(prev).focus(); }
+            } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                const next = FIELDS[index + 1];
+                if (next) { e.preventDefault(); el(next).focus(); }
+            }
+        });
+    })();
+</script>

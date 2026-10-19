@@ -393,7 +393,8 @@ body.page-mode #main-container {
 
 /* === PAGES PARENTES (galeries, évènements...) : conteneur + barre de sous-menus === */
 .galeries-section-wrapper,
-.evenements-section-wrapper {
+.evenements-section-wrapper,
+.outils-section-wrapper {
     max-width: 1100px;
     margin: 0 auto;
     padding: 0 20px 60px 20px;
@@ -409,7 +410,8 @@ body.page-mode #main-container {
     justify-content: center;
     gap: 15px;
     flex-wrap: wrap;
-    margin: -12px 0 28px; /* le padding de 12px est compensé : les boutons ne bougent pas */
+    margin: -12px 0 28px;
+    /* le padding de 12px est compensé : les boutons ne bougent pas */
     padding: 12px 0;
     background: rgba(17, 17, 17, 0.95);
     -webkit-backdrop-filter: blur(10px);
@@ -472,6 +474,27 @@ body.page-mode #main-container {
     opacity: 1;
 }
 
+/* === OUTILS : sous-pages "en cours de création" (à remplacer par les vrais outils) === */
+.tool-placeholder {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.tool-placeholder h2 {
+    font-family: 'Avenir', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.tool-placeholder p {
+    font-family: 'Avenir', sans-serif;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    color: #777;
+}
+
 /* === GALERIES : conteneur commun === */
 .galerie-container {
     max-width: 1100px;
@@ -516,8 +539,13 @@ body.page-mode #main-container {
 }
 
 @keyframes carouselFade {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .gallery-video {
@@ -532,7 +560,8 @@ body.page-mode #main-container {
 .carousel-slide .gallery-video {
     width: 100%;
     height: auto;
-    aspect-ratio: auto 16 / 9; /* hauteur provisoire avant chargement ; le format réel prend le relais */
+    aspect-ratio: auto 16 / 9;
+    /* hauteur provisoire avant chargement ; le format réel prend le relais */
     max-height: min(78vh, 760px);
     max-height: min(78dvh, 760px);
     object-fit: contain;

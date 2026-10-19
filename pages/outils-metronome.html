@@ -1,0 +1,614 @@
+<!-- === 1. LE CONTENU === -->
+<section class="tool-metro" id="tool-metro">
+
+    <h2 class="titreTool">Métronome</h2>
+
+    <!-- Tempo -->
+    <div class="bloc blocTempo">
+        <div class="bpmValue"><span id="mt-bpm">120</span><small>BPM</small></div>
+
+        <div class="tempoRow">
+            <button type="button" class="roundBtn" id="mt-bpm-minus" aria-label="Ralentir de 1 BPM">&minus;</button>
+            <input type="range" id="mt-bpm-slider" min="30" max="300" value="120" aria-label="Tempo en BPM">
+            <button type="button" class="roundBtn" id="mt-bpm-plus" aria-label="Accélérer de 1 BPM">+</button>
+        </div>
+
+        <button type="button" id="mt-tap">TAP</button>
+        <div class="hint" id="mt-tap-hint">Cliquez 2 fois au rythme voulu</div>
+    </div>
+
+    <!-- Départ / arrêt (lance aussi le chronomètre) -->
+    <button type="button" id="mt-start" class="startBtn">Démarrer</button>
+
+    <!-- Temps, mesures, chronomètre -->
+    <div class="bloc blocMesure">
+        <div class="dots" id="mt-dots" aria-hidden="true"></div>
+        <div class="posLine">
+            Mesure <b id="mt-measure">&ndash;</b> &middot; Temps <b id="mt-beat">&ndash;</b> / <span
+                id="mt-beats-total">4</span>
+        </div>
+        <div class="chrono" id="mt-chrono" aria-label="Chronomètre">00:00.0</div>
+    </div>
+
+    <!-- Réglages -->
+    <div class="bloc blocReglages">
+        <div class="mtLabel">Temps par mesure</div>
+        <div class="stepper">
+            <button type="button" class="roundBtn" id="mt-beats-minus"
+                aria-label="Un temps de moins par mesure">&minus;</button>
+            <span class="stepValue" id="mt-beats">4</span>
+            <button type="button" class="roundBtn" id="mt-beats-plus"
+                aria-label="Un temps de plus par mesure">+</button>
+        </div>
+
+        <div class="mtLabel">Son</div>
+        <div class="sounds">
+            <button type="button" data-sound="metal" aria-pressed="true" class="active">Métallique</button>
+            <button type="button" data-sound="electro" aria-pressed="false">Électronique</button>
+            <button type="button" data-sound="bois" aria-pressed="false">Bois</button>
+        </div>
+
+        <div class="mtLabel">Volume</div>
+        <div class="volRow">
+            <input type="range" id="mt-volume" min="0" max="100" value="70" aria-label="Volume">
+            <span id="mt-vol-val">70 %</span>
+        </div>
+    </div>
+
+</section>
+
+
+<!-- === 2. LE STYLE (CSS) === -->
+<style>
+    /* Même habillage que les autres outils : carte claire de 375px, texte noir, Arial.
+       Tout est limité à .tool-metro ; on rétablit à l'intérieur les valeurs par défaut
+       du navigateur que le CSS global du site modifie (box-sizing, marges, interligne). */
+    .tool-metro {
+        box-sizing: border-box;
+        max-width: 375px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+        color: #000;
+        font-family: Arial, sans-serif;
+        line-height: normal;
+        text-align: center;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .tool-metro *,
+    .tool-metro *::before,
+    .tool-metro *::after {
+        box-sizing: content-box;
+    }
+
+    .tool-metro button {
+        cursor: pointer;
+        border: none;
+        color: #000;
+        touch-action: manipulation;
+        /* pas de zoom au double-tap sur mobile */
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .tool-metro .titreTool {
+        font-size: 26px;
+        margin: 5px 0 14px;
+    }
+
+    .tool-metro .bloc {
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 10px;
+    }
+
+    .tool-metro .blocTempo {
+        background: #f2e9e6;
+    }
+
+    .tool-metro .blocMesure {
+        background: #f7f4e1;
+    }
+
+    .tool-metro .blocReglages {
+        background: #e4f7ea;
+    }
+
+    /* --- Tempo --- */
+    .tool-metro .bpmValue {
+        font-size: 64px;
+        font-weight: bold;
+        line-height: 1.1;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .tool-metro .bpmValue small {
+        font-size: 14px;
+        color: #666;
+        margin-left: 6px;
+    }
+
+    .tool-metro .tempoRow,
+    .tool-metro .stepper,
+    .tool-metro .volRow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .tool-metro .tempoRow {
+        margin-top: 6px;
+    }
+
+    .tool-metro input[type="range"] {
+        flex: 1;
+        min-width: 0;
+        accent-color: #3ac74f;
+        cursor: pointer;
+    }
+
+    .tool-metro .roundBtn {
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: #ddd;
+        font-size: 24px;
+        line-height: 44px;
+        user-select: none;
+    }
+
+    .tool-metro .roundBtn:active {
+        background: #c3d9d5;
+    }
+
+    .tool-metro #mt-tap {
+        width: 120px;
+        padding: 10px;
+        margin: 12px auto 0;
+        font-size: 16px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        border-radius: 10px;
+        background: #ddd;
+        transition: background 0.15s;
+    }
+
+    .tool-metro #mt-tap.flash {
+        background: #c3d9d5;
+    }
+
+    .tool-metro .hint {
+        margin-top: 6px;
+        font-size: 12px;
+        color: #666;
+    }
+
+    /* --- Départ / arrêt --- */
+    .tool-metro .startBtn {
+        display: block;
+        width: 80%;
+        padding: 14px;
+        margin: 0 auto 12px;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 12px;
+        background: #3ac74f;
+        color: #fff;
+        transition: background 0.2s;
+    }
+
+    .tool-metro .startBtn.running {
+        background: #f06a6a;
+    }
+
+    /* --- Temps / mesures / chrono --- */
+    .tool-metro .dots {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        min-height: 18px;
+        margin-bottom: 8px;
+    }
+
+    .tool-metro .dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #e6dfb8;
+        border: 2px solid transparent;
+        transition: background 0.05s;
+    }
+
+    /* le 1er temps (accentué) est cerclé */
+    .tool-metro .dot:first-child {
+        border-color: #8a6d00;
+    }
+
+    .tool-metro .dot.on {
+        background: #b38600;
+    }
+
+    .tool-metro .dot:first-child.on {
+        background: #c41b16;
+        border-color: #c41b16;
+    }
+
+    .tool-metro .posLine {
+        font-size: 16px;
+        margin: 6px 0;
+    }
+
+    .tool-metro .chrono {
+        font-size: 32px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* --- Réglages --- */
+    .tool-metro .mtLabel {
+        margin: 10px 0 4px;
+        font-size: 13px;
+        font-weight: bold;
+        color: #444;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .tool-metro .mtLabel:first-child {
+        margin-top: 0;
+    }
+
+    .tool-metro .stepper {
+        gap: 16px;
+    }
+
+    .tool-metro .stepValue {
+        min-width: 40px;
+        font-size: 26px;
+        font-weight: bold;
+    }
+
+    .tool-metro .sounds {
+        display: flex;
+        gap: 6px;
+    }
+
+    .tool-metro .sounds button {
+        flex: 1;
+        padding: 9px 2px;
+        font-size: 13px;
+        border-radius: 10px;
+        background: #ddd;
+    }
+
+    .tool-metro .sounds button.active {
+        background: #c3d9d5;
+        font-weight: bold;
+    }
+
+    .tool-metro .volRow span {
+        min-width: 44px;
+        text-align: right;
+        font-size: 14px;
+    }
+</style>
+
+
+<!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
+<script>
+    // Métronome : sons synthétisés avec la Web Audio API (aucun fichier audio).
+    // Les clics sont programmés à l'avance sur l'horloge audio (précis), et non avec un simple
+    // setInterval (qui dérive). Tout est dans une fonction : aucune variable globale, et tout
+    // s'arrête de lui-même quand on quitte la page.
+    (function () {
+        const root = document.getElementById('tool-metro');
+        if (!root) return;
+
+        const $ = (id) => document.getElementById('mt-' + id);
+
+        const BPM_MIN = 30, BPM_MAX = 300;
+        const BEATS_MIN = 1, BEATS_MAX = 16;
+        const LOOKAHEAD_MS = 25;     // fréquence de la boucle de programmation
+        const SCHEDULE_AHEAD = 0.12; // on programme les clics jusqu'à 120 ms à l'avance (secondes)
+
+        const state = { bpm: 120, beats: 4, sound: 'metal', volume: 70, running: false };
+
+        let ctx = null, master = null, bus = null, noiseBuf = null;
+        let timer = null, rafId = null;
+        let nextTime = 0, beatIndex = 0, measureNo = 1, t0 = 0;
+        let queue = [];       // clics programmés, en attente d'être affichés
+        let shownBeat = 0;    // temps actuellement allumé (1..n), 0 = aucun
+
+        // ---------------------------------------------------------------- audio
+        function ensureAudio() {
+            if (!ctx) {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return false;
+                ctx = new AC();
+                master = ctx.createGain();
+                master.connect(ctx.destination);
+
+                // Un court bruit blanc, utilisé pour le claquement du son "Bois"
+                noiseBuf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.05), ctx.sampleRate);
+                const data = noiseBuf.getChannelData(0);
+                for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+
+                applyVolume();
+            }
+            if (ctx.state === 'suspended') ctx.resume();
+            return true;
+        }
+
+        function applyVolume() {
+            if (master) master.gain.value = Math.pow(state.volume / 100, 2); // courbe plus naturelle qu'une droite
+        }
+
+        // Enveloppe : attaque quasi instantanée puis décroissance
+        function envelope(gainNode, t, peak, dur) {
+            const g = gainNode.gain;
+            g.setValueAtTime(0.0001, t);
+            g.exponentialRampToValueAtTime(peak, t + 0.002);
+            g.exponentialRampToValueAtTime(0.0001, t + dur);
+        }
+
+        function tone(out, t, type, freq, peak, dur, freqEnd) {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, t);
+            if (freqEnd) osc.frequency.exponentialRampToValueAtTime(freqEnd, t + 0.03);
+            envelope(g, t, peak, dur);
+            osc.connect(g);
+            g.connect(out);
+            osc.start(t);
+            osc.stop(t + dur + 0.02);
+        }
+
+        // Un clic. Le 1er temps de la mesure (accent) est plus aigu et plus fort.
+        function playClick(t, accent, out) {
+            const level = accent ? 1 : 0.65;
+
+            if (state.sound === 'metal') {
+                // Tintement métallique : plusieurs harmoniques "non entières" qui s'éteignent à des vitesses différentes
+                const base = accent ? 2000 : 1500;
+                tone(out, t, 'sine', base, 0.55 * level, 0.16);
+                tone(out, t, 'sine', base * 2.76, 0.30 * level, 0.10);
+                tone(out, t, 'sine', base * 5.4, 0.15 * level, 0.05);
+
+            } else if (state.sound === 'electro') {
+                // Bip électronique : onde carrée très brève
+                tone(out, t, 'square', accent ? 1760 : 1175, 0.25 * level, 0.07);
+
+            } else {
+                // Bois : note courte qui descend + petit claquement de bruit filtré
+                tone(out, t, 'sine', accent ? 1500 : 1050, 0.9 * level, 0.06, accent ? 1000 : 700);
+
+                const noise = ctx.createBufferSource();
+                const filter = ctx.createBiquadFilter();
+                const g = ctx.createGain();
+                noise.buffer = noiseBuf;
+                filter.type = 'bandpass';
+                filter.frequency.value = 1800;
+                filter.Q.value = 3;
+                envelope(g, t, 0.5 * level, 0.03);
+                noise.connect(filter);
+                filter.connect(g);
+                g.connect(out);
+                noise.start(t);
+                noise.stop(t + 0.04);
+            }
+        }
+
+        // Petit aperçu (changement de son, de volume)
+        function preview() {
+            if (state.running || !ensureAudio()) return;
+            playClick(ctx.currentTime + 0.01, true, master);
+        }
+
+        // ---------------------------------------------------------------- cadence
+        function scheduleBeat(t) {
+            if (beatIndex >= state.beats) { beatIndex = 0; measureNo += 1; }
+            playClick(t, beatIndex === 0, bus);
+            queue.push({ time: t, beat: beatIndex + 1, measure: measureNo });
+            beatIndex += 1;
+            nextTime += 60 / state.bpm; // le tempo peut changer en cours de route
+        }
+
+        function scheduler() {
+            if (!root.isConnected) { teardown(); return; } // page quittée : on arrête tout
+
+            // Si l'onglet a été ralenti par le navigateur, on repart proprement au lieu de rattraper en rafale
+            if (nextTime < ctx.currentTime - 0.05) nextTime = ctx.currentTime + 0.05;
+
+            while (nextTime < ctx.currentTime + SCHEDULE_AHEAD) scheduleBeat(nextTime);
+            timer = setTimeout(scheduler, LOOKAHEAD_MS);
+        }
+
+        // Affichage synchronisé sur l'horloge audio (temps allumé, mesure, chrono)
+        function frame() {
+            if (!state.running) return;
+            if (!root.isConnected) { teardown(); return; }
+
+            const now = ctx.currentTime;
+            while (queue.length && queue[0].time <= now) showBeat(queue.shift());
+            setChrono(Math.max(0, now - t0));
+
+            rafId = requestAnimationFrame(frame);
+        }
+
+        function start() {
+            if (!ensureAudio()) {
+                $('tap-hint').textContent = "Audio non disponible sur ce navigateur";
+                return;
+            }
+            bus = ctx.createGain();
+            bus.connect(master);
+
+            beatIndex = 0;
+            measureNo = 1;
+            queue = [];
+            resetDisplay();
+
+            nextTime = ctx.currentTime + 0.08;
+            t0 = nextTime; // le chrono démarre au 1er clic
+            state.running = true;
+            renderRun();
+
+            scheduler();
+            rafId = requestAnimationFrame(frame);
+        }
+
+        // Arrêt : l'affichage reste figé (on peut relire le chrono et la mesure atteinte)
+        function stop() {
+            state.running = false;
+            clearTimeout(timer);
+            cancelAnimationFrame(rafId);
+
+            if (ctx) setChrono(Math.max(0, ctx.currentTime - t0));
+            if (bus) { bus.disconnect(); bus = null; } // coupe aussi les clics déjà programmés
+            queue = [];
+            renderRun();
+        }
+
+        function teardown() {
+            state.running = false;
+            clearTimeout(timer);
+            cancelAnimationFrame(rafId);
+            if (ctx) { ctx.close(); ctx = null; }
+        }
+
+        // ---------------------------------------------------------------- affichage
+        function fmtChrono(sec) {
+            const m = Math.floor(sec / 60);
+            const s = Math.floor(sec % 60);
+            const d = Math.floor((sec * 10) % 10);
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${d}`;
+        }
+
+        function setChrono(sec) { $('chrono').textContent = fmtChrono(sec); }
+
+        function renderDots() {
+            const wrap = $('dots');
+            wrap.innerHTML = '';
+            for (let i = 0; i < state.beats; i++) {
+                const dot = document.createElement('span');
+                dot.className = 'dot' + (i + 1 === shownBeat ? ' on' : '');
+                wrap.appendChild(dot);
+            }
+            $('beats-total').textContent = state.beats;
+        }
+
+        function showBeat(b) {
+            shownBeat = b.beat;
+            $('measure').textContent = b.measure;
+            $('beat').textContent = b.beat;
+            Array.from($('dots').children).forEach((dot, i) => {
+                dot.classList.toggle('on', i + 1 === b.beat);
+            });
+        }
+
+        function resetDisplay() {
+            shownBeat = 0;
+            $('measure').textContent = '\u2013';
+            $('beat').textContent = '\u2013';
+            setChrono(0);
+            renderDots();
+        }
+
+        function renderRun() {
+            const btn = $('start');
+            btn.textContent = state.running ? 'Arrêter' : 'Démarrer';
+            btn.classList.toggle('running', state.running);
+        }
+
+        // ---------------------------------------------------------------- réglages
+        function setBpm(value) {
+            state.bpm = Math.min(BPM_MAX, Math.max(BPM_MIN, Math.round(value)));
+            $('bpm').textContent = state.bpm;
+            $('bpm-slider').value = state.bpm;
+        }
+
+        function setBeats(value) {
+            state.beats = Math.min(BEATS_MAX, Math.max(BEATS_MIN, value));
+            $('beats').textContent = state.beats;
+            renderDots();
+        }
+
+        // Bouton qui répète l'action tant qu'on le maintient appuyé (+ / −)
+        function bindRepeat(btn, step) {
+            let delay = null, repeat = null;
+            const stopRepeat = () => { clearTimeout(delay); clearInterval(repeat); delay = repeat = null; };
+
+            btn.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                step();
+                delay = setTimeout(() => { repeat = setInterval(step, 70); }, 400);
+            });
+            ['pointerup', 'pointerleave', 'pointercancel'].forEach(t => btn.addEventListener(t, stopRepeat));
+            btn.addEventListener('click', (e) => { if (e.detail === 0) step(); }); // clavier (Entrée / Espace)
+        }
+
+        // Tap tempo : 2 clics suffisent (le tempo = l'écart entre les deux) ;
+        // les clics suivants affinent la moyenne (sur les 5 derniers). Pause > 2,5 s = on repart de zéro.
+        let taps = [];
+        function tap() {
+            const now = performance.now();
+            if (taps.length && now - taps[taps.length - 1] > 2500) taps = [];
+            taps.push(now);
+            if (taps.length > 5) taps.shift();
+
+            const btn = $('tap');
+            btn.classList.add('flash');
+            setTimeout(() => btn.classList.remove('flash'), 120);
+
+            if (taps.length < 2) {
+                $('tap-hint').textContent = 'Encore un clic pour fixer le tempo\u2026';
+                return;
+            }
+            const avg = (taps[taps.length - 1] - taps[0]) / (taps.length - 1);
+            const raw = 60000 / avg;
+            setBpm(raw);
+            $('tap-hint').textContent = (raw < BPM_MIN || raw > BPM_MAX)
+                ? `Tempo limité à ${BPM_MIN}\u2013${BPM_MAX} BPM`
+                : `Tempo calculé sur ${taps.length} clics`;
+        }
+
+        // ---------------------------------------------------------------- écouteurs
+        $('start').addEventListener('click', () => (state.running ? stop() : start()));
+
+        $('bpm-slider').addEventListener('input', (e) => setBpm(Number(e.target.value)));
+        bindRepeat($('bpm-minus'), () => setBpm(state.bpm - 1));
+        bindRepeat($('bpm-plus'), () => setBpm(state.bpm + 1));
+        $('tap').addEventListener('click', tap);
+
+        $('beats-minus').addEventListener('click', () => setBeats(state.beats - 1));
+        $('beats-plus').addEventListener('click', () => setBeats(state.beats + 1));
+
+        root.querySelectorAll('.sounds button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.sound = btn.dataset.sound;
+                root.querySelectorAll('.sounds button').forEach(b => {
+                    const on = b === btn;
+                    b.classList.toggle('active', on);
+                    b.setAttribute('aria-pressed', on);
+                });
+                preview(); // on entend le son choisi
+            });
+        });
+
+        $('volume').addEventListener('input', (e) => {
+            state.volume = Number(e.target.value);
+            $('vol-val').textContent = state.volume + ' %';
+            applyVolume();
+        });
+        $('volume').addEventListener('change', preview); // aperçu quand on relâche le curseur
+
+        resetDisplay();
+    })();
+</script>

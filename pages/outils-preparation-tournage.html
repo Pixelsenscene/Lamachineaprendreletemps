@@ -1,0 +1,614 @@
+<!-- === 1. LE CONTENU === -->
+<!-- Outil repris de l'appli Python "AppliRalentir" (page "Machine à Prendre le Temps") -->
+<section class="tool-prepa" id="tool-prepa" data-mode="none">
+
+    <h2 id="pt-machineTitle" class="pageTitle" role="button" tabindex="0" title="Cliquer pour tout réinitialiser">
+        La Machine<br>
+        à prendre le Temps
+    </h2>
+
+    <div id="mptPage">
+
+        <!-- Zone Tournage -->
+        <div class="bloc" id="pt-blocTournage">
+            <h2 class="titreBloc">Tournage</h2>
+
+            <div class="ligneChamps">
+                <div class="champAvecUnite">
+                    <input type="number" id="pt-t_h" placeholder="heures" min="0" step="any">
+                    <span class="unit" id="pt-t_h_unit"></span>
+                </div>
+                <div class="champAvecUnite">
+                    <input type="number" id="pt-t_m" placeholder="minutes" min="0" step="any">
+                    <span class="unit" id="pt-t_m_unit"></span>
+                </div>
+                <div class="champAvecUnite">
+                    <input type="number" id="pt-t_s" placeholder="secondes" min="0" step="any">
+                    <span class="unit" id="pt-t_s_unit"></span>
+                </div>
+            </div>
+
+            <div class="blinkCalc" id="pt-blink-t" role="button" tabindex="0" hidden>CALCULER</div>
+            <div class="sousTexte" id="pt-t_seconds">(0 seconde)</div>
+        </div>
+
+        <!-- Zone Vitesse avec flèches -->
+        <div class="ligneVitesse3cols">
+
+            <!-- Colonne 1 : flèche ↓ = accélération -->
+            <div class="colVitesse">
+                <div id="pt-flecheGauche" class="fleche" role="button" tabindex="0" aria-label="Accélération">&#8595;
+                </div>
+            </div>
+
+            <!-- Colonne 2 : bloc Vitesse -->
+            <div class="colVitesse">
+                <div class="bloc" id="pt-blocVitesse">
+                    <h2 class="titreBloc">Vitesse</h2>
+
+                    <div id="pt-v_type">(mode)</div>
+
+                    <div class="vitesseInputRow">
+                        <span id="pt-symboleVitesse" class="symboleVitesse">X</span>
+                        <input type="number" id="pt-v_val" placeholder="----" min="0" step="any">
+                    </div>
+
+                    <div class="blinkCalc" id="pt-blink-v" role="button" tabindex="0" hidden>CALCULER</div>
+                </div>
+            </div>
+
+            <!-- Colonne 3 : flèche ↑ = ralentissement -->
+            <div class="colVitesse">
+                <div id="pt-flecheDroite" class="fleche" role="button" tabindex="0" aria-label="Ralentissement">&#8593;
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Zone Vidéo finale -->
+        <div class="bloc" id="pt-blocVideo">
+            <h2 class="titreBloc">Vidéo finale</h2>
+
+            <div class="ligneChamps">
+                <div class="champAvecUnite">
+                    <input type="number" id="pt-vf_h" placeholder="heures" min="0" step="any">
+                    <span class="unit" id="pt-vf_h_unit"></span>
+                </div>
+                <div class="champAvecUnite">
+                    <input type="number" id="pt-vf_m" placeholder="minutes" min="0" step="any">
+                    <span class="unit" id="pt-vf_m_unit"></span>
+                </div>
+                <div class="champAvecUnite">
+                    <input type="number" id="pt-vf_s" placeholder="secondes" min="0" step="any">
+                    <span class="unit" id="pt-vf_s_unit"></span>
+                </div>
+            </div>
+
+            <div class="blinkCalc" id="pt-blink-vf" role="button" tabindex="0" hidden>CALCULER</div>
+            <div class="sousTexte" id="pt-vf_seconds">(0 seconde)</div>
+        </div>
+
+    </div>
+
+    <!-- Réinitialisation : remet tous les blocs à zéro -->
+    <button type="button" id="pt-btnReset">Réinitialiser</button>
+</section>
+
+
+<!-- === 2. LE STYLE (CSS) === -->
+<style>
+    /* Tout est limité à .tool-prepa. Comme pour "Convertir le temps", on rétablit à l'intérieur
+       de l'outil les valeurs par défaut du navigateur que le CSS du site modifie
+       (box-sizing, marges, interligne) pour obtenir EXACTEMENT le rendu de l'appli d'origine. */
+    .tool-prepa {
+        box-sizing: border-box;
+        max-width: 375px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+        color: #000;
+        font-family: Arial, sans-serif;
+        line-height: normal;
+        text-align: center;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .tool-prepa *,
+    .tool-prepa *::before,
+    .tool-prepa *::after {
+        box-sizing: content-box;
+    }
+
+    .tool-prepa input {
+        height: 32px;
+        font-size: 16px;
+        padding: 4px;
+        text-align: center;
+    }
+
+    /* Titre (cliquable : réinitialise tout) */
+    .tool-prepa #pt-machineTitle {
+        font-size: 22px;
+        font-weight: bold;
+        text-align: center;
+        margin: 0 0 20px 0;
+        padding: 0;
+        line-height: 1.2;
+        cursor: pointer;
+    }
+
+    .tool-prepa #pt-machineTitle.animatePulse {
+        animation: ptTitlePulse 2.2s ease-in-out infinite;
+    }
+
+    @keyframes ptTitlePulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.03);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .tool-prepa #mptPage {
+        max-width: 375px;
+        margin: 0 auto;
+    }
+
+    /* --- Blocs : couleur pâle par défaut, couleur marquée quand le bloc est "actif" (.strong) ---
+       La bordure de 4px existe toujours (transparente au repos) : les blocs ne "sautent" plus
+       de 8px quand ils s'allument. */
+    .tool-prepa .bloc {
+        background: #eee;
+        padding: 10px;
+        margin-bottom: 12px;
+        border-radius: 10px;
+        border: 4px solid transparent;
+        transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .tool-prepa .titreBloc {
+        font-size: 22px;
+        margin: 5px 0;
+        text-align: center;
+    }
+
+    .tool-prepa #pt-blocTournage {
+        background: #e4f7ea;
+        margin-top: 0;
+    }
+
+    .tool-prepa #pt-blocVideo {
+        background: #f7f4e1;
+    }
+
+    .tool-prepa #pt-blocVitesse {
+        background: #f2e9e6;
+    }
+
+    .tool-prepa #pt-blocTournage.strong {
+        background: #bae0c6;
+        border-color: #7aa88c;
+        font-weight: bold;
+    }
+
+    .tool-prepa #pt-blocVideo.strong {
+        background: #f7e9a0;
+        border-color: #c9b86f;
+        font-weight: bold;
+    }
+
+    .tool-prepa[data-mode="accel"] #pt-blocVitesse.strong {
+        background: #ed8882;
+        border-color: #b84f49;
+        color: white;
+        font-weight: bold;
+    }
+
+    .tool-prepa[data-mode="ralent"] #pt-blocVitesse.strong {
+        background: #86a8e3;
+        border-color: #4a6fb0;
+        color: white;
+        font-weight: bold;
+    }
+
+    /* Vitesse renseignée mais mode pas encore choisi : ton neutre */
+    .tool-prepa[data-mode="none"] #pt-blocVitesse.strong {
+        background: #e2d5d0;
+        border-color: #a89a94;
+        font-weight: bold;
+    }
+
+    /* --- Bouton de réinitialisation (même style que "Effacer tout" de Convertir le temps) --- */
+    .tool-prepa #pt-btnReset {
+        width: 140px;
+        padding: 10px;
+        margin: 10px auto 0;
+        font-size: 16px;
+        border-radius: 10px;
+        border: none;
+        background: #f06a6a;
+        color: white;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .tool-prepa #pt-btnReset:hover {
+        background: #e85a5a;
+    }
+
+    /* --- Champs h / min / s --- */
+    .tool-prepa .ligneChamps {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .tool-prepa .champAvecUnite {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 90px;
+    }
+
+    .tool-prepa .champAvecUnite input {
+        width: 55px;
+        height: 32px;
+        font-size: 16px;
+        padding: 4px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        flex-shrink: 0;
+    }
+
+    .tool-prepa .champAvecUnite input::placeholder {
+        font-size: 11px;
+        color: #bbb;
+        opacity: 1;
+    }
+
+    .tool-prepa .unit {
+        font-weight: bold;
+        color: #444;
+        min-width: 22px;
+        text-align: left;
+    }
+
+    .tool-prepa .sousTexte {
+        font-size: 12px;
+        color: #666;
+        margin-top: 10px;
+        margin-bottom: -4px;
+        text-align: center;
+    }
+
+    /* --- Bouton CALCULER clignotant (une ligne à part, sous les champs) --- */
+    .tool-prepa .blinkCalc {
+        box-sizing: border-box;
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-top: 8px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        color: red;
+        font-weight: bold;
+        cursor: pointer;
+        animation: ptBlink 0.8s infinite;
+    }
+
+    .tool-prepa .blinkCalc[hidden] {
+        display: none;
+    }
+
+    @keyframes ptBlink {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.2;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    /* --- Ligne Vitesse : flèche / bloc / flèche --- */
+    .tool-prepa .ligneVitesse3cols {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+        align-items: center;
+        width: 100%;
+    }
+
+    .tool-prepa .colVitesse {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .tool-prepa #pt-blocVitesse {
+        width: 100%;
+        margin: 10px auto;
+        min-height: 90px;
+        padding: 12px;
+    }
+
+    .tool-prepa .fleche {
+        font-size: 40px;
+        color: #999;
+        font-weight: 300;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        user-select: none;
+    }
+
+    .tool-prepa[data-mode="accel"] #pt-flecheGauche {
+        font-size: 80px;
+        color: #c41b16;
+        font-weight: 900;
+        transform: scale(1.1);
+    }
+
+    .tool-prepa[data-mode="ralent"] #pt-flecheDroite {
+        font-size: 80px;
+        color: #0d52bf;
+        font-weight: 900;
+        transform: scale(1.1);
+    }
+
+    .tool-prepa #pt-v_type {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 6px;
+        text-align: center;
+    }
+
+    .tool-prepa[data-mode="accel"] #pt-v_type {
+        color: #c41b16;
+    }
+
+    .tool-prepa[data-mode="ralent"] #pt-v_type {
+        color: #0d52bf;
+    }
+
+    .tool-prepa .vitesseInputRow {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .tool-prepa #pt-v_val {
+        width: 80px;
+        text-align: center;
+        font-size: 20px;
+        padding: 4px 6px;
+    }
+
+    .tool-prepa .symboleVitesse {
+        font-size: 22px;
+        font-weight: bold;
+        padding-right: 4px;
+    }
+
+    .tool-prepa[data-mode="accel"] .symboleVitesse {
+        color: #b84f49;
+    }
+
+    .tool-prepa[data-mode="ralent"] .symboleVitesse {
+        color: #4a6fb0;
+    }
+</style>
+
+
+<!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
+<script>
+    // Logique de l'appli d'origine, réorganisée autour d'UN SEUL état et d'UNE SEULE fonction
+    // d'affichage (render) : plus de couleurs modifiées à plusieurs endroits, plus de variables
+    // globales, plus de bouton CALCULER recréé à chaque saisie.
+    //
+    // Principe : 3 blocs (Tournage "t", Vitesse "v", Vidéo finale "vf"). Quand 2 blocs sont
+    // saisis par l'utilisateur, le 3e est calculé :
+    //   • Tournage + Vitesse   → Vidéo finale  (accélération : vidéo = tournage ÷ vitesse)
+    //   • Vidéo finale + Vitesse → Tournage    (ralentissement : tournage = vidéo × vitesse)
+    //   • Tournage + Vidéo finale → Vitesse    (vitesse = tournage ÷ vidéo)
+    (function () {
+        const root = document.getElementById('tool-prepa');
+        if (!root) return;
+
+        const $ = (id) => document.getElementById('pt-' + id);
+
+        const BLOCS = { t: 'blocTournage', v: 'blocVitesse', vf: 'blocVideo' };
+        const CHAMPS = { t: ['t_h', 't_m', 't_s'], v: ['v_val'], vf: ['vf_h', 'vf_m', 'vf_s'] };
+        const UNITES = [
+            ['t_h', 't_h_unit', 'H'], ['t_m', 't_m_unit', 'min'], ['t_s', 't_s_unit', 's'],
+            ['vf_h', 'vf_h_unit', 'H'], ['vf_m', 'vf_m_unit', 'min'], ['vf_s', 'vf_s_unit', 's']
+        ];
+
+        const state = {
+            kind: { t: 'empty', v: 'empty', vf: 'empty' }, // 'empty' | 'input' (saisi) | 'result' (calculé)
+            order: [],        // ordre dans lequel les blocs ont été saisis (sert à choisir le mode)
+            mode: null,       // 'accel' | 'ralent' | null
+            computed: false,  // true juste après un CALCULER (résultat à jour)
+            touched: false    // true dès la première saisie
+        };
+
+        // ---------- temps ----------
+        function secondsOf(block) {
+            const [h, m, s] = CHAMPS[block].map(id => Number($(id).value || 0));
+            return h * 3600 + m * 60 + s;
+        }
+
+        function setTime(block, total) {
+            const t = Math.max(0, Math.round(total)); // on arrondit AVANT de découper (plus de "60 s")
+            const [h, m, s] = CHAMPS[block];
+            $(h).value = Math.floor(t / 3600);
+            $(m).value = Math.floor((t % 3600) / 60);
+            $(s).value = t % 60;
+        }
+
+        // Un bloc de temps est "saisi" s'il représente une durée > 0 (les "0" laissés par un
+        // calcul précédent ne comptent pas) ; la vitesse, dès qu'elle n'est pas vide.
+        function isFilled(block) {
+            if (block === 'v') return $('v_val').value !== '';
+            return secondsOf(block) > 0;
+        }
+
+        // ---------- logique ----------
+        // Le bloc à calculer = celui qui reste quand exactement 2 blocs sont saisis
+        function getTarget() {
+            const inputs = Object.keys(BLOCS).filter(b => state.kind[b] === 'input');
+            if (inputs.length !== 2) return null;
+            return Object.keys(BLOCS).find(b => !inputs.includes(b));
+        }
+
+        function applyAutoMode() {
+            const target = getTarget();
+            if (target === 'vf') state.mode = 'accel';
+            else if (target === 't') state.mode = 'ralent';
+            else if (target === 'v') {
+                // Tournage saisi en premier → accélération ; Vidéo finale en premier → ralentissement
+                state.mode = state.order.indexOf('t') < state.order.indexOf('vf') ? 'accel' : 'ralent';
+            }
+        }
+
+        function onUserInput(block) {
+            state.touched = true;
+            state.computed = false;
+
+            if (isFilled(block)) {
+                state.kind[block] = 'input';
+                if (!state.order.includes(block)) state.order.push(block);
+            } else {
+                state.kind[block] = 'empty';
+                state.order = state.order.filter(b => b !== block);
+            }
+
+            applyAutoMode();
+            render();
+        }
+
+        function setMode(mode) {
+            if (state.mode === mode) return;
+            state.mode = mode;
+
+            // Le mode change le calcul de Tournage / Vidéo finale : un résultat déjà affiché devient périmé
+            const hasStaleResult = ['t', 'vf'].some(b => state.kind[b] === 'result');
+            if (hasStaleResult) state.computed = false;
+
+            render();
+        }
+
+        function flashError(block) {
+            const btn = $('blink-' + block);
+            btn.hidden = false;
+            btn.textContent = 'VALEUR À VÉRIFIER';
+            setTimeout(() => { btn.textContent = 'CALCULER'; render(); }, 1800);
+        }
+
+        function compute(target) {
+            const tSec = secondsOf('t');
+            const vfSec = secondsOf('vf');
+            const v = Number($('v_val').value);
+
+            if (target === 'vf') {
+                if (!(v > 0)) return flashError(target);
+                setTime('vf', state.mode === 'ralent' ? tSec * v : tSec / v);
+
+            } else if (target === 't') {
+                if (!(v > 0)) return flashError(target);
+                // Même règle dans les deux sens : accélération = ÷ vitesse, ralentissement = × vitesse
+                setTime('t', state.mode === 'accel' ? vfSec / v : vfSec * v);
+
+            } else { // 'v'
+                if (!(vfSec > 0)) return flashError(target);
+                $('v_val').value = (tSec / vfSec).toFixed(1);
+            }
+
+            state.kind[target] = 'result';
+            state.computed = true;
+            $('machineTitle').classList.add('animatePulse'); // invite à cliquer le titre pour réinitialiser
+            render();
+        }
+
+        function resetAll() {
+            Object.values(CHAMPS).flat().forEach(id => { $(id).value = ''; });
+            state.kind = { t: 'empty', v: 'empty', vf: 'empty' };
+            state.order = [];
+            state.mode = null;
+            state.computed = false;
+            state.touched = false;
+            $('machineTitle').classList.remove('animatePulse');
+            $('t_seconds').textContent = '(0 seconde)';
+            $('vf_seconds').textContent = '(0 seconde)';
+            render();
+        }
+
+        // ---------- affichage ----------
+        function render() {
+            if (state.touched) {
+                $('t_seconds').textContent = `total de secondes = ${Math.round(secondsOf('t'))} s`;
+                $('vf_seconds').textContent = `total de secondes = ${Math.round(secondsOf('vf'))} s`;
+            }
+
+            // Unité (H / min / s) affichée seulement à côté d'une case remplie
+            UNITES.forEach(([inputId, unitId, label]) => {
+                $(unitId).textContent = $(inputId).value === '' ? '' : label;
+            });
+
+            // Blocs "allumés" : saisis, ou calculés ET à jour
+            Object.keys(BLOCS).forEach(b => {
+                const strong = state.kind[b] === 'input' || (state.kind[b] === 'result' && state.computed);
+                $(BLOCS[b]).classList.toggle('strong', strong);
+            });
+
+            // Mode : flèches, libellé, symbole (les couleurs sont gérées en CSS via data-mode)
+            root.dataset.mode = state.mode || 'none';
+            $('v_type').textContent =
+                state.mode === 'accel' ? 'ACCÉLÉRATION' :
+                    state.mode === 'ralent' ? 'RALENTISSEMENT' : '(mode)';
+            $('symboleVitesse').textContent = state.mode === 'ralent' ? '/' : 'X';
+
+            // CALCULER clignote dans le bloc à calculer, tant que le résultat n'est pas à jour
+            const target = getTarget();
+            Object.keys(BLOCS).forEach(b => {
+                $('blink-' + b).hidden = !(target === b && !state.computed);
+            });
+        }
+
+        // ---------- écouteurs ----------
+        Object.keys(CHAMPS).forEach(block => {
+            CHAMPS[block].forEach(id => $(id).addEventListener('input', () => onUserInput(block)));
+        });
+
+        // Un élément "bouton" non natif (div) : clic + Entrée / Espace
+        function onActivate(el, fn) {
+            el.addEventListener('click', fn);
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); }
+            });
+        }
+
+        onActivate($('flecheGauche'), () => setMode('accel'));
+        onActivate($('flecheDroite'), () => setMode('ralent'));
+        onActivate($('machineTitle'), resetAll);
+        $('btnReset').addEventListener('click', () => {
+            resetAll();
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // on revient en haut de la page, comme "Effacer tout"
+        });
+        Object.keys(BLOCS).forEach(b => onActivate($('blink-' + b), () => compute(b)));
+
+        render();
+    })();
+</script>

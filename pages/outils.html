@@ -1,0 +1,32 @@
+<!-- === 1. LE CONTENU === -->
+<section class="outils-section-wrapper">
+
+    <!-- Barre de sous-menus fixe (jamais de fondu ni de mouvement).
+         L'état "active" des boutons est géré par loadSubPage() dans script.js. -->
+    <nav class="sub-nav-buttons">
+        <button type="button" class="sub-btn" data-subpage="outils-convertir-le-temps"
+            onclick="loadSubPage('outils-convertir-le-temps')">Convertir le temps</button>
+        <button type="button" class="sub-btn" data-subpage="outils-metronome"
+            onclick="loadSubPage('outils-metronome')">Métronome</button>
+        <button type="button" class="sub-btn" data-subpage="outils-simulateur-acceleration"
+            onclick="loadSubPage('outils-simulateur-acceleration')">Simulateur d'accélération</button>
+        <button type="button" class="sub-btn" data-subpage="outils-preparation-tournage"
+            onclick="loadSubPage('outils-preparation-tournage')">Préparation tournage</button>
+    </nav>
+
+    <!-- Conteneur de la sous-page (lui subit le fondu au noir de 200ms) -->
+    <div id="sub-page-content" class="sub-page-content"></div>
+
+</section>
+
+<!-- === 2. LE STYLE === -->
+<!-- Le CSS du conteneur et de la barre de sous-menus est dans style.css -->
+
+
+<!-- === 3. LE SCRIPT === -->
+<script>
+    // Au chargement de la page Outils : sous-page demandée par le menu / l'URL
+    // (window.pendingSubPage), sinon "Convertir le temps" par défaut.
+    loadSubPage(window.pendingSubPage || 'outils-convertir-le-temps');
+    window.pendingSubPage = ''; // Reset
+</script>
