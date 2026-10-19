@@ -94,27 +94,104 @@ function loadAndPlayVideo(videoEl, sourceEl, videoData, callback) {
     videoEl.addEventListener('canplay', handleReady, { once: true });
 }
 
-function switchHeroVideo() {
+// --- Points indicateurs (un par vidéo du hero, le point plein = vidéo en cours) ---
+function buildHeroDots(heroSection) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'hero-dots';
+
+    CONFIG.videos.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'hero-dot';
+        dot.dataset.index = String(i);
+        dot.setAttribute('aria-label', `Vidéo ${i + 1} sur ${CONFIG.videos.length}`);
+        wrapper.appendChild(dot);
+    });
+
+    // Un clic sur un point affiche cette vidéo (sans déclencher le clic du hero)
+    wrapper.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dot = e.target.closest('.hero-dot');
+        if (!dot) return;
+        const index = Number(dot.dataset.index);
+        if (index !== currentHeroIndex) showHeroVideo(index);
+    });
+
+    // Les points s'insèrent à la fin du titre, comme des points de suspension.
+    // Le dernier mot du titre et les points sont solidaires (jamais de points seuls
+    // à la ligne si le titre passe sur deux lignes sur mobile).
+    const title = heroSection.querySelector('.hero-title');
+    if (title) {
+        const text = title.textContent.trim();
+        const cut = text.lastIndexOf(' ') + 1;
+        const tail = document.createElement('span');
+        tail.className = 'hero-title-tail';
+        tail.textContent = text.slice(cut);
+        tail.appendChild(wrapper);
+        title.textContent = text.slice(0, cut);
+        title.appendChild(tail);
+    } else {
+        heroSection.appendChild(wrapper);
+    }
+    updateHeroDots();
+}
+
+function updateHeroDots() {
+    document.querySelectorAll('.hero-dot').forEach((dot, i) => {
+        const active = i === currentHeroIndex;
+        dot.classList.toggle('active', active);
+        if (active) dot.setAttribute('aria-current', 'true');
+        else dot.removeAttribute('aria-current');
+    });
+}
+
+// Affiche la vidéo n° "index" du hero, avec fondu au noir.
+// Si c'est déjà la vidéo en cours, on la remet simplement au début (sans la recharger).
+function showHeroVideo(index) {
     if (isTransitioning) return;
     isTransitioning = true;
 
     const heroVideo = document.getElementById('hero-video');
     const heroSource = document.getElementById('hero-source');
+    const data = CONFIG.videos[index];
 
     heroVideo.style.opacity = '0';
 
     setTimeout(() => {
-        currentHeroIndex = (currentHeroIndex + 1) % CONFIG.videos.length;
-        const nextData = CONFIG.videos[currentHeroIndex];
-
-        loadAndPlayVideo(heroVideo, heroSource, nextData, () => {
+        const done = () => {
             setTimeout(() => {
                 isTransitioning = false;
             }, CONFIG.transitionDuration);
-        });
+        };
+
+        if (index === currentHeroIndex) {
+            heroVideo.currentTime = data.customLoop ? data.startTime : 0;
+            const p = heroVideo.play();
+            if (p && typeof p.catch === 'function') p.catch(() => { });
+            setTimeout(() => {
+                heroVideo.style.opacity = '1';
+                done();
+            }, 50);
+        } else {
+            currentHeroIndex = index;
+            updateHeroDots();
+            loadAndPlayVideo(heroVideo, heroSource, data, done);
+        }
     }, CONFIG.transitionDuration);
 }
+
+// Clic sur le hero : vidéo suivante
+function switchHeroVideo() {
+    showHeroVideo((currentHeroIndex + 1) % CONFIG.videos.length);
+}
 window.switchHeroVideo = switchHeroVideo;
+
+// Clic sur le titre : retour à la 1ère vidéo ("Le fil du temps"), depuis son début
+function restartHeroVideo(e) {
+    if (e) e.stopPropagation(); // ne déclenche pas aussi le changement de vidéo du hero
+    showHeroVideo(0);
+}
+window.restartHeroVideo = restartHeroVideo;
 
 function initHero() {
     const heroSection = document.getElementById('hero-section');
@@ -124,6 +201,24 @@ function initHero() {
     if (heroSection) {
         heroSection.classList.add('video-loaded');
         heroSection.addEventListener('click', switchHeroVideo);
+        buildHeroDots(heroSection);
+
+        const heroTitle = heroSection.querySelector('.hero-title');
+        if (heroTitle) heroTitle.addEventListener('click', restartHeroVideo);
+
+        // La vidéo du hero se met en pause quand la moitié a disparu à l'écran, et reprend
+        // quand elle redevient à moitié visible : l'image figée est celle qu'on a vue en partant,
+        // et la lecture repart au moment où on la revoit.
+        if ('IntersectionObserver' in window && heroVideo) {
+            new IntersectionObserver(([entry]) => {
+                if (entry.intersectionRatio < 0.5) {
+                    heroVideo.pause();
+                } else if (!body.classList.contains('page-mode')) {
+                    const p = heroVideo.play();
+                    if (p && typeof p.catch === 'function') p.catch(() => { });
+                }
+            }, { threshold: [0.5] }).observe(heroSection);
+        }
     }
     if (!heroVideo || !heroSource) return;
 
@@ -231,6 +326,7 @@ function injectHTML(container, html) {
     }
 
     initCarousels(container);
+    initMediaObserver(container);
 }
 
 async function loadSubPage(subPageName) {
@@ -252,6 +348,16 @@ async function loadSubPage(subPageName) {
     document.querySelectorAll('.sub-btn').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-subpage') === subPageName);
     });
+
+    // Si la barre de boutons défile (petit écran), on centre le bouton actif
+    const activeBtn = document.querySelector('.sub-btn.active');
+    const bar = activeBtn && activeBtn.parentElement;
+    if (bar && bar.scrollWidth > bar.clientWidth) {
+        bar.scrollTo({
+            left: activeBtn.offsetLeft - (bar.clientWidth - activeBtn.offsetWidth) / 2,
+            behavior: 'smooth'
+        });
+    }
 
     // Garde l'URL et le menu synchronisés (sans ajouter d'entrée à l'historique)
     if (currentActivePage && currentActivePage !== 'accueil') {
@@ -398,10 +504,41 @@ function handleMediaClick(container) {
             });
         }
     } else {
-        container.innerHTML = `<img src="${imgSrc}" alt="${imgAlt}">`;
+        resetMedia(container);
     }
 }
-window.handleMediaClick = handleMediaClick; // appelée par onclick="" dans accueil.html
+window.handleMediaClick = handleMediaClick;
+
+// Remet l'image à la place de la vidéo (arrête la lecture et libère la vidéo)
+function resetMedia(container) {
+    if (!container.querySelector('video')) return; // déjà sur l'image
+    const imgSrc = container.getAttribute('data-img');
+    const imgAlt = container.getAttribute('data-alt') || '';
+    container.innerHTML = `<img src="${imgSrc}" alt="${imgAlt}">`;
+}
+
+// Quand un bloc sort de l'écran (moins de 10% visible), sa vidéo s'arrête et l'image revient :
+// aucune vidéo ne tourne "dans le vide" hors de la zone affichée.
+const MEDIA_MIN_VISIBLE = 0.1;
+let mediaObserver = null;
+
+function initMediaObserver(root) {
+    if (!('IntersectionObserver' in window)) return;
+
+    if (!mediaObserver) {
+        mediaObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting || entry.intersectionRatio < MEDIA_MIN_VISIBLE) {
+                    resetMedia(entry.target);
+                }
+            });
+        }, { threshold: [0, MEDIA_MIN_VISIBLE] });
+    }
+
+    // Nouvelle page principale : on oublie les anciens blocs avant d'observer les nouveaux
+    if (root === pageContainer) mediaObserver.disconnect();
+    root.querySelectorAll('.media-container').forEach(c => mediaObserver.observe(c));
+} // appelée par onclick="" dans accueil.html
 
 // Centrage vertical d'un bloc dans l'espace sous le bandeau
 function scrollToBlockCentered(targetBlock) {
@@ -562,14 +699,76 @@ function playSafe(video) {
     }
 }
 
+// --- Chargement économe : une vidéo n'est téléchargée que si elle est affichée ---
+// Les vidéos sont en preload="none" (rien ne part au chargement de la page). Un carrousel ne
+// charge et ne lit sa vidéo active que lorsqu'il est proche de l'écran, et la met en pause
+// dès qu'il en est éloigné.
+let carouselObserver = null;
+const CAROUSEL_LOAD_MARGIN = '300px 0px'; // démarre un peu AVANT que le carrousel soit visible
+
+function activeCarouselVideo(container) {
+    return container.querySelector('.carousel-slide.is-active video');
+}
+
+// Après le démarrage de la vidéo active, on précharge seulement les métadonnées de la suivante
+// (changement de slide plus rapide, sans télécharger toute la vidéo).
+function prefetchNextSlide(container) {
+    const track = container.querySelector('.carousel-track');
+    if (!track) return;
+    const slides = track.querySelectorAll('.carousel-slide');
+    if (slides.length < 2) return;
+
+    const next = slides[((Number(track.dataset.index) || 0) + 1) % slides.length];
+    const v = next && next.querySelector('video');
+    if (v && !v.dataset.prefetched && v.preload === 'none') {
+        v.dataset.prefetched = '1';
+        v.preload = 'metadata';
+        v.load();
+    }
+}
+
+function startActiveSlide(container) {
+    const video = activeCarouselVideo(container);
+    if (!video) return;
+    playSafe(video);
+    video.addEventListener('playing', () => prefetchNextSlide(container), { once: true });
+}
+
 // Appelée après chaque injection de page / sous-page
 function initCarousels(root) {
-    root.querySelectorAll('.carousel-track').forEach(track => {
-        const slides = track.querySelectorAll('.carousel-slide');
+    const containers = root.querySelectorAll('.vr-carousel-container');
+    if (containers.length === 0) return;
+
+    containers.forEach(container => {
+        const track = container.querySelector('.carousel-track');
+        if (!track) return;
         track.dataset.index = '0';
-        slides.forEach((slide, i) => slide.classList.toggle('is-active', i === 0));
-        playSafe(track.querySelector('.carousel-slide.is-active video'));
+        track.querySelectorAll('.carousel-slide').forEach((slide, i) => {
+            slide.classList.toggle('is-active', i === 0);
+        });
     });
+
+    if (!('IntersectionObserver' in window)) {
+        containers.forEach(startActiveSlide); // repli : ancien comportement
+        return;
+    }
+
+    if (!carouselObserver) {
+        carouselObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const container = entry.target;
+                if (entry.isIntersecting) {
+                    startActiveSlide(container);
+                } else if (!container.classList.contains('fullscreen-mode')) {
+                    const video = activeCarouselVideo(container);
+                    if (video) video.pause();
+                }
+            });
+        }, { rootMargin: CAROUSEL_LOAD_MARGIN });
+    }
+
+    carouselObserver.disconnect(); // oublie les carrousels de la sous-page précédente
+    containers.forEach(c => carouselObserver.observe(c));
 }
 
 // Clic sur une vidéo : bascule plein écran
@@ -608,7 +807,7 @@ function moveCarousel(carouselId, direction, event) {
         slide.classList.toggle('is-active', i === index);
     });
 
-    playSafe(slides[index].querySelector('video'));
+    startActiveSlide(track.closest('.vr-carousel-container'));
 }
 
 // Clavier en plein écran : Échap pour sortir, ← → pour naviguer
