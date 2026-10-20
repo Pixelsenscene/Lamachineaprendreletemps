@@ -56,11 +56,11 @@
     <!-- Section Vidéo d'Accueil (cliquable pour changer de vidéo : écouteur dans script.js) -->
     <section id="hero-section" class="video-loaded" title="Cliquez pour changer de vidéo">
         <div class="video-container">
-            <video id="hero-video" autoplay muted playsinline preload="auto" disablePictureInPicture
+            <video id="hero-video" muted playsinline preload="auto" disablePictureInPicture
                 controlsList="nodownload noremoteplayback" loop>
-                <source id="hero-source"
-                    src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/LeFilduTemps%20-%20Hiver1-SiteWeb%20MPEG-4.mp4"
-                    type="video/mp4">
+                <!-- L'adresse de la vidéo est définie par script.js (CONFIG.videos) : le navigateur ne la
+                     télécharge qu'UNE fois au démarrage (avant, elle était demandée deux fois). -->
+                <source id="hero-source" type="video/mp4">
                 Votre navigateur ne prend pas en charge la lecture de vidéos.
             </video>
         </div>
@@ -132,6 +132,13 @@
     <main id="main-container">
         <div id="page-content" class="page-content active"></div>
     </main>
+
+    <!-- Pied de page : lien permanent vers les mentions légales (obligatoire sur toutes les pages) -->
+    <footer id="site-footer">
+        <a href="#/mentions-legales" data-page="mentions-legales">Mentions légales &amp; confidentialité</a>
+        <span class="footer-sep">&middot;</span>
+        <span>&copy; Pixels en scène</span>
+    </footer>
 
     <script src="script.js"></script>
 </body>

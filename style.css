@@ -391,6 +391,35 @@ body.page-mode #main-container {
     opacity: 1;
 }
 
+/* --- PIED DE PAGE (lien permanent vers les mentions légales) --- */
+#site-footer {
+    position: relative;
+    z-index: 10;
+    background: #111;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 28px 20px 36px;
+    text-align: center;
+    font-family: 'Avenir', sans-serif;
+    font-size: 0.8rem;
+    color: #777;
+}
+
+#site-footer a {
+    color: #999;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+#site-footer a:hover {
+    color: #fff;
+    border-bottom-color: rgba(255, 255, 255, 0.5);
+}
+
+.footer-sep {
+    margin: 0 8px;
+}
+
 /* === PAGES PARENTES (galeries, évènements...) : conteneur + barre de sous-menus === */
 .galeries-section-wrapper,
 .evenements-section-wrapper,

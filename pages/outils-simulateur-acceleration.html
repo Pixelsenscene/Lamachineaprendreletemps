@@ -1,7 +1,539 @@
 <!-- === 1. LE CONTENU === -->
-<section class="tool-placeholder">
-    <h2>Simulateur d'accélération</h2>
-    <p>Outil en cours de création.</p>
+<section class="tool-simu" id="tool-simu">
+
+    <h2 class="titreTool">Simulateur d'accélération</h2>
+
+    <!-- Vidéo brute : ni commandes, ni pause, ni plein écran.
+         Deux vidéos superposées : la page passe de l'une à l'autre (fondu) quand le curseur
+         change de palier de vitesse. -->
+    <div class="simuStage">
+        <video id="simu-video-a" class="front" muted loop playsinline preload="none" tabindex="-1"
+            disablePictureInPicture disableRemotePlayback controlsList="nodownload nofullscreen noremoteplayback"
+            aria-label="Vidéo de démonstration"></video>
+        <video id="simu-video-b" muted loop playsinline preload="none" tabindex="-1" aria-hidden="true"
+            disablePictureInPicture disableRemotePlayback
+            controlsList="nodownload nofullscreen noremoteplayback"></video>
+
+        <!-- Écran de lancement : disparaît quand la vidéo est prête -->
+        <div class="simuStart" id="simu-start">
+            <button type="button" id="simu-load">Lancer la simulation</button>
+            <p class="simuNote" id="simu-note"></p>
+        </div>
+    </div>
+
+    <!-- Curseur de vitesse -->
+    <div class="bloc blocVitesse">
+        <div class="mtLabel">Vitesse de lecture</div>
+        <div class="speedValue">&times;<span id="simu-speed">1</span></div>
+        <input type="range" id="simu-slider" min="0" max="100" step="0.5" value="0"
+            aria-label="Vitesse de lecture, de ×1 à ×25">
+        <div class="scale"><span>&times;1</span><span>&times;25</span></div>
+        <div class="simuInfo" id="simu-info">&nbsp;</div>
+        <div class="simuFile" id="simu-file"></div>
+    </div>
+
 </section>
 
-<!-- Le style de cette sous-page (.tool-placeholder) est dans style.css -->
+
+<!-- === 2. LE STYLE (CSS) === -->
+<style>
+    /* Même habillage que les autres outils (carte claire, texte noir, Arial), en plus large
+       pour afficher la vidéo en grand. Tout est limité à .tool-simu. */
+    .tool-simu {
+        box-sizing: border-box;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+        color: #000;
+        font-family: Arial, sans-serif;
+        line-height: normal;
+        text-align: center;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .tool-simu *,
+    .tool-simu *::before,
+    .tool-simu *::after {
+        box-sizing: content-box;
+    }
+
+    .tool-simu .titreTool {
+        font-size: 26px;
+        margin: 5px 0 14px;
+    }
+
+    /* --- Vidéo --- */
+    .tool-simu .simuStage {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1080 / 608;
+        /* format de la vidéo : la page ne "saute" pas au chargement */
+        background: #000;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .tool-simu .simuStage video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        opacity: 0;
+        transition: opacity 0.15s linear;
+        /* fondu entre deux paliers */
+        pointer-events: none;
+        /* aucun clic ne peut mettre en pause ou ouvrir un lecteur */
+    }
+
+    .tool-simu .simuStage video.front {
+        opacity: 1;
+    }
+
+    .tool-simu .simuStart {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.85);
+        color: #fff;
+    }
+
+    .tool-simu .simuStart[hidden] {
+        display: none;
+    }
+
+    .tool-simu #simu-load {
+        padding: 14px 28px;
+        font-size: 20px;
+        font-weight: bold;
+        border: none;
+        border-radius: 12px;
+        background: #3ac74f;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    .tool-simu #simu-load:disabled {
+        background: #888;
+        cursor: default;
+    }
+
+    .tool-simu .simuNote {
+        max-width: 460px;
+        font-size: 13px;
+        color: #ccc;
+    }
+
+    /* --- Vitesse --- */
+    .tool-simu .bloc {
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: 10px;
+        background: #f2e9e6;
+    }
+
+    .tool-simu .mtLabel {
+        font-size: 13px;
+        font-weight: bold;
+        color: #444;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .tool-simu .speedValue {
+        margin: 4px 0 8px;
+        font-size: 48px;
+        font-weight: bold;
+        line-height: 1.1;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .tool-simu input[type="range"] {
+        width: 100%;
+        accent-color: #3ac74f;
+        cursor: pointer;
+    }
+
+    .tool-simu .scale {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: #666;
+    }
+
+    .tool-simu .simuInfo {
+        margin-top: 8px;
+        font-size: 13px;
+        color: #555;
+        min-height: 1.2em;
+    }
+
+    .tool-simu .simuFile {
+        margin-top: 2px;
+        font-size: 12px;
+        color: #888;
+    }
+
+    /* Messages vides : aucune place réservée */
+    .tool-simu .simuFile:empty,
+    .tool-simu .simuNote:empty {
+        display: none;
+    }
+</style>
+
+
+<!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
+<script>
+    // Simulateur d'accélération par PALIERS DE VITESSE.
+    // La vidéo existe en 10 versions : la version "×4,2" ne garde qu'une image sur 4,2 de l'originale et se lit
+    // à vitesse normale. Le curseur choisit la version la plus proche de la vitesse voulue, puis ajuste finement
+    // la vitesse de lecture (toujours entre ×0,9 et ×1,6 : un réglage très léger pour le navigateur).
+    // Quand on change de version, la nouvelle est préparée en arrière-plan à la position équivalente,
+    // puis on passe de l'une à l'autre en fondu.
+    // Tout est dans une fonction : aucune variable globale, et tout est nettoyé quand on quitte la page.
+    (function () {
+        const root = document.getElementById('tool-simu');
+        if (!root) return;
+
+        const $ = (id) => document.getElementById('simu-' + id);
+
+        // ---------------------------------------------------------------- réglages
+        const BASE_URL = 'https://MaptDiff.b-cdn.net/RALENTIS%20VR%20paysage/';
+        const FILE_PREFIX = 'ziozio_x';
+        // Les fichiers sont nommés ziozio_x + (vitesse × 100) + ".mp4", par exemple ziozio_x2500.mp4 pour ×25.
+        // (Plusieurs extensions peuvent être listées : la page les essaie dans l'ordre.)
+        const EXTENSIONS = ['mp4'];
+        // Les 10 paliers (doit correspondre aux fichiers envoyés sur Bunny)
+        const LADDER = [1, 1.4, 2, 2.9, 4.2, 6, 8.5, 12, 17, 25];
+        const SPEED_MIN = LADDER[0];
+        const SPEED_MAX = LADDER[LADDER.length - 1];
+        const SOURCE_SECONDS = 7 * 60 + 56; // durée de la vidéo d'origine (7 min 56 s)
+        // 'log'    : chaque pas du curseur multiplie la vitesse (le milieu du curseur = ×5)
+        // 'linear' : proportionnel (le milieu du curseur = ×13)
+        const SCALE = 'log';
+        const AUTO_START = false;           // true : démarrage automatique à l'ouverture de la page
+        const SWITCH_DEBOUNCE_MS = 150;     // attente avant de changer de version quand on déplace le curseur
+        const MIN_RATE = 0.9;               // une version reste utilisée tant que sa vitesse de lecture est dans [0,9 ; 1,6[
+        const MAX_RATE = 1.6;
+        const BOOST_MAX = 4;                // vitesse max du fichier en cours pendant qu'on charge le suivant
+        const LOAD_TIMEOUT_MS = 20000;
+        const SETTLE_DELAY_MS = 700;        // curseur immobile : on passe au palier le plus proche de la vitesse voulue
+        const PREFETCH_DELAY_MS = 1500;     // le palier voisin est préchargé quand le curseur ne bouge plus
+
+        const slider = $('slider');
+        const videos = [$('video-a'), $('video-b')];
+
+        let front = 0;          // vidéo actuellement visible (0 ou 1)
+        let ci = 0;             // palier lu par la vidéo visible
+        let si = -1;            // palier chargé (ou en cours de chargement) dans l'autre vidéo
+        let target = -1;        // palier vers lequel on bascule (-1 = aucun)
+        let token = 0;          // permet d'annuler une bascule devenue inutile
+        let running = false;
+        let extIndex = 0;
+        let lastDir = 1;
+        let lastSlider = 0;
+        let debounceTimer = null;
+        let settleTimer = null;
+        let idleTimer = null;
+        const failed = new Set(); // paliers impossibles à charger
+
+        const activeVideo = () => videos[front];
+        const standbyVideo = () => videos[1 - front];
+        const urlFor = (i) => `${BASE_URL}${FILE_PREFIX}${Math.round(LADDER[i] * 100)}.${EXTENSIONS[extIndex]}`;
+
+        // ---------------------------------------------------------------- vitesse
+        function speedFromSlider(p) {
+            const t = p / 100;
+            return SCALE === 'linear'
+                ? SPEED_MIN + (SPEED_MAX - SPEED_MIN) * t
+                : SPEED_MIN * Math.pow(SPEED_MAX / SPEED_MIN, t);
+        }
+        const currentSpeed = () => speedFromSlider(Number(slider.value));
+
+        function detectNativeMax() {
+            const probe = document.createElement('video');
+            for (const r of [25, 16, 8, 5, 4, 2]) {
+                try {
+                    probe.playbackRate = r;
+                    if (probe.playbackRate === r) return r;
+                } catch (e) { /* refusée : on essaie la suivante */ }
+            }
+            return 1;
+        }
+        const nativeMax = detectNativeMax();
+
+        function setRate(video, r) {
+            const rate = Math.max(0.25, Math.min(r, nativeMax));
+            try {
+                video.defaultPlaybackRate = rate; // le navigateur la remet à chaque changement de source
+                video.playbackRate = rate;
+            } catch (e) { /* vitesse non prise en charge */ }
+        }
+
+        // Palier idéal = le plus grand palier inférieur ou égal à la vitesse voulue (en sautant ceux qui ont échoué)
+        function chooseFile(S) {
+            let idx = 0;
+            for (let i = 0; i < LADDER.length; i++) if (LADDER[i] <= S + 1e-9) idx = i;
+            while (idx > 0 && failed.has(idx)) idx--;
+            return idx;
+        }
+
+        // Position équivalente dans un autre palier : on garde le même moment de la vidéo d'origine
+        function mapTime(t, fromIdx, toIdx, duration) {
+            let m = t * LADDER[fromIdx] / LADDER[toIdx];
+            if (isFinite(duration) && duration > 0) m = m % duration;
+            return m;
+        }
+
+        // ---------------------------------------------------------------- affichage
+        const fmt = (n) => n.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+
+        function fmtDuration(sec) {
+            const m = Math.floor(sec / 60);
+            const s = Math.round(sec % 60);
+            return m > 0 ? `${m} min ${String(s).padStart(2, '0')} s` : `${s} s`;
+        }
+
+        // Zone de message sous le curseur : vide en fonctionnement normal, utilisée uniquement pour signaler une erreur
+        function updateFileInfo(message) {
+            $('file').textContent = message || '';
+        }
+
+        function updateDisplay(S) {
+            $('speed').textContent = fmt(S);
+            $('info').textContent =
+                `La vidéo (${fmtDuration(SOURCE_SECONDS)}) défile en ${fmtDuration(SOURCE_SECONDS / S)} à cette vitesse.`;
+        }
+
+        // ---------------------------------------------------------------- chargement
+        function waitFor(video, events, ms) {
+            return new Promise((resolve, reject) => {
+                const timer = setTimeout(() => finish(new Error('timeout')), ms);
+                const onOk = () => finish();
+                const onErr = () => finish(new Error('media'));
+                function finish(err) {
+                    clearTimeout(timer);
+                    events.forEach(e => video.removeEventListener(e, onOk));
+                    video.removeEventListener('error', onErr);
+                    if (err) reject(err); else resolve();
+                }
+                events.forEach(e => video.addEventListener(e, onOk));
+                video.addEventListener('error', onErr);
+            });
+        }
+
+        // Charge un palier dans une vidéo. Si l'extension ne marche pas, on essaie la suivante.
+        async function loadFile(video, i) {
+            for (; ;) {
+                video.preload = 'auto';
+                video.src = urlFor(i);
+                video.defaultPlaybackRate = 1;
+                video.load();
+                try {
+                    await waitFor(video, ['canplay'], LOAD_TIMEOUT_MS);
+                    return;
+                } catch (e) {
+                    if (e.message === 'media' && extIndex < EXTENSIONS.length - 1) { extIndex++; continue; }
+                    throw e;
+                }
+            }
+        }
+
+        async function seekTo(video, t) {
+            if (Math.abs(video.currentTime - t) < 0.01) return; // aucun déplacement : pas d'événement "seeked"
+            video.currentTime = t;
+            await waitFor(video, ['seeked'], LOAD_TIMEOUT_MS);
+            if (video.readyState < 3) await waitFor(video, ['canplay'], LOAD_TIMEOUT_MS);
+        }
+
+        // Attend qu'une image de la vidéo soit réellement affichée (pour ne pas faire un fondu vers du noir)
+        function framePresented(video) {
+            return new Promise((resolve) => {
+                if (typeof video.requestVideoFrameCallback === 'function') {
+                    video.requestVideoFrameCallback(() => resolve());
+                    setTimeout(resolve, 400); // sécurité
+                } else {
+                    setTimeout(resolve, 80);
+                }
+            });
+        }
+
+        // ---------------------------------------------------------------- changement de palier
+        async function doSwitch(ti) {
+            const my = ++token;
+            target = ti;
+            updateFileInfo();
+
+            const cur = activeVideo();
+            const next = standbyVideo();
+
+            try {
+                // 1. la nouvelle version est chargée dans la vidéo "de réserve" (déjà prête si elle a été préchargée)
+                if (si === ti) {
+                    if (next.readyState < 3) await waitFor(next, ['canplay'], LOAD_TIMEOUT_MS);
+                } else {
+                    si = ti;
+                    await loadFile(next, ti);
+                }
+                if (my !== token) return;
+
+                // 2. on se place à la position équivalente, puis on se recale (le temps a avancé pendant le chargement)
+                await seekTo(next, mapTime(cur.currentTime, ci, ti, next.duration));
+                if (my !== token) return;
+                const t2 = mapTime(cur.currentTime, ci, ti, next.duration);
+                if (Math.abs(t2 - next.currentTime) > 0.05) {
+                    await seekTo(next, t2);
+                    if (my !== token) return;
+                }
+
+                // 3. lecture, puis fondu dès qu'une image est affichée
+                setRate(next, currentSpeed() / LADDER[ti]);
+                await next.play();
+                await framePresented(next);
+                if (my !== token) { next.pause(); return; }
+
+                const old = cur;
+                next.classList.add('front');
+                old.classList.remove('front');
+                front = 1 - front;
+                const previous = ci;
+                ci = ti;
+                si = previous;      // l'ancienne version reste chargée : un retour en arrière est instantané
+                target = -1;
+                setTimeout(() => { if (activeVideo() !== old) old.pause(); }, 250);
+
+                applySpeed();
+                updateFileInfo();
+                scheduleIdlePrefetch();
+            } catch (e) {
+                if (my !== token) return;
+                failed.add(ti);
+                si = -1;
+                target = -1;
+                updateFileInfo(`La version \u00d7${fmt(LADDER[ti])} n\u2019a pas pu être chargée.`);
+            }
+        }
+
+        // Le curseur a bougé : faut-il changer de palier ?
+        function applySpeed() {
+            const S = currentSpeed();
+            updateDisplay(S);
+            if (!running) return;
+
+            const r = S / LADDER[ci];
+            const stillOk = r >= MIN_RATE && r < MAX_RATE;
+
+            if (stillOk) {
+                if (target >= 0) { token++; target = -1; } // on est revenu : on annule la bascule en cours
+            } else {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    if (!running) return;
+                    const speed = currentSpeed();
+                    const rr = speed / LADDER[ci];
+                    if (rr >= MIN_RATE && rr < MAX_RATE) return;
+                    const ti = chooseFile(speed);
+                    if (ti !== ci && ti !== target) doSwitch(ti);
+                }, SWITCH_DEBOUNCE_MS);
+            }
+
+            // Vitesse de la vidéo visible. Pendant qu'une autre version se charge, on laisse monter la vitesse
+            // du fichier en cours (jusqu'à ×4) pour que le curseur reste réactif.
+            const waiting = target >= 0 || r >= MAX_RATE || r < MIN_RATE;
+            setRate(activeVideo(), waiting ? Math.min(Math.max(r, 0.25), BOOST_MAX) : r);
+            updateFileInfo();
+            scheduleSettle();
+            scheduleIdlePrefetch();
+        }
+
+        // Curseur immobile : si le palier en cours n'est pas le plus proche de la vitesse voulue
+        // (la tolérance sert surtout à éviter les allers-retours pendant le déplacement), on passe au meilleur.
+        function scheduleSettle() {
+            clearTimeout(settleTimer);
+            settleTimer = setTimeout(() => {
+                if (!running) return;
+                const ti = chooseFile(currentSpeed());
+                if (ti !== ci && ti !== target) doSwitch(ti);
+            }, SETTLE_DELAY_MS);
+        }
+
+        // Quand le curseur ne bouge plus, on précharge le palier voisin dans la direction du mouvement
+        function scheduleIdlePrefetch() {
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => {
+                if (!running || target >= 0) return;
+                const idx = ci + lastDir;
+                if (idx < 0 || idx >= LADDER.length || failed.has(idx) || si === idx) return;
+                si = idx;
+                loadFile(standbyVideo(), idx).catch(() => { si = -1; failed.add(idx); });
+            }, PREFETCH_DELAY_MS);
+        }
+
+        // ---------------------------------------------------------------- lancement
+        async function start() {
+            if (running) return;
+            $('load').disabled = true;
+            $('note').textContent = 'Chargement\u2026';
+
+            const S = currentSpeed();
+            const first = chooseFile(S);
+            const av = activeVideo();
+            try {
+                ci = first;
+                si = -1;
+                await loadFile(av, first);
+                setRate(av, S / LADDER[first]);
+                await av.play();
+                running = true;
+                $('start').hidden = true;
+                applySpeed();
+            } catch (e) {
+                $('load').disabled = false;
+                $('note').textContent =
+                    `Impossible de lire ${FILE_PREFIX}${Math.round(LADDER[first] * 100)}.${EXTENSIONS[extIndex]}. ` +
+                    `Vérifiez que les fichiers sont bien en MP4 (H.264), avec ce nom, dans le bon dossier.`;
+            }
+        }
+
+        // ---------------------------------------------------------------- écouteurs
+        slider.addEventListener('input', () => {
+            const v = Number(slider.value);
+            if (v !== lastSlider) { lastDir = v > lastSlider ? 1 : -1; lastSlider = v; }
+            applySpeed();
+        });
+        videos.forEach(v => v.addEventListener('contextmenu', (e) => e.preventDefault()));
+        $('load').addEventListener('click', start);
+
+        // Onglet masqué : pause ; au retour : la lecture reprend
+        function onVisibility() {
+            if (!root.isConnected) { document.removeEventListener('visibilitychange', onVisibility); return; }
+            if (document.hidden) videos.forEach(v => v.pause());
+            else if (running) activeVideo().play().catch(() => { });
+        }
+        document.addEventListener('visibilitychange', onVisibility);
+
+        // Page quittée : on arrête tout, on coupe les téléchargements et on se désabonne
+        const guard = setInterval(() => {
+            if (root.isConnected) return;
+            clearInterval(guard);
+            clearTimeout(debounceTimer);
+            clearTimeout(settleTimer);
+            clearTimeout(idleTimer);
+            token++;
+            running = false;
+            document.removeEventListener('visibilitychange', onVisibility);
+            videos.forEach(v => { v.pause(); v.removeAttribute('src'); v.load(); });
+        }, 1000);
+
+        updateDisplay(currentSpeed());
+        if (AUTO_START) start();
+    })();
+</script>

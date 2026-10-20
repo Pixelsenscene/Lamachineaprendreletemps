@@ -15,8 +15,9 @@
 const body = document.body;
 const allNavLinks = document.querySelectorAll('#main-header nav a');
 const pageContainer = document.getElementById('page-content');
+const footerLinks = document.querySelectorAll('#site-footer a[data-page]'); // pied de page (mentions légales)
 const validPages = new Set(
-    Array.from(allNavLinks).map(l => l.dataset.page).filter(Boolean)
+    [...Array.from(allNavLinks), ...Array.from(footerLinks)].map(l => l.dataset.page).filter(Boolean)
 );
 
 const FADE_MS = 200; // durée du fondu au noir des pages / sous-pages
@@ -39,10 +40,11 @@ const CONFIG = {
     transitionDuration: 200,
     videos: [
         {
-            src: "https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/LeFilduTemps%20-%20Hiver1-SiteWeb%20MPEG-4.mp4",
-            customLoop: true,
-            startTime: 16,
-            endTime: 106
+            // "Le fil du temps" : fichier allégé (49 Mo), déjà découpé aux bornes de la boucle et sans son.
+            // Il boucle seul (attribut "loop" du <video>) : plus besoin de startTime / endTime.
+            // (L'ancien fichier de 201 Mo reste sur Bunny sous le nom "...Hiver1-SiteWeb MPEG-4.mp4".)
+            src: "https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/LeFilduTemps%20-%20Hiver1-SiteWebok.mp4",
+            customLoop: false
         },
         {
             src: "https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/phare%20StMathieu1%20PL%20web-SiteWeb%20MPEG-4.mp4",
@@ -61,6 +63,22 @@ const CONFIG = {
 
 let currentHeroIndex = 0;
 let isTransitioning = false;
+let heroInView = true; // le hero est-il à l'écran ? (mis à jour par l'observateur ci-dessous)
+
+// Onglet masqué ou oublié : on met en pause les vidéos MUETTES (hero, blocs, carrousels).
+// Une vidéo qui tourne en boucle dans un onglet en arrière-plan continue sinon de télécharger.
+// Les vidéos avec son (lecteur agrandi, vidéo d'actualité) ne sont pas touchées.
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        document.querySelectorAll('video').forEach(v => {
+            if (v.muted && !v.paused) v.pause();
+        });
+    } else if (heroInView && !body.classList.contains('page-mode')) {
+        const heroVideo = document.getElementById('hero-video');
+        const p = heroVideo && heroVideo.play();
+        if (p && typeof p.catch === 'function') p.catch(() => { });
+    }
+});
 
 function loadAndPlayVideo(videoEl, sourceEl, videoData, callback) {
     sourceEl.src = videoData.src;
@@ -211,9 +229,10 @@ function initHero() {
         // et la lecture repart au moment où on la revoit.
         if ('IntersectionObserver' in window && heroVideo) {
             new IntersectionObserver(([entry]) => {
-                if (entry.intersectionRatio < 0.5) {
+                heroInView = entry.intersectionRatio >= 0.5;
+                if (!heroInView) {
                     heroVideo.pause();
-                } else if (!body.classList.contains('page-mode')) {
+                } else if (!body.classList.contains('page-mode') && !document.hidden) {
                     const p = heroVideo.play();
                     if (p && typeof p.catch === 'function') p.catch(() => { });
                 }
@@ -439,6 +458,14 @@ allNavLinks.forEach(link => {
     });
 });
 
+// Liens du pied de page (ex : "Mentions légales")
+footerLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        navigate(link.getAttribute('data-page'), link.getAttribute('data-sub') || '');
+    });
+});
+
 // Boutons précédent / suivant du navigateur (et hash modifié à la main)
 window.addEventListener('popstate', () => {
     const { page, sub } = parseHash();
@@ -617,6 +644,24 @@ window.addEventListener('wheel', (e) => {
     }
 
     // Descente
+    // On repère le bloc affiché. Sur le DERNIER bloc, on laisse le défilement natif descendre
+    // jusqu'au pied de page (mentions légales) au lieu de bloquer la molette.
+    let currentIndex = 0;
+    if (scrollY >= windowHeight / 2) {
+        let minDistance = Infinity;
+
+        blocks.forEach((block, index) => {
+            const rect = block.getBoundingClientRect();
+            const distance = Math.abs(rect.top - 120);
+            if (distance < minDistance) {
+                minDistance = distance;
+                currentIndex = index;
+            }
+        });
+
+        if (currentIndex >= blocks.length - 1) return;
+    }
+
     e.preventDefault();
     isAnimatingScroll = true;
 
@@ -631,25 +676,7 @@ window.addEventListener('wheel', (e) => {
         return;
     }
 
-    let currentIndex = 0;
-    let minDistance = Infinity;
-
-    blocks.forEach((block, index) => {
-        const rect = block.getBoundingClientRect();
-        const distance = Math.abs(rect.top - 120);
-        if (distance < minDistance) {
-            minDistance = distance;
-            currentIndex = index;
-        }
-    });
-
-    if (currentIndex < blocks.length - 1) {
-        scrollToBlockCentered(blocks[currentIndex + 1]);
-    } else {
-        isAnimatingScroll = false;
-        return;
-    }
-
+    scrollToBlockCentered(blocks[currentIndex + 1]);
     setTimeout(() => { isAnimatingScroll = false; }, 800);
 
 }, { passive: false });
