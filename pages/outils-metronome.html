@@ -323,10 +323,53 @@
         let timer = null, rafId = null;
         let nextTime = 0, beatIndex = 0, measureNo = 1, t0 = 0;
         let queue = [];       // clics programmés, en attente d'être affichés
+        let silentAudio = null, silentUrl = null; // piste silencieuse (repli pour les anciens iOS)
         let shownBeat = 0;    // temps actuellement allumé (1..n), 0 = aucun
 
         // ---------------------------------------------------------------- audio
+        // iPhone / iPad : le Web Audio est rangé par défaut sur le canal "sonnerie" et reste MUET quand le
+        // commutateur de sonnerie est sur silencieux (ou quand le son du téléphone est coupé).
+        // On le place sur le canal "média" (comme une vidéo ou de la musique).
+        const IS_IOS = typeof navigator !== 'undefined' && (
+            /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)); // iPad récents
+
+        function silentWavUrl() {
+            const rate = 8000, n = rate; // 1 seconde de silence
+            const buf = new ArrayBuffer(44 + n);
+            const dv = new DataView(buf);
+            const text = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
+            text(0, 'RIFF'); dv.setUint32(4, 36 + n, true); text(8, 'WAVE'); text(12, 'fmt ');
+            dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
+            dv.setUint32(24, rate, true); dv.setUint32(28, rate, true); dv.setUint16(32, 1, true);
+            dv.setUint16(34, 8, true); text(36, 'data'); dv.setUint32(40, n, true);
+            for (let i = 0; i < n; i++) dv.setUint8(44 + i, 128); // 128 = silence en 8 bits
+            return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+        }
+
+        // À appeler depuis un geste de l'utilisateur (clic)
+        function unlockIOSAudio() {
+            try {
+                // iOS 16.4 et plus récent : méthode officielle
+                if (navigator.audioSession) { navigator.audioSession.type = 'playback'; return; }
+            } catch (e) { /* on passe au repli */ }
+
+            // iOS plus ancien : une piste silencieuse jouée en boucle "ouvre" le canal média
+            if (!IS_IOS) return;
+            try {
+                if (!silentAudio) {
+                    silentUrl = silentWavUrl();
+                    silentAudio = new Audio(silentUrl);
+                    silentAudio.loop = true;
+                    silentAudio.setAttribute('x-webkit-airplay', 'deny');
+                }
+                const p = silentAudio.play();
+                if (p && typeof p.catch === 'function') p.catch(() => { });
+            } catch (e) { /* sans conséquence */ }
+        }
+
         function ensureAudio() {
+            unlockIOSAudio();
             if (!ctx) {
                 const AC = window.AudioContext || window.webkitAudioContext;
                 if (!AC) return false;
@@ -462,6 +505,13 @@
 
             scheduler();
             rafId = requestAnimationFrame(frame);
+
+            // Si l'audio reste bloqué (téléphone en silencieux, onglet restreint...), on prévient
+            setTimeout(() => {
+                if (state.running && ctx && ctx.state !== 'running') {
+                    $('tap-hint').textContent = 'Pas de son ? Vérifiez le volume et le commutateur de sonnerie.';
+                }
+            }, 700);
         }
 
         // Arrêt : l'affichage reste figé (on peut relire le chrono et la mesure atteinte)
@@ -473,6 +523,7 @@
             if (ctx) setChrono(Math.max(0, ctx.currentTime - t0));
             if (bus) { bus.disconnect(); bus = null; } // coupe aussi les clics déjà programmés
             queue = [];
+            if (silentAudio) silentAudio.pause();
             renderRun();
         }
 
@@ -481,6 +532,8 @@
             clearTimeout(timer);
             cancelAnimationFrame(rafId);
             if (ctx) { ctx.close(); ctx = null; }
+            if (silentAudio) { silentAudio.pause(); silentAudio = null; }
+            if (silentUrl) { URL.revokeObjectURL(silentUrl); silentUrl = null; }
         }
 
         // ---------------------------------------------------------------- affichage
