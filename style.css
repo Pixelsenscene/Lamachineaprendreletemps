@@ -497,6 +497,37 @@ body.page-mode #main-container {
     }
 }
 
+/* === OUTILS : les 5 boutons de sous-menu tiennent sur UNE seule ligne ===
+   (boutons plus petits que ceux des galeries / évènements ; la taille du texte suit la largeur de l'écran) */
+.outils-section-wrapper .sub-nav-buttons {
+    flex-wrap: nowrap;
+    gap: clamp(4px, 0.8vw, 9px);
+}
+
+.outils-section-wrapper .sub-btn {
+    flex: 0 1 auto;
+    white-space: nowrap;
+    padding: 6px clamp(7px, 1.1vw, 13px);
+    font-size: clamp(0.54rem, 0.98vw, 0.72rem);
+    letter-spacing: 0.4px;
+}
+
+/* Écrans étroits : même ligne unique, texte lisible, qui défile horizontalement si elle est plus large que l'écran */
+@media (max-width: 959px) {
+    .outils-section-wrapper .sub-nav-buttons {
+        justify-content: flex-start;
+        overflow-x: auto;
+        scrollbar-width: none;
+        gap: 6px;
+    }
+
+    .outils-section-wrapper .sub-btn {
+        flex: 0 0 auto;
+        padding: 6px 11px;
+        font-size: 0.66rem;
+    }
+}
+
 /* Le fondu au noir ne touche que le contenu de la sous-page */
 .sub-page-content {
     transition: opacity 0.2s ease-in-out;

@@ -348,20 +348,44 @@ function injectHTML(container, html) {
     initMediaObserver(container);
 }
 
+// Outils qui gardent leur affichage ET leur état (temps, réglages, chronomètre en marche...) quand on change d'outil :
+// tous sauf le "Simulateur d'accélération" (vidéos lourdes : il est recréé à chaque visite).
+// Tout est remis à zéro dès qu'on quitte le menu Outils : la page Outils est alors reconstruite.
+const KEEP_ALIVE_TOOLS = new Set([
+    'outils-preparation-tournage',
+    'outils-convertir-le-temps',
+    'outils-metronome',
+    'outils-chronometre'
+]);
+
 async function loadSubPage(subPageName) {
     const subContainer = document.getElementById('sub-page-content');
     if (!subContainer) return;
 
     const requestId = ++subRequestId;
+    const keep = currentActivePage === 'outils' && KEEP_ALIVE_TOOLS.has(subPageName);
+    // Un outil déjà ouvert est simplement réaffiché, tel qu'on l'a laissé (pas de rechargement)
+    const kept = keep ? Array.from(subContainer.children).find(c => c.dataset.keep === subPageName) : null;
     subContainer.style.opacity = '0';
 
     // Le chargement et le fondu au noir se font en parallèle
-    const [html] = await Promise.all([fetchHTML(`pages/${subPageName}.html`), wait(FADE_MS)]);
+    const [html] = await Promise.all([kept ? '' : fetchHTML(`pages/${subPageName}.html`), wait(FADE_MS)]);
 
     // Un clic plus récent a pris le relais (ou la page a changé) : on abandonne
     if (requestId !== subRequestId || !subContainer.isConnected) return;
 
-    injectHTML(subContainer, html);
+    // Ce qui n'est pas conservé (le simulateur) est supprimé ; les outils conservés restent en place, cachés
+    Array.from(subContainer.children).forEach(c => { if (!c.dataset.keep) c.remove(); });
+    Array.from(subContainer.children).forEach(c => { c.hidden = true; });
+
+    let holder = kept;
+    if (!holder) {
+        holder = document.createElement('div');
+        if (keep) holder.dataset.keep = subPageName;
+        subContainer.appendChild(holder);
+        injectHTML(holder, html);
+    }
+    holder.hidden = false;
     subContainer.style.opacity = '1';
 
     document.querySelectorAll('.sub-btn').forEach(btn => {
@@ -412,6 +436,13 @@ async function loadPageContent(pageName) {
 // ---------------------------------------------------------------------
 function navigate(page, sub = '', { push = true } = {}) {
     if (!validPages.has(page)) { page = 'accueil'; sub = ''; }
+
+    // Déjà dans Outils et clic sur le menu "Outils" : on garde l'outil affiché, avec son état.
+    // La remise à zéro n'a lieu qu'après être passé par un autre menu.
+    if (!sub && page === 'outils' && page === currentActivePage && document.getElementById('sub-page-content')) {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        return;
+    }
 
     setActiveNav(page, sub);
     window.scrollTo({ top: 0, behavior: 'instant' });

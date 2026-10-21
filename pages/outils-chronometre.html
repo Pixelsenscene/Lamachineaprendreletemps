@@ -61,14 +61,36 @@
         <div class="panel" id="ch-timer" hidden>
             <h2 class="titreTool timerTitle" id="ch-timer-title" role="button" tabindex="0">Timer</h2>
 
-            <div class="display" role="timer" aria-label="Timer">
-                <div class="cell"><span class="digits" id="ch-rh">00</span><span class="ulab">h</span></div>
-                <span class="sep">:</span>
-                <div class="cell"><span class="digits" id="ch-rm">00</span><span class="ulab">min</span></div>
-                <span class="sep">:</span>
-                <div class="cell"><span class="digits" id="ch-rs">00</span><span class="ulab">s</span></div>
-                <span class="sep">:</span>
-                <div class="cell"><span class="digits" id="ch-rc">00</span><span class="ulab">cs</span></div>
+            <!-- Bloc des deux décomptes (encadré en blanc dans la vue "Timer" seule) :
+                 en haut le décompte TOTAL, dessous le décompte INTERMÉDIAIRE (temps restant avant le point suivant). -->
+            <div class="timerBox" id="ch-timerbox">
+                <div class="interCap totalCap" id="ch-totalcap" hidden>décompte total</div>
+
+                <div class="display" role="timer" aria-label="Timer">
+                    <div class="cell"><span class="digits" id="ch-rh">00</span><span class="ulab">h</span></div>
+                    <span class="sep">:</span>
+                    <div class="cell"><span class="digits" id="ch-rm">00</span><span class="ulab">min</span></div>
+                    <span class="sep">:</span>
+                    <div class="cell"><span class="digits" id="ch-rs">00</span><span class="ulab">s</span></div>
+                    <span class="sep">:</span>
+                    <div class="cell"><span class="digits" id="ch-rc">00</span><span class="ulab">cs</span></div>
+                </div>
+
+                <div class="interBlock" id="ch-interblock" hidden>
+                    <div class="display small" role="timer"
+                        aria-label="Décompte intermédiaire : temps restant avant le point suivant">
+                        <div class="cell"><span class="digits" id="ch-ih">--</span><span class="ulab">h</span></div>
+                        <span class="sep">:</span>
+                        <div class="cell"><span class="digits" id="ch-im">--</span><span class="ulab">min</span></div>
+                        <span class="sep">:</span>
+                        <div class="cell"><span class="digits" id="ch-is">--</span><span class="ulab">s</span></div>
+                        <span class="sep">:</span>
+                        <div class="cell"><span class="digits" id="ch-ic">--</span><span class="ulab">cs</span></div>
+                    </div>
+                    <!-- d'où l'on vient, et où l'on va -->
+                    <div class="interCap" id="ch-intercap1"></div>
+                    <div class="interCap" id="ch-intercap2"></div>
+                </div>
             </div>
 
             <!-- Boutons du Timer (vue "Timer" seule) : remise au début (rouge) / lancer-pause (vert) / flèches = temps intermédiaires -->
@@ -76,7 +98,7 @@
                 <div class="ctl side">
                     <button type="button" id="ch-treset" class="round red"
                         aria-label="Remise au début du timer"></button>
-                    <span class="sub">remise au début</span>
+                    <span class="sub" id="ch-treset-sub">remise au début</span>
                 </div>
                 <div class="ctl main">
                     <button type="button" id="ch-tstart" class="rect green"
@@ -726,6 +748,69 @@
         box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.28);
     }
 
+    /* --- Bloc des deux décomptes : encadré blanc dans la vue "Timer" seule (sans cadre dans les modes) --- */
+    .tool-chrono.v-timer .timerBox {
+        margin-bottom: 22px;
+        padding: 14px 12px 12px;
+        border: 1px solid #fff;
+        border-radius: 12px;
+    }
+
+    .tool-chrono.v-timer .timerBox>.display {
+        margin-bottom: 12px;
+    }
+
+    .tool-chrono .totalCap {
+        margin-bottom: 6px;
+    }
+
+    .tool-chrono .totalCap[hidden] {
+        display: none;
+    }
+
+    /* --- Décompte intermédiaire (vue Timer seule) --- */
+    .tool-chrono .interBlock {
+        padding-top: 12px;
+        border-top: 1px solid #333;
+    }
+
+    .tool-chrono .interBlock[hidden] {
+        display: none;
+    }
+
+    .tool-chrono .interCap {
+        font-size: 12px;
+        color: #888;
+        letter-spacing: 0.5px;
+    }
+
+    /* les deux lignes "depuis ... / jusqu'à ..." sous le décompte intermédiaire */
+    .tool-chrono .interBlock .interCap {
+        min-height: 1.3em;
+        font-size: 13px;
+        color: #b9b9b9;
+        overflow-wrap: anywhere;
+    }
+
+    .tool-chrono .display.small {
+        margin: 0 0 8px;
+    }
+
+    .tool-chrono .display.small .digits,
+    .tool-chrono .display.small .sep {
+        font-size: 34px;
+        color: #f5a524;
+        /* même orange que la ligne courante dans la liste */
+    }
+
+    .tool-chrono .display.small .sep {
+        opacity: 0.6;
+    }
+
+    .tool-chrono .display.small .ulab {
+        font-size: 10px;
+    }
+
     .tool-chrono .chError {
         margin-top: 16px;
         font-size: 12px;
@@ -768,8 +853,9 @@
     //  • Chronomètre : vert = démarrer-arrêter, orange = temps intermédiaire, rouge = remise à zéro.
     //  • Ralentissement : le chronomètre reste à gauche ; le Timer (à droite) affiche les temps × X.
     //  • Accélération   : le chronomètre passe à droite ; le Timer (à gauche) affiche les temps ÷ X.
-    //  • Un clic sur "Timer" l'affiche seul : c'est alors un COMPTE À REBOURS (lancer / pause / remise au début /
-    //    flèches vers les temps intermédiaires, listés du dernier au premier). "Retour" recharge l'outil.
+    //  • Un clic sur "Timer" l'affiche seul : compte à rebours (lancer / pause / remise au début / flèches
+    //    vers les points). Le Timer parcourt la liste du point 1 (départ) vers le point final (fin), dans l'ordre du chronomètre.
+    //    "Retour" ramène au mode d'où l'on vient (sans rien remettre à zéro).
     (function () {
         const root = document.getElementById('tool-chrono');
         if (!root) return;
@@ -778,6 +864,7 @@
 
         const MAX_LAPS = 30;            // nombre maximum de temps intermédiaires (sans compter le "départ")
         const START_NAME = 'départ';    // nom par défaut de la première ligne
+        const END_NAME = 'fin';         // nom par défaut de la dernière ligne (temps où le chronomètre a été arrêté)
         const CONFIRM_MS = 3000;        // délai pour confirmer une remise à zéro qui efface des temps nommés
         const FADE_MS = 1000;           // apparition en fondu du Timer
         const MOVE_MS = 600;            // glissement du chronomètre vers sa nouvelle place
@@ -788,6 +875,7 @@
         let accumulated = 0;            // temps déjà écoulé avant le dernier démarrage (ms)
         let laps = [];                  // temps intermédiaires : { ms, name }
         let startName = START_NAME;     // nom de la ligne "départ"
+        let endName = END_NAME;         // nom de la ligne "fin"
         let resetArmed = false;
         let resetTimer = null;
 
@@ -800,14 +888,16 @@
         let tStart = 0;                 // instant du dernier lancement
         let tRunning = false;
         let tLoaded = 0;                // valeur de départ du compte à rebours : la remise au début y revient
-        let frozenTimes = [];           // temps intermédiaires convertis, du PLUS GRAND au plus petit
-        // (dernier temps en premier, "départ" = 0 en dernier)
-        let frozenNums = [];            // numéros d'origine des lignes (1 = départ)
+        let tTotal = 0;                 // durée TOTALE (ms) : le temps affiché au départ, qui décompte jusqu'à 0
+        let frozenTimes = [];           // temps de la liste, convertis, dans l'ORDRE du chronomètre :
+        // "départ" (0) en premier, ..., "fin" en dernier
         let frozenNames = [];
         let timerRows = [];             // lignes (éléments) de la liste du Timer
-        let rowTarget = -2;             // ligne actuellement visée (clignotante)
-        let rowLine = -2;               // ligne actuellement "chargée"
+        let rowLine = -2;               // ligne "courante" (le dernier point atteint), celle qui clignote
         let rowBlink = null;
+        let rowCap = null;              // légendes du décompte intermédiaire (pour ne les réécrire que si elles changent)
+        let timerFrom = 'ralent';       // le mode d'où l'on vient : "Retour" y ramène
+        let hasEndAtEntry = false;      // la liste du Timer se termine-t-elle par la ligne "fin" ?
 
         let rafId = null;
 
@@ -857,8 +947,9 @@
         }
 
         // ---------------------------------------------------------------- affichage
+        // ms = null : on affiche "--" (pas de point devant nous)
         function renderDisplay(prefix, ms) {
-            const p = parts(ms);
+            const p = ms === null ? { h: '--', m: '--', s: '--', c: '--' } : parts(ms);
             ['h', 'm', 's', 'c'].forEach(k => {
                 const el = $(prefix + k);
                 if (el.textContent !== p[k]) el.textContent = p[k];
@@ -870,8 +961,8 @@
             renderDisplay('', ms);
             if (inMode()) renderDisplay('r', convert(ms));      // Timer = copie convertie
             else if (view === 'timer') {
-                renderDisplay('r', timerNow());                    // Timer autonome (compte à rebours)
-                refreshTimerRows();
+                renderDisplay('r', timerNow());                    // décompte TOTAL
+                refreshTimerRows();                                // + décompte INTERMÉDIAIRE, surlignage, flèches
             }
         }
 
@@ -934,6 +1025,9 @@
             return row;
         }
 
+        // La ligne "fin" (dernier temps enregistré) : le temps où le chronomètre a été ARRÊTÉ. Elle n'est affichée qu'à l'arrêt.
+        const hasEndRow = () => !running && laps.length > 0 && accumulated > 0;
+
         // La fenêtre n'apparaît qu'à partir du premier temps intermédiaire
         function renderLaps(scrollToEnd) {
             const box = $('laps');
@@ -945,6 +1039,9 @@
                 laps.forEach((lap, i) => {
                     list.appendChild(makeRow(i + 2, lap.ms, lap.name, 'temps intermédiaire', (v) => { lap.name = v; renderLapsRight(); }));
                 });
+                if (hasEndRow()) {
+                    list.appendChild(makeRow(laps.length + 2, accumulated, endName, END_NAME, (v) => { endName = v; renderLapsRight(); }));
+                }
                 if (scrollToEnd) list.scrollTop = list.scrollHeight;
             }
             renderLapsRight();
@@ -963,6 +1060,7 @@
             laps.forEach((lap, i) => {
                 list.appendChild(makeStaticRow(i + 2, convert(lap.ms), lap.name, 'temps intermédiaire'));
             });
+            if (hasEndRow()) list.appendChild(makeStaticRow(laps.length + 2, convert(accumulated), endName, END_NAME));
             list.scrollTop = $('list').scrollTop; // les deux listes défilent ensemble
         }
 
@@ -978,6 +1076,7 @@
                 ensureLoop();
             }
             renderButtons();
+            if (laps.length > 0) renderLaps(!running); // "fin" apparaît à l'arrêt (et la liste défile jusqu'à elle)
         }
 
         function lap() {
@@ -1005,6 +1104,7 @@
             accumulated = 0;
             laps = [];
             startName = START_NAME;
+            endName = END_NAME;
             renderTime();
             renderLaps(false);
             renderButtons();
@@ -1052,6 +1152,8 @@
             $('ghost').hidden = next === 'timer';
             $('retour-row').hidden = next !== 'timer';
             $('soundrow').hidden = next !== 'timer';        // haut-parleur + volume : vue Timer seule
+            $('interblock').hidden = next !== 'timer';      // décompte intermédiaire : vue Timer seule
+            $('totalcap').hidden = next !== 'timer';        // légende "décompte total" : vue Timer seule
 
             $('mode-ralent').setAttribute('aria-pressed', String(next === 'ralent'));
             $('mode-accel').setAttribute('aria-pressed', String(next === 'accel'));
@@ -1079,20 +1181,28 @@
         }
 
         // ---------------------------------------------------------------- vue "Timer" seule (compte à rebours)
-        // Où se trouve la valeur v dans la liste (décroissante) :
-        //   line   = première ligne (en partant du haut) dont le temps est <= v ;
-        //   onLine = v tombe exactement sur cette ligne ;
-        //   target = ligne VERS LAQUELLE le compte à rebours se dirige (le plus grand temps strictement inférieur à v).
-        function locate(v) {
-            let line = frozenTimes.length;
+        // Le Timer PARCOURT la liste du point 1 (départ) vers le point final ("fin"), dans l'ordre du chronomètre :
+        //  • le décompte TOTAL affiche le temps qui reste jusqu'à la fin : il part de la durée totale et va jusqu'à 0 ;
+        //  • le décompte INTERMÉDIAIRE affiche le temps qui reste avant le point suivant (1/ vers 2/, puis 2/ vers 3/, ...) ;
+        //  • la ligne du dernier point atteint clignote : elle part d'en haut (1/) et descend jusqu'au dernier point.
+        // "Position" = temps déjà écoulé depuis le départ = durée totale - temps restant.
+        const EPS = 0.5; // tolérance (ms) pour dire qu'on est "exactement" sur un point
+
+        // line = dernier point atteint ; next = point suivant (-1 s'il n'y en a plus) ; onLine = on est pile sur "line"
+        function locate(pos) {
+            let line = -1;
             for (let i = 0; i < frozenTimes.length; i++) {
-                if (frozenTimes[i] <= v) { line = i; break; }
+                if (frozenTimes[i] <= pos + EPS) line = i;
             }
-            const onLine = line < frozenTimes.length && frozenTimes[line] === v;
-            let target = onLine ? line + 1 : line;
-            if (v <= 0 || target >= frozenTimes.length) target = -1; // plus rien devant nous
-            return { line: line, onLine: onLine, target: target };
+            const next = (line + 1 < frozenTimes.length) ? line + 1 : -1;
+            const onLine = line >= 0 && Math.abs(frozenTimes[line] - pos) <= EPS;
+            return { line: line, next: next, onLine: onLine };
         }
+
+        const rowDefault = (i) => i === 0 ? START_NAME : (i === frozenTimes.length - 1 && hasEndAtEntry ? END_NAME : 'temps intermédiaire');
+
+        // Nom d'un point dans les légendes : son nom, ou son nom par défaut
+        const pointName = (i) => `${i + 1}/ ${frozenNames[i] || rowDefault(i)}`;
 
         function renderTimerLaps() {
             const box = $('rlaps');
@@ -1101,48 +1211,58 @@
             list.innerHTML = '';
             timerRows = [];
             frozenTimes.forEach((ms, i) => {
-                const row = makeStaticRow(frozenNums[i], ms, frozenNames[i], frozenNums[i] === 1 ? START_NAME : 'temps intermédiaire');
+                const row = makeStaticRow(i + 1, ms, frozenNames[i], rowDefault(i));
                 list.appendChild(row);
                 timerRows.push(row);
             });
-            rowTarget = -2; rowLine = -2; rowBlink = null;
+            rowLine = -2; rowBlink = null; rowCap = null;
             refreshTimerRows();
         }
 
-        // Met en valeur le temps visé (il clignote pendant le compte à rebours) et la ligne éventuellement chargée
+        // Met à jour : le DÉCOMPTE INTERMÉDIAIRE, la ligne qui clignote, la légende et les flèches
         function refreshTimerRows() {
-            const loc = locate(timerNow());
-            if (timerRows.length > 0) {
-                const line = loc.onLine ? loc.line : -1;
+            const pos = tTotal - timerNow();      // temps déjà écoulé depuis le départ
+            const loc = locate(pos);
 
-                if (loc.target !== rowTarget || tRunning !== rowBlink) {
-                    if (rowTarget >= 0 && timerRows[rowTarget]) {
-                        timerRows[rowTarget].classList.remove('target');
-                        timerRows[rowTarget].classList.remove('blink');
-                    }
-                    if (loc.target >= 0) {
-                        const row = timerRows[loc.target];
-                        row.classList.add('target');
-                        row.classList.toggle('blink', tRunning);
-                        // la ligne visée reste visible dans la liste
-                        const list = $('rlist');
-                        if (typeof row.offsetTop === 'number' && list.clientHeight) {
-                            list.scrollTop = Math.max(0, row.offsetTop - list.clientHeight / 2);
-                        }
-                    }
-                    rowTarget = loc.target;
-                    rowBlink = tRunning;
-                }
-                if (line !== rowLine) {
-                    if (rowLine >= 0 && timerRows[rowLine]) timerRows[rowLine].classList.remove('sel');
-                    if (line >= 0) timerRows[line].classList.add('sel');
-                    rowLine = line;
-                }
+            // décompte intermédiaire : temps restant avant le point suivant
+            renderDisplay('i', loc.next >= 0 ? Math.max(0, frozenTimes[loc.next] - pos) : null);
+            // légendes : d'où l'on vient (le dernier point atteint) et où l'on va (le point suivant)
+            const cap1 = loc.line >= 0 ? `depuis ${pointName(loc.line)}` : '';
+            const cap2 = loc.next >= 0 ? `jusqu'à ${pointName(loc.next)}`
+                : (frozenTimes.length ? 'plus de point devant' : 'aucun temps intermédiaire');
+            if (cap1 + '|' + cap2 !== rowCap) {
+                $('intercap1').textContent = cap1;
+                $('intercap2').textContent = cap2;
+                rowCap = cap1 + '|' + cap2;
             }
-            // ▲ = ligne au-dessus (temps plus grand) ; ▼ = ligne en dessous (temps plus petit : celle que vise le rebours)
-            const n = frozenTimes.length;
-            $('tup').disabled = n === 0 || loc.line - 1 < 0;
-            $('tdown').disabled = n === 0 || loc.target < 0;
+
+            // texte sous le bouton rouge : où il ramène
+            const resetTxt = frozenTimes.length === 0 ? 'remise au début'
+                : (!loc.onLine ? 'début de ce segment' : (loc.line > 0 ? 'début du timer' : 'au début'));
+            if ($('treset-sub').textContent !== resetTxt) $('treset-sub').textContent = resetTxt;
+
+            // ligne courante : elle clignote pendant le décompte (surlignée fixe à l'arrêt)
+            if (timerRows.length > 0 && (loc.line !== rowLine || tRunning !== rowBlink)) {
+                if (rowLine >= 0 && timerRows[rowLine]) {
+                    timerRows[rowLine].classList.remove('target');
+                    timerRows[rowLine].classList.remove('blink');
+                }
+                if (loc.line >= 0) {
+                    const row = timerRows[loc.line];
+                    row.classList.add('target');
+                    row.classList.toggle('blink', tRunning);
+                    const list = $('rlist');
+                    if (typeof row.offsetTop === 'number' && list.clientHeight) { // la ligne courante reste visible
+                        list.scrollTop = Math.max(0, row.offsetTop - list.clientHeight / 2);
+                    }
+                }
+                rowLine = loc.line;
+                rowBlink = tRunning;
+            }
+
+            // ▲ = point précédent (ou début du segment en cours) ; ▼ = point suivant
+            $('tup').disabled = frozenTimes.length === 0 || (loc.onLine ? loc.line - 1 : loc.line) < 0;
+            $('tdown').disabled = frozenTimes.length === 0 || loc.next < 0;
         }
 
         function renderTimerButtons() {
@@ -1160,19 +1280,22 @@
             const value = convert(elapsed());
             if (running) { accumulated += now() - startedAt; running = false; renderButtons(); } // le chronomètre caché s'arrête
 
-            // Liste INVERSÉE : le dernier temps intermédiaire devient le premier, le "départ" (0) est tout en bas
-            frozenTimes = []; frozenNums = []; frozenNames = [];
+            // Même ordre que dans le chronomètre : départ, temps intermédiaires, puis "fin" (temps de l'arrêt)
+            frozenTimes = []; frozenNames = [];
+            hasEndAtEntry = false;
             if (laps.length > 0) {
-                for (let i = laps.length - 1; i >= 0; i--) {
-                    frozenTimes.push(convert(laps[i].ms));
-                    frozenNums.push(i + 2);
-                    frozenNames.push(laps[i].name);
-                }
                 frozenTimes.push(0);
-                frozenNums.push(1);
                 frozenNames.push(startName);
+                laps.forEach(l => { frozenTimes.push(convert(l.ms)); frozenNames.push(l.name); });
+                if (accumulated > 0) {
+                    frozenTimes.push(convert(accumulated));
+                    frozenNames.push(endName);
+                    hasEndAtEntry = true;
+                }
             }
 
+            timerFrom = view;     // "Retour" ramènera à ce mode (là où l'on choisit la vitesse)
+            tTotal = value;       // durée totale : le décompte total part de là et va jusqu'à 0
             tBase = value;
             tLoaded = value;
             tRunning = false;
@@ -1207,35 +1330,48 @@
             renderTimerButtons();
         }
 
-        // Remise au début : retour à la valeur de départ (celle affichée à l'entrée, ou le dernier temps chargé)
+        // Remise au début, en deux temps :
+        //  • 1er clic : retour au début du temps intermédiaire en cours (le dernier point atteint) ;
+        //  • 2e clic (on est alors pile sur un point) : retour au début du timer total (le point 1).
         function timerReset() {
+            let target = tTotal; // sans points : retour à la durée totale
+            if (frozenTimes.length > 0) {
+                const loc = locate(tTotal - timerNow());
+                const idx = loc.onLine ? 0 : Math.max(0, loc.line);
+                target = Math.max(0, tTotal - frozenTimes[idx]);
+            }
             tRunning = false;
-            tBase = tLoaded;
+            tBase = target;
+            tLoaded = target;
             renderTimerButtons();
             renderTime();
         }
 
-        // Flèches : l'affichage charge le temps intermédiaire de la ligne au-dessus (▲) ou en dessous (▼)
+        // Flèches : on se place sur un point de la liste. ▲ = point précédent (ou début du segment en cours),
+        // ▼ = point suivant. Le décompte total affiche alors le temps qui reste depuis ce point jusqu'à la fin.
         function timerStep(dir) {
             if (frozenTimes.length === 0) return;
-            const loc = locate(timerNow());
-            const idx = dir < 0 ? loc.line - 1 : loc.target;
+            const pos = tTotal - timerNow();
+            const loc = locate(pos);
+            const idx = dir < 0 ? (loc.onLine ? loc.line - 1 : loc.line) : loc.next;
             if (idx < 0 || idx >= frozenTimes.length) return;
 
-            tBase = frozenTimes[idx];
+            tBase = Math.max(0, tTotal - frozenTimes[idx]);
             tLoaded = tBase;
-            tStart = now(); // si le compte à rebours tourne, il repart à partir de ce temps
+            tStart = now(); // si le compte à rebours tourne, il repart de ce point
             renderTimerButtons();
             renderTime();
         }
 
-        // Retour : recharge l'outil, comme à l'ouverture de la page (avec le chronomètre à zéro)
+        // Retour : on revient à l'étape précédente (le mode Ralentissement / Accélération où l'on règle la vitesse),
+        // sans rien remettre à zéro : le chronomètre, ses temps et la vitesse sont conservés.
         function goBack() {
-            if (typeof window !== 'undefined' && typeof window.loadSubPage === 'function') {
-                window.loadSubPage('outils-chronometre');
-            } else {
-                location.reload();
-            }
+            if (view !== 'timer') return;
+            tRunning = false; // le décompte s'arrête (et le son avec lui)
+            tBase = timerNow();
+            slidePanels(() => applyView(timerFrom));
+            renderTime();
+            renderLapsRight();
         }
 
         // ---------------------------------------------------------------- vitesse : clavier, flèches du champ, roulette
@@ -1292,12 +1428,17 @@
             state: function () {
                 return {
                     running: tRunning, base: tBase, start: tStart,
-                    targets: frozenTimes.length ? frozenTimes : [0]
+                    targets: frozenTimes.length ? frozenTimes.map(function (x) { return tTotal - x; }) : [0]
                 };
             }
         };
 
         // ---------------------------------------------------------------- écouteurs
+        // Le chronomètre d'abord : quoi qu'il arrive ensuite, ses trois boutons fonctionnent.
+        $('start').addEventListener('click', toggle);
+        $('lap').addEventListener('click', lap);
+        $('reset').addEventListener('click', reset);
+
         $('mode-ralent').addEventListener('click', () => setMode('ralent'));
         $('mode-accel').addEventListener('click', () => setMode('accel'));
         $('x').addEventListener('input', onFactorChange);
@@ -1313,218 +1454,321 @@
         $('tdown').addEventListener('click', () => timerStep(1));
         $('retour').addEventListener('click', goBack);
 
-        $('start').addEventListener('click', toggle);
-        $('lap').addEventListener('click', lap);
-        $('reset').addEventListener('click', reset);
-
         renderTime();
         renderLaps(false);
         renderButtons();
-    })();
 
+    })();
 </script>
 
 <script>
-    // Son du Timer : clics de bois aux approches des temps intermédiaires.
-    // Script SÉPARÉ du chronomètre : s'il rencontrait un problème, le chronomètre et le Timer continueraient de fonctionner.
+    // Son du Timer : clics de "bois" aux approches des temps intermédiaires (script séparé du chronomètre :
+    // s'il rencontrait un problème, le chronomètre et le Timer continueraient de fonctionner).
     // Il ne fait que LIRE l'état du compte à rebours (root.chTimer.state()), sans jamais le modifier.
     (function () {
-        const root = document.getElementById('tool-chrono');
-        if (!root) return;
+        var initSound = function (root) {
+            if (!root || root.chSonInit) { return; }
+            root.chSonInit = true;
 
-        const $ = (id) => document.getElementById('ch-' + id);
-        const btn = $('sound');
-        const volBar = $('vol');
-        if (!btn || !volBar) return;
+            function $(id) { return document.getElementById('ch-' + id); }
 
-        const WARN_SECONDS = 10;     // un clic par seconde pendant les 10 s avant chaque temps, accent à la seconde 0
-        const LOOKAHEAD_MS = 150;    // les clics sont programmés à l'avance sur l'horloge audio
-        const POLL_MS = 25;
+            var btn = $('sound');
+            var volBar = $('vol');
+            if (!btn || !volBar) { return; }
 
-        let soundOn = false;         // haut-parleur barré à l'ouverture
-        let volume = Number(volBar.value) || 70;
-        let audioCtx = null, master = null, bus = null, noiseBuf = null;
-        let pollId = null;
-        let lastBase = null, lastStart = null;
-        let done = {};               // clics déjà programmés (clé = valeur du rebours en ms)
+            var WARN_SECONDS = 10;     // un clic par seconde pendant les 10 s avant chaque temps, accent à la seconde 0
+            var LOOKAHEAD_MS = 150;    // les clics sont programmés à l'avance sur l'horloge audio
+            var POLL_MS = 25;
 
-        // iPhone / iPad : le Web Audio est coupé par le commutateur de sonnerie ; on le place sur le canal "média"
-        const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        let silentAudio = null, silentUrl = null;
+            var soundOn = false;       // haut-parleur barré à l'ouverture
+            var volume = Number(volBar.value) || 70;
+            var audioCtx = null;
+            var master = null;
+            var bus = null;
+            var noiseBuf = null;
+            var pollId = null;
+            var lastBase = null;
+            var lastStart = null;
+            var done = {};             // clics déjà programmés (clé = valeur du décompte en ms)
 
-        function unlockIOSAudio() {
-            try {
-                if (navigator.audioSession) { navigator.audioSession.type = 'playback'; return; }
-            } catch (e) { /* repli ci-dessous */ }
-            if (!IS_IOS) return;
-            try {
-                if (!silentAudio) {
-                    const rate = 8000, n = rate;
-                    const buf = new ArrayBuffer(44 + n);
-                    const dv = new DataView(buf);
-                    const text = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
-                    text(0, 'RIFF'); dv.setUint32(4, 36 + n, true); text(8, 'WAVE'); text(12, 'fmt ');
-                    dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
-                    dv.setUint32(24, rate, true); dv.setUint32(28, rate, true); dv.setUint16(32, 1, true);
-                    dv.setUint16(34, 8, true); text(36, 'data'); dv.setUint32(40, n, true);
-                    for (let i = 0; i < n; i++) dv.setUint8(44 + i, 128);
-                    silentUrl = URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
-                    silentAudio = new Audio(silentUrl);
-                    silentAudio.loop = true;
-                }
-                const p = silentAudio.play();
-                if (p && typeof p.catch === 'function') p.catch(function () { });
-            } catch (e) { /* sans conséquence */ }
-        }
+            // iPhone / iPad : le Web Audio est coupé par le commutateur de sonnerie ; on le place sur le canal "média"
+            var ua = navigator.userAgent || '';
+            var IS_IOS = ua.indexOf('iPad') >= 0 || ua.indexOf('iPhone') >= 0 || ua.indexOf('iPod') >= 0 ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            var silentAudio = null;
+            var silentUrl = null;
 
-        function ensureAudio() {
-            unlockIOSAudio();
-            if (!audioCtx) {
-                const AC = window.AudioContext || window.webkitAudioContext;
-                if (!AC) return false;
-                audioCtx = new AC();
-                master = audioCtx.createGain();
-                master.connect(audioCtx.destination);
-                noiseBuf = audioCtx.createBuffer(1, Math.floor(audioCtx.sampleRate * 0.05), audioCtx.sampleRate);
-                const data = noiseBuf.getChannelData(0);
-                for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-                applyVolume();
+            function unlockIOSAudio() {
+                try {
+                    if (navigator.audioSession) { navigator.audioSession.type = 'playback'; return; }
+                } catch (e1) { /* repli ci-dessous */ }
+                if (!IS_IOS) { return; }
+                try {
+                    if (!silentAudio) {
+                        var rate = 8000;
+                        var n = rate;
+                        var buf = new ArrayBuffer(44 + n);
+                        var dv = new DataView(buf);
+                        var writeText = function (o, s) {
+                            for (var i = 0; i < s.length; i++) { dv.setUint8(o + i, s.charCodeAt(i)); }
+                        };
+                        writeText(0, 'RIFF'); dv.setUint32(4, 36 + n, true); writeText(8, 'WAVE'); writeText(12, 'fmt ');
+                        dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
+                        dv.setUint32(24, rate, true); dv.setUint32(28, rate, true); dv.setUint16(32, 1, true);
+                        dv.setUint16(34, 8, true); writeText(36, 'data'); dv.setUint32(40, n, true);
+                        for (var j = 0; j < n; j++) { dv.setUint8(44 + j, 128); }
+                        silentUrl = URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+                        silentAudio = new Audio(silentUrl);
+                        silentAudio.loop = true;
+                    }
+                    var p = silentAudio.play();
+                    if (p && typeof p.catch === 'function') { p.catch(function () { }); }
+                } catch (e2) { /* sans conséquence */ }
             }
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            return true;
-        }
 
-        function applyVolume() {
-            if (master) master.gain.value = Math.pow(volume / 100, 2); // courbe plus naturelle qu'une droite
-        }
+            function applyVolume() {
+                if (master) { master.gain.value = Math.pow(volume / 100, 2); } // courbe plus naturelle qu'une droite
+            }
 
-        function envelope(gainNode, t, peak, dur) {
-            const g = gainNode.gain;
-            g.setValueAtTime(0.0001, t);
-            g.exponentialRampToValueAtTime(peak, t + 0.002);
-            g.exponentialRampToValueAtTime(0.0001, t + dur);
-        }
-
-        function tone(out, t, freq, peak, dur, freqEnd) {
-            const osc = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, t);
-            if (freqEnd) osc.frequency.exponentialRampToValueAtTime(freqEnd, t + 0.03);
-            envelope(g, t, peak, dur);
-            osc.connect(g);
-            g.connect(out);
-            osc.start(t);
-            osc.stop(t + dur + 0.02);
-        }
-
-        // Clic "bois" (même son que le métronome). À la seconde 0 : version plus aiguë, plus forte et plus longue.
-        function woodClick(t, accent, out) {
-            const level = accent ? 1.4 : 0.7;
-            tone(out, t, accent ? 1700 : 1050, 0.9 * level, accent ? 0.1 : 0.06, accent ? 1100 : 700);
-
-            const noise = audioCtx.createBufferSource();
-            const filter = audioCtx.createBiquadFilter();
-            const g = audioCtx.createGain();
-            noise.buffer = noiseBuf;
-            filter.type = 'bandpass';
-            filter.frequency.value = accent ? 2200 : 1800;
-            filter.Q.value = 3;
-            envelope(g, t, 0.5 * level, 0.03);
-            noise.connect(filter);
-            filter.connect(g);
-            g.connect(out);
-            noise.start(t);
-            noise.stop(t + 0.04);
-        }
-
-        function cutBus() {
-            if (bus) { try { bus.disconnect(); } catch (e) { } bus = null; }
-        }
-
-        function newTimeline(st) {
-            cutBus();
-            bus = audioCtx.createGain();
-            bus.connect(master);
-            done = {};
-            lastBase = st.base;
-            lastStart = st.start;
-        }
-
-        // Programme à l'avance les clics des prochaines 150 ms : un par seconde pendant les 10 s qui précèdent
-        // chaque temps, et le clic distinctif à la seconde 0.
-        function schedule(st) {
-            const nowMs = performance.now();
-            const horizon = nowMs + LOOKAHEAD_MS;
-            const accents = {};
-            st.targets.forEach(function (T) { accents[Math.round(T)] = true; });
-
-            st.targets.forEach(function (T) {
-                for (let m = WARN_SECONDS; m >= 0; m--) {
-                    const point = T + m * 1000;                       // valeur du rebours à laquelle on clique
-                    if (point >= st.base - 1) continue;               // déjà passé (ou point de départ) : pas de clic
-                    const eventMs = st.start + (st.base - point);     // instant où le rebours atteint cette valeur
-                    if (eventMs > horizon || eventMs < nowMs - 30) continue;
-                    const key = Math.round(point);
-                    if (done[key]) continue;                          // deux temps proches : un seul clic
-                    done[key] = true;
-                    woodClick(audioCtx.currentTime + Math.max(0, (eventMs - nowMs) / 1000), accents[key] === true, bus);
+            function ensureAudio() {
+                unlockIOSAudio();
+                if (!audioCtx) {
+                    var AC = window.AudioContext || window.webkitAudioContext;
+                    if (!AC) { return false; }
+                    audioCtx = new AC();
+                    master = audioCtx.createGain();
+                    master.connect(audioCtx.destination);
+                    noiseBuf = audioCtx.createBuffer(1, Math.floor(audioCtx.sampleRate * 0.05), audioCtx.sampleRate);
+                    var data = noiseBuf.getChannelData(0);
+                    for (var i = 0; i < data.length; i++) { data[i] = Math.random() * 2 - 1; }
+                    applyVolume();
                 }
-            });
-        }
+                if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+                return true;
+            }
 
-        // Surveille le compte à rebours toutes les 25 ms tant que le haut-parleur est actif
-        function poll() {
-            pollId = null;
-            if (!root.isConnected) { shutdown(); return; }
-            if (!soundOn || !audioCtx) return;
+            function envelope(gainNode, t, peak, dur) {
+                var g = gainNode.gain;
+                g.setValueAtTime(0.0001, t);
+                g.exponentialRampToValueAtTime(peak, t + 0.002);
+                g.exponentialRampToValueAtTime(0.0001, t + dur);
+            }
 
-            const st = root.chTimer && root.chTimer.state ? root.chTimer.state() : null;
-            if (st && st.running) {
-                if (!bus || st.base !== lastBase || st.start !== lastStart) newTimeline(st); // nouveau lancement / nouveau temps chargé
-                schedule(st);
-            } else if (bus && st && st.base > 0) {
-                cutBus();            // pause ou remise au début : on coupe les clics déjà programmés
-                lastBase = lastStart = null;
-            }                        // (fin naturelle : base = 0, on laisse jouer le dernier clic)
-            pollId = setTimeout(poll, POLL_MS);
-        }
+            function tone(out, t, freq, peak, dur, freqEnd) {
+                var osc = audioCtx.createOscillator();
+                var g = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, t);
+                if (freqEnd) { osc.frequency.exponentialRampToValueAtTime(freqEnd, t + 0.03); }
+                envelope(g, t, peak, dur);
+                osc.connect(g);
+                g.connect(out);
+                osc.start(t);
+                osc.stop(t + dur + 0.02);
+            }
 
-        function shutdown() {
-            clearTimeout(pollId);
-            pollId = null;
-            cutBus();
-            if (audioCtx) { try { audioCtx.close(); } catch (e) { } audioCtx = null; master = null; }
-            if (silentAudio) { try { silentAudio.pause(); } catch (e) { } silentAudio = null; }
-            if (silentUrl) { URL.revokeObjectURL(silentUrl); silentUrl = null; }
-        }
+            // Clic "bois" (même son que le métronome). À la seconde 0 : version plus aiguë, plus forte et plus longue.
+            function woodClick(t, accent, out) {
+                var level = accent ? 1.4 : 0.7;
+                tone(out, t, accent ? 1700 : 1050, 0.9 * level, accent ? 0.1 : 0.06, accent ? 1100 : 700);
 
-        // Haut-parleur : actif = clics ; barré = silence. Un petit clic confirme l'activation.
-        function toggleSound() {
-            soundOn = !soundOn;
-            btn.setAttribute('aria-pressed', String(soundOn));
-            if (soundOn) {
-                if (!ensureAudio()) { soundOn = false; btn.setAttribute('aria-pressed', 'false'); return; }
-                woodClick(audioCtx.currentTime + 0.01, false, master);
-                lastBase = lastStart = null;
-                if (pollId === null) poll();
-            } else {
+                var noise = audioCtx.createBufferSource();
+                var filter = audioCtx.createBiquadFilter();
+                var g = audioCtx.createGain();
+                noise.buffer = noiseBuf;
+                filter.type = 'bandpass';
+                filter.frequency.value = accent ? 2200 : 1800;
+                filter.Q.value = 3;
+                envelope(g, t, 0.5 * level, 0.03);
+                noise.connect(filter);
+                filter.connect(g);
+                g.connect(out);
+                noise.start(t);
+                noise.stop(t + 0.04);
+            }
+
+            function cutBus() {
+                if (bus) {
+                    try { bus.disconnect(); } catch (e3) { /* déjà coupé */ }
+                    bus = null;
+                }
+            }
+
+            function newTimeline(st) {
+                cutBus();
+                bus = audioCtx.createGain();
+                bus.connect(master);
+                done = {};
+                lastBase = st.base;
+                lastStart = st.start;
+            }
+
+            // Y a-t-il un autre temps strictement entre "low" et "high" ? (alors le décompte approche CE temps-là, pas "low")
+            function hasTargetBetween(targets, low, high) {
+                for (var i = 0; i < targets.length; i++) {
+                    if (targets[i] > low && targets[i] < high) { return true; }
+                }
+                return false;
+            }
+
+            // Programme à l'avance les clics des prochaines 150 ms : un par seconde pendant les 10 s qui précèdent
+            // chaque temps, et le clic distinctif à la seconde 0.
+            function schedule(st) {
+                var nowMs = performance.now();
+                var horizon = nowMs + LOOKAHEAD_MS;
+                var accents = {};
+                var k;
+                for (k = 0; k < st.targets.length; k++) { accents[Math.round(st.targets[k])] = true; }
+
+                for (k = 0; k < st.targets.length; k++) {
+                    for (var m = WARN_SECONDS; m >= 0; m--) {
+                        var point = st.targets[k] + m * 1000;               // valeur du décompte à laquelle on clique
+                        if (point >= st.base - 1) { continue; }             // déjà passé (ou point de départ) : pas de clic
+                        if (m > 0 && hasTargetBetween(st.targets, st.targets[k], point)) { continue; } // un point plus proche : c'est lui qu'on approche
+                        var eventMs = st.start + (st.base - point);         // instant où le décompte atteint cette valeur
+                        if (eventMs > horizon || eventMs < nowMs - 30) { continue; }
+                        var key = Math.round(point);
+                        if (done[key]) { continue; }                        // deux temps proches : un seul clic
+                        done[key] = true;
+                        woodClick(audioCtx.currentTime + Math.max(0, (eventMs - nowMs) / 1000), accents[key] === true, bus);
+                    }
+                }
+            }
+
+            function shutdown() {
                 clearTimeout(pollId);
                 pollId = null;
                 cutBus();
+                if (audioCtx) {
+                    try { audioCtx.close(); } catch (e4) { /* déjà fermé */ }
+                    audioCtx = null;
+                    master = null;
+                }
+                if (silentAudio) {
+                    try { silentAudio.pause(); } catch (e5) { /* sans conséquence */ }
+                    silentAudio = null;
+                }
+                if (silentUrl) {
+                    URL.revokeObjectURL(silentUrl);
+                    silentUrl = null;
+                }
             }
-        }
 
-        btn.addEventListener('click', toggleSound);
+            // Surveille le compte à rebours toutes les 25 ms tant que le haut-parleur est actif
+            function poll() {
+                pollId = null;
+                if (!root.isConnected) { shutdown(); return; }
+                if (!soundOn || !audioCtx) { return; }
 
-        volBar.addEventListener('input', function () { volume = Number(volBar.value); applyVolume(); });
-        volBar.addEventListener('change', function () { // petit clic d'essai quand on relâche la barre
-            if (soundOn && ensureAudio()) woodClick(audioCtx.currentTime + 0.01, false, master);
-        });
+                var st = (root.chTimer && root.chTimer.state) ? root.chTimer.state() : null;
+                if (st && st.running) {
+                    if (!bus || st.base !== lastBase || st.start !== lastStart) { newTimeline(st); } // nouveau lancement / nouveau temps
+                    schedule(st);
+                } else if (bus && st && st.base > 0) {
+                    cutBus();            // pause ou remise au début : on coupe les clics déjà programmés
+                    lastBase = null;
+                    lastStart = null;
+                }                        // (fin naturelle : base = 0, on laisse jouer le dernier clic)
+                pollId = setTimeout(poll, POLL_MS);
+            }
 
-        // Un clic sur "lancer" est un geste de l'utilisateur : on en profite pour réveiller l'audio s'il s'est endormi
-        const tstart = $('tstart');
-        if (tstart) tstart.addEventListener('click', function () { if (soundOn) ensureAudio(); });
+            // Haut-parleur : actif = clics ; barré = silence. Un petit clic confirme l'activation.
+            function toggleSound() {
+                soundOn = !soundOn;
+                btn.setAttribute('aria-pressed', String(soundOn));
+                if (soundOn) {
+                    if (!ensureAudio()) {
+                        soundOn = false;
+                        btn.setAttribute('aria-pressed', 'false');
+                        return;
+                    }
+                    woodClick(audioCtx.currentTime + 0.01, false, master);
+                    lastBase = null;
+                    lastStart = null;
+                    if (pollId === null) { poll(); }
+                } else {
+                    clearTimeout(pollId);
+                    pollId = null;
+                    cutBus();
+                }
+            }
+
+            btn.addEventListener('click', toggleSound);
+
+            volBar.addEventListener('input', function () {
+                volume = Number(volBar.value);
+                applyVolume();
+            });
+            volBar.addEventListener('change', function () { // petit clic d'essai quand on relâche la barre
+                if (soundOn && ensureAudio()) { woodClick(audioCtx.currentTime + 0.01, false, master); }
+            });
+
+            // Un clic sur "lancer" est un geste de l'utilisateur : on en profite pour réveiller l'audio s'il s'est endormi
+            var tstart = $('tstart');
+            if (tstart) {
+                tstart.addEventListener('click', function () { if (soundOn) { ensureAudio(); } });
+            }
+        };
+
+        initSound(document.getElementById('tool-chrono'));
     })();
 </script>
+
+<!-- FIN-DU-FICHIER outils-chronometre.html : protection (ne sert à rien, à garder tout à la fin du fichier).
+     Si un serveur coupait la fin du fichier, ce serait ce commentaire qui serait coupé,
+     et non le code ci-dessus.
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+-->
