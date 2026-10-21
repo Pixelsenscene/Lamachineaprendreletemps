@@ -4,60 +4,98 @@
 
     <h2 class="titreConvertir">Convertir le temps</h2>
 
-    <div class="zone2cols">
-
-        <!-- Colonne 1 -->
-        <div class="col1">
-            <label for="cv-sec">Secondes</label>
-            <input id="cv-sec" type="number" min="0">
-
-            <label for="cv-min">Minutes</label>
-            <input id="cv-min" type="number" min="0">
-
+    <!-- Ligne 1 : Heures / Minutes / Secondes (chaque champ est cerclé de bleu clair) -->
+    <div class="zoneMain">
+        <div class="tf">
             <label for="cv-hr">Heures</label>
-            <input id="cv-hr" type="number" min="0">
+            <input id="cv-hr" type="number" min="0" step="any">
         </div>
-
-        <!-- Colonne 2 (grisée) -->
-        <div class="col2">
-            <label class="gris" for="cv-day">Jours</label>
-            <input id="cv-day" type="number" min="0" class="gris">
-
-            <label class="gris" for="cv-month">Mois</label>
-            <input id="cv-month" type="number" min="0" class="gris">
-
-            <label class="gris" for="cv-year">Années</label>
-            <input id="cv-year" type="number" min="0" class="gris">
-
-            <label class="gris" for="cv-century">Siècles</label>
-            <input id="cv-century" type="number" min="0" class="gris">
+        <div class="tf">
+            <label for="cv-min">Minutes</label>
+            <input id="cv-min" type="number" min="0" step="any">
         </div>
-
+        <div class="tf">
+            <label for="cv-sec">Secondes</label>
+            <input id="cv-sec" type="number" min="0" step="any">
+        </div>
     </div>
 
-    <button type="button" id="cv-btnCalculer">Calculer</button>
-    <button type="button" id="cv-btnClear">Effacer tout</button>
+    <!-- Ligne 2 : Jours / Mois / Années / Siècles, sans encadré et plus discrets -->
+    <div class="zoneMinor">
+        <div class="minorRow">
+            <div class="tf">
+                <label class="gris" for="cv-day">Jours</label>
+                <input id="cv-day" type="number" min="0" step="any" class="gris">
+            </div>
+            <div class="tf">
+                <label class="gris" for="cv-month">Mois</label>
+                <input id="cv-month" type="number" min="0" step="any" class="gris">
+            </div>
+            <div class="tf">
+                <label class="gris" for="cv-year">Années</label>
+                <input id="cv-year" type="number" min="0" step="any" class="gris">
+            </div>
+            <div class="tf">
+                <label class="gris" for="cv-century">Siècles</label>
+                <input id="cv-century" type="number" min="0" step="any" class="gris">
+            </div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button type="button" id="cv-btnCalculer" disabled>Calculer</button>
+        <!-- "supprimer" : n'apparaît que lorsqu'un champ est rempli ou qu'un calcul est en place (il peut être seul) -->
+        <button type="button" id="cv-btnClear" hidden title="Tout supprimer et recommencer">supprimer</button>
+    </div>
 
     <div class="resultLine">
         <span class="egal">=</span>
-        <div id="cv-resultDefault" class="result"></div>
+        <!-- Bloc central : par défaut une simple zone de RÉSULTAT (texte). Un clic sur le bloc fait apparaître les champs
+             h / min / sec (saisie, flèches haut/bas, roulette) ; les champs du dessus s'adaptent alors
+             "comme on compte le temps" (60 s, 60 min, 24 h, 30 j par mois, 12 mois...). -->
+        <div id="cv-resultDefault" class="result">
+            <div class="resText" id="cv-resultText" role="button" tabindex="0"
+                aria-label="Résultat : cliquer pour le modifier"></div>
+            <div class="resRow">
+                <span class="resField"><input id="cv-rh" type="number" step="any" placeholder="0"
+                        aria-label="Heures du résultat"><span class="resUnit">h</span></span>
+                <span class="resField"><input id="cv-rm" type="number" step="any" placeholder="0"
+                        aria-label="Minutes du résultat"><span class="resUnit">min</span></span>
+                <span class="resField"><input id="cv-rs" type="number" step="any" placeholder="0"
+                        aria-label="Secondes du résultat"><span class="resUnit">sec</span></span>
+            </div>
+        </div>
     </div>
 
-    <h3>Résultat selon l’unité</h3>
-    <div class="unitButtons">
-        <button type="button" data-unit="sec">Secondes</button>
-        <button type="button" data-unit="min">Minutes</button>
-        <button type="button" data-unit="hr">Heures</button>
-        <button type="button" data-unit="day">Jours</button>
-        <button type="button" data-unit="month">Mois</button>
-        <button type="button" data-unit="year">Années</button>
-        <button type="button" data-unit="century">Siècles</button>
+    <!-- Partie du bas (de "Résultat selon l'unité" jusqu'au résultat "soit :") : cadre gris en pointillés -->
+    <div class="unitZone">
+        <h3>Résultat selon l’unité</h3>
+        <div class="unitButtons">
+            <div class="unitRow">
+                <button type="button" data-unit="sec">Secondes</button>
+                <button type="button" data-unit="min">Minutes</button>
+                <button type="button" data-unit="hr">Heures</button>
+            </div>
+            <div class="unitRow">
+                <button type="button" data-unit="day">Jours</button>
+                <button type="button" data-unit="month">Mois</button>
+                <button type="button" data-unit="year">Années</button>
+                <button type="button" data-unit="century">Siècles</button>
+            </div>
+        </div>
+
+        <div class="result2cols">
+            <div id="cv-resultUnitLeft" class="result"></div>
+        </div>
     </div>
 
-    <div class="result2cols">
-        <div id="cv-resultUnitLeft" class="result"></div>
-        <div class="soit">soit :</div>
-        <div id="cv-resultUnitRight" class="result"></div>
+    <!-- Résultat "soit :" : en dessous du cadre en pointillés, en gris -->
+    <div class="soitLine">
+        <div id="cv-resultUnitRightBox" class="result">
+            <span id="cv-resultUnitRight" class="resVal"></span>
+            <!-- "soit :" est DANS le bloc, aligné à gauche (n'est affiché que si le bloc contient un résultat) -->
+            <span class="soit">soit :</span>
+        </div>
     </div>
 
 </section>
@@ -65,22 +103,21 @@
 
 <!-- === 2. LE STYLE (CSS) === -->
 <style>
-    /* Tout est limité à .tool-convertir : rien ne déborde sur le reste du site.
-       Le site utilise "box-sizing: border-box", "margin: 0" et "line-height: 1.6" partout ;
-       l'appli d'origine utilisait les valeurs par défaut du navigateur. On les rétablit
-       à l'intérieur de l'outil pour obtenir EXACTEMENT le même rendu. */
+    /* Thème sombre (comme le métronome) : fond transparent qui se confond avec la page, texte clair,
+       blocs signalés par un ENCADRÉ de couleur. Tout est limité à .tool-convertir ; on rétablit à
+       l'intérieur les valeurs par défaut du navigateur que le CSS global du site modifie
+       (box-sizing, marges, interligne). */
     .tool-convertir {
         box-sizing: border-box;
         max-width: 375px;
         margin: 0 auto;
         padding: 20px;
-        background: #f5f5f5;
-        color: #000;
+        background: transparent;
+        color: #f4f4f4;
+        color-scheme: dark;
         font-family: Arial, sans-serif;
         line-height: normal;
         text-align: center;
-        border-radius: 14px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
     }
 
     .tool-convertir *,
@@ -89,86 +126,163 @@
         box-sizing: content-box;
     }
 
+    .tool-convertir .titreConvertir {
+        font-size: 26px;
+        margin-top: 5px;
+        margin-bottom: 14px;
+        color: #fff;
+    }
+
+    /* --- Boutons --- */
     .tool-convertir button {
         width: 80%;
         padding: 10px;
         margin: 6px auto;
         font-size: 16px;
         border-radius: 10px;
-        border: none;
-        background: #ddd;
-        color: #000;
+        border: 1px solid #555;
+        background: #222;
+        color: #f4f4f4;
         cursor: pointer;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        transition: background 0.15s, border-color 0.15s;
     }
 
+    .tool-convertir button[hidden] {
+        display: none;
+    }
+
+    /* Calculer n'est utilisable que lorsqu'il est vert (au moins un champ rempli) */
+    .tool-convertir button:disabled,
+    .tool-convertir button:disabled:hover {
+        background: #222;
+        border-color: #444;
+        color: #777;
+        cursor: not-allowed;
+    }
+
+    .tool-convertir button:hover {
+        background: #2e2e2e;
+        border-color: #777;
+    }
+
+    /* --- Champs : trois façons de remplir -> saisie au clavier, flèches haut/bas du champ, roulette de la souris --- */
     .tool-convertir input {
         height: 32px;
         font-size: 16px;
         padding: 4px;
         text-align: center;
+        color: #fff;
+        background: #1a1a1a;
+        border: 1px solid #555;
+        border-radius: 6px;
+        outline: none;
     }
 
-    .tool-convertir .titreConvertir {
-        font-size: 26px;
-        margin-top: 5px;
-        margin-bottom: 5px;
+    .tool-convertir input:focus {
+        border-color: #6fcf8d;
+        box-shadow: 0 0 0 1px #6fcf8d;
     }
 
-    .tool-convertir h3 {
-        margin: 1em 0;
-    }
-
-    .tool-convertir .zone2cols {
+    /* --- Saisie ---
+       Ligne 1 : Heures / Minutes / Secondes, encadrés en bleu clair (mis en évidence).
+       Lignes 2 et 3 : Jours / Mois puis Années / Siècles, sans encadré et en gris plus discret. */
+    .tool-convertir .tf {
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        width: 100%;
+        flex-direction: column;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .tool-convertir label {
+        margin-bottom: 4px;
+        color: #ddd;
+    }
+
+    .tool-convertir .zoneMain {
+        display: flex;
         gap: 10px;
     }
 
-    .tool-convertir .col1,
-    .tool-convertir .col2 {
-        width: 48%;
-        display: flex;
-        flex-direction: column;
+    /* Heures / Minutes / Secondes : chaque champ a son propre fin cercle bleu clair */
+    .tool-convertir .zoneMain input {
+        border: 1px solid #7fc4f5;
     }
 
-    .tool-convertir .col2 {
-        background: #eee;
-        padding: 10px;
-        border-radius: 10px;
+    .tool-convertir .zoneMain input:focus {
+        border-color: #6fcf8d;
+    }
+
+    .tool-convertir .zoneMinor {
+        margin-top: 14px;
+    }
+
+    .tool-convertir .minorRow {
+        display: flex;
+        gap: 8px;
     }
 
     .tool-convertir .gris {
-        color: #888;
+        color: #8f8f8f;
     }
 
     .tool-convertir input.gris {
-        background: #f5f5f5;
+        background: #141414;
+        border-color: #444;
+    }
+
+    .tool-convertir input.gris:focus {
+        border-color: #6fcf8d;
+    }
+
+    /* --- Calculer / effacer --- */
+    .tool-convertir .actions {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 14px;
+        margin: 20px 0 6px;
     }
 
     .tool-convertir #cv-btnCalculer {
         width: 100px;
-        padding: 10px;
-        margin: 20px auto;
-        font-size: 16px;
-        border-radius: 10px;
-        border: none;
-        background: #ddd;
-        transition: background 0.2s;
+        margin: 0;
+        font-weight: bold;
     }
 
+    .tool-convertir #cv-btnCalculer.ready {
+        background: #3ac74f;
+        border-color: #3ac74f;
+        color: #0b1a0e;
+        /* texte foncé : lisible sur le vert */
+    }
+
+    /* "supprimer" : petit bouton rouge, discret */
     .tool-convertir #cv-btnClear {
-        width: 120px;
-        padding: 10px;
-        margin: 10px auto;
-        font-size: 16px;
-        border-radius: 10px;
+        width: auto;
+        height: 34px;
+        margin: 0;
+        padding: 0 16px;
         border: none;
+        border-radius: 17px;
         background: #f06a6a;
-        color: white;
+        color: #1a0a0a;
+        font-size: 14px;
+        font-weight: bold;
     }
 
+    .tool-convertir #cv-btnClear:hover {
+        background: #f47f7f;
+    }
+
+    .tool-convertir #cv-btnClear[hidden],
+    .tool-convertir #cv-btnCalculer[hidden] {
+        display: none;
+        /* plus spécifique que les règles d'affichage des boutons */
+    }
+
+    /* --- Résultats : encadrés de couleur, fond transparent --- */
     .tool-convertir .resultLine {
         display: flex;
         align-items: center;
@@ -178,53 +292,194 @@
     .tool-convertir .egal {
         font-size: 22px;
         font-weight: bold;
+        color: #fff;
     }
 
     .tool-convertir .result {
-        background: white;
         padding: 15px;
         margin: 10px auto;
         width: 80%;
         border-radius: 10px;
+        border: 2px solid;
+        background: none;
         font-size: 18px;
+        color: #fff;
+    }
+
+    .tool-convertir #cv-resultDefault {
+        border-color: #6fcf8d;
+    }
+
+    /* vert */
+
+    /* Le bloc central contient trois champs (h / min / sec) : on lui laisse toute la largeur disponible */
+    .tool-convertir .resultLine .result {
+        flex: 1;
+        width: auto;
+        min-width: 0;
+    }
+
+    /* Bloc central : texte de résultat par défaut ; les champs n'apparaissent qu'après un clic sur le bloc.
+       Sa hauteur ne change pas entre les deux états (pas de saut de mise en page). */
+    .tool-convertir #cv-resultDefault {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        cursor: pointer;
+    }
+
+    .tool-convertir .resText {
+        width: 100%;
+        min-height: 1.2em;
+        outline: none;
+    }
+
+    .tool-convertir .resRow {
+        display: none;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 6px 10px;
+    }
+
+    .tool-convertir #cv-resultDefault.editing {
+        cursor: default;
+    }
+
+    .tool-convertir #cv-resultDefault.editing .resText {
+        display: none;
+    }
+
+    .tool-convertir #cv-resultDefault.editing .resRow {
+        display: flex;
+    }
+
+    .tool-convertir .resField {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .tool-convertir .resField input {
+        width: 46px;
+    }
+
+    .tool-convertir .resField input::placeholder {
+        color: #777;
+        opacity: 1;
+    }
+
+    .tool-convertir .resUnit {
+        font-size: 16px;
+        color: #ccc;
+    }
+
+    .tool-convertir #cv-resultUnitLeft {
+        border-color: #e6c76a;
+    }
+
+    /* jaune doré */
+
+    .tool-convertir h3 {
+        margin: 20px 0 8px;
+        font-size: 13px;
+        font-weight: bold;
+        color: #aaa;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* --- Partie du bas : cadre gris en pointillés, discret --- */
+    .tool-convertir .unitZone {
+        margin-top: 22px;
+        padding: 12px 10px 14px;
+        border: 1px dotted #666;
+        border-radius: 12px;
+    }
+
+    .tool-convertir .unitZone h3 {
+        margin-top: 0;
+    }
+
+    /* --- Unités : 2 lignes (secondes, minutes, heures / jours, mois, années, siècles) --- */
+    .tool-convertir .unitRow {
+        display: flex;
+        flex-wrap: wrap;
+        /* repli sur très petit écran seulement */
+        justify-content: center;
     }
 
     .tool-convertir .unitButtons button {
         width: auto;
-        padding: 10px 15px;
-        margin: 5px;
+        padding: 10px 11px;
+        margin: 4px 3px;
         font-size: 14px;
     }
 
     .tool-convertir .unitButtons button.activeUnit {
-        background: #c3d9d5;
+        background: #1d2f24;
+        border-color: #6fcf8d;
+        color: #fff;
+        font-weight: bold;
     }
 
+    @media (max-width: 400px) {
+        .tool-convertir .unitButtons button {
+            padding: 9px 8px;
+            font-size: 13px;
+        }
+    }
+
+    /* --- Résultats par unité : l'un sous l'autre, en grand, centrés comme le reste de l'outil --- */
     .tool-convertir .result2cols {
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        width: 90%;
-        margin: auto;
-        gap: 10px;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        margin-top: 4px;
         /* Au clic sur "Calculer", la page défile jusqu'ici : on laisse la place
            au bandeau fixe (70px) et à la barre de sous-menus collée en haut */
         scroll-margin-top: 150px;
     }
 
-    .tool-convertir .result2cols .result {
-        width: 45%;
+    .tool-convertir .result2cols .result,
+    .tool-convertir .soitLine .result {
+        position: relative;
+        width: auto;
+        margin: 0;
+        /* marges latérales symétriques : le texte reste centré, "soit :" a sa place à gauche */
+        padding: 18px 58px;
+        min-height: 1.3em;
+        /* même hauteur vide ou rempli */
+        font-size: 18px;
+        /* même taille que le bloc central (encadré vert) */
+    }
+
+    /* Le dernier bloc n'a pas d'encadré visible (la bordure reste, transparente, pour garder l'alignement) */
+    .tool-convertir .soitLine #cv-resultUnitRightBox {
+        border-color: transparent;
+        color: #b5b5b5;
+        /* résultat "soit :" : légèrement grisé */
+    }
+
+    .tool-convertir .soitLine {
+        margin-top: 12px;
     }
 
     .tool-convertir .soit {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 17px;
         font-weight: bold;
-        color: black;
-        width: 10%;
-        text-align: center;
-        font-size: 9px;
+        color: #999;
+    }
+
+    /* "soit :" n'apparaît que lorsque le bloc contient un résultat */
+    .tool-convertir .resVal:empty~.soit {
+        visibility: hidden;
     }
 </style>
 
@@ -237,7 +492,8 @@
         const root = document.getElementById('tool-convertir');
         if (!root) return;
 
-        const FIELDS = ['sec', 'min', 'hr', 'day', 'month', 'year', 'century'];
+        const FIELDS = ['hr', 'min', 'sec', 'day', 'month', 'year', 'century']; // ordre d'affichage
+        const CENTRAL = ['rh', 'rm', 'rs']; // champs du bloc central : heures, minutes, secondes
         const ORDER = ['century', 'year', 'month', 'day', 'hr', 'min', 'sec'];
         // Valeur de chaque unité en secondes (mois = 30 jours, année = 365 jours)
         const UNITS = {
@@ -252,28 +508,224 @@
 
         const el = (id) => document.getElementById('cv-' + id);
 
+        // Noms français des unités pour le résultat de gauche (singulier, pluriel)
+        const UNIT_NAMES = {
+            sec: ['seconde', 'secondes'],
+            min: ['minute', 'minutes'],
+            hr: ['heure', 'heures'],
+            day: ['jour', 'jours'],
+            month: ['mois', 'mois'],
+            year: ['an', 'ans'],
+            century: ['siècle', 'siècles']
+        };
+
+        // ---------------------------------------------------------------- roulette de la souris
+        // Dans un champ sélectionné (cliqué), la molette remplace les flèches haut / bas :
+        //   défiler vers le HAUT = flèche haut (+1)  ;  défiler vers le BAS = flèche bas (-1).
+        // Plus le défilement est rapide et fort, plus les chiffres défilent vite.
+        const WHEEL_NEEDS_FOCUS = true; // true : le champ doit avoir été cliqué (la page défile normalement sinon)
+        const PX_PER_UNIT = 100;        // un cran de molette de souris (~100 px) = 1 unité à vitesse normale
+        const FAST_FROM = 800;          // au-delà de cette vitesse de défilement (px/s), les chiffres accélèrent
+        const FAST_RANGE = 1200;        // plus cette valeur est petite, plus l'accélération est brutale
+        const MAX_FACTOR = 12;          // accélération maximale (×12)
+
+        function wheelPixels(e) {
+            let d = e.deltaY;
+            if (e.deltaMode === 1) d *= 33;       // "lignes" (Firefox avec une souris) -> pixels
+            else if (e.deltaMode === 2) d *= 400; // "pages"
+            return d;
+        }
+
+        function enableWheel(field, afterStep) {
+            let acc = 0;   // fraction d'unité en attente
+            let vel = 0;   // vitesse de défilement lissée (px/s)
+            let last = 0;
+
+            field.addEventListener('wheel', (e) => {
+                if (WHEEL_NEEDS_FOCUS && document.activeElement !== field) return;
+
+                const d = wheelPixels(e);
+                if (!d) return;
+                e.preventDefault();
+
+                const now = performance.now();
+                const dt = Math.max(now - last, 8);
+                vel = dt > 300 ? 0 : 0.5 * vel + 0.5 * (Math.abs(d) / dt * 1000); // nouvelle séquence si pause
+                last = now;
+
+                const factor = Math.min(MAX_FACTOR, 1 + Math.max(0, vel - FAST_FROM) / FAST_RANGE);
+                const sign = d < 0 ? 1 : -1; // vers le haut = augmente
+
+                if (acc !== 0 && Math.sign(acc) !== sign) acc = 0; // changement de sens : on repart de zéro
+
+                // Un vrai "cran" de molette (≥ 40 px : 100 sur Mac/Chrome, 120 sur Windows, ~99 sur Firefox) vaut
+                // toujours au moins 1 unité ; les petits défilements du pavé tactile s'accumulent en fractions.
+                const abs = Math.abs(d);
+                const base = abs >= 40 ? Math.max(1, Math.round(abs / PX_PER_UNIT)) : abs / PX_PER_UNIT;
+                acc += sign * base * factor;
+
+                const steps = Math.trunc(acc);
+                if (steps === 0) return;
+                acc -= steps;
+
+                const min = field.min !== '' ? Number(field.min) : -Infinity;
+                const next = Math.max(min, (Number(field.value) || 0) + steps);
+                field.value = String(+next.toFixed(10)); // évite 0.30000000000000004
+                field.dispatchEvent(new Event('input', { bubbles: true })); // comme une saisie au clavier
+                if (typeof afterStep === 'function') afterStep(field);      // ex : report des retenues (59 s + 1 = 1 min)
+            }, { passive: false });
+        }
+
         let totalSeconds = null; // null tant qu'on n'a pas cliqué sur "Calculer"
+        // true dès qu'un premier calcul est en place : "Calculer" disparaît, et toute modification des champs
+        // recalcule instantanément. Repasse à false avec "supprimer".
+        let calculated = false;
         let currentUnit = null;  // unité choisie dans "Résultat selon l'unité"
 
-        function convertTime() {
-            const val = (id) => Number(el(id).value || 0);
+        // ---------------------------------------------------------------- bloc central (modifiable)
+        const round2 = (n) => Math.round(n * 100) / 100; // évite 5.300000000000001
 
-            totalSeconds =
-                val('sec') +
+        // Écrit le temps dans le bloc central : heures (sans limite), minutes (< 60), secondes (< 60)
+        function writeCentral(total) {
+            const t = Math.max(0, round2(total));
+            el('rh').value = String(Math.floor(t / 3600));
+            el('rm').value = String(Math.floor((t % 3600) / 60));
+            el('rs').value = String(round2(t % 60));
+        }
+
+        const centralBlank = () => CENTRAL.every(id => el(id).value === '');
+
+        // Texte du résultat (affiché tant qu'on ne modifie pas le bloc) : "1 h, 1 min, 1 sec"
+        function renderCentralText() {
+            if (totalSeconds === null) { el('resultText').textContent = ''; return; }
+            const t = Math.max(0, round2(totalSeconds));
+            el('resultText').textContent =
+                `${Math.floor(t / 3600)} h, ${Math.floor((t % 3600) / 60)} min, ${round2(t % 60)} sec`;
+        }
+
+        let centralEditing = false; // true : les champs h / min / sec sont affichés
+        let centralDirty = false;   // true : le bloc central a été modifié par l'utilisateur
+
+        // Un clic sur le bloc fait apparaître les champs
+        function enterCentralEdit() {
+            if (centralEditing) return;
+            centralEditing = true;
+            if (totalSeconds !== null) writeCentral(totalSeconds); else CENTRAL.forEach(id => { el(id).value = ''; });
+            el('resultDefault').classList.add('editing');
+            el('rh').focus();
+            if (el('rh').select) el('rh').select();
+        }
+
+        // On quitte l'édition : si le bloc a été modifié, on le remet "dans l'ordre", puis on réaffiche le texte
+        function exitCentralEdit() {
+            if (!centralEditing) return;
+            if (centralDirty) commitCentral();
+            centralEditing = false;
+            el('resultDefault').classList.remove('editing');
+            renderCentralText();
+        }
+
+        // Total en secondes d'après le bloc central (un champ vide compte pour 0 ; jamais négatif)
+        function centralTotal() {
+            const v = (id) => Number(el(id).value || 0);
+            return Math.max(0, round2(v('rh') * 3600 + v('rm') * 60 + v('rs')));
+        }
+
+        // Décompose un temps comme on compte le temps : 60 s, 60 min, 24 h, 30 j par mois, 12 mois,
+        // 365 j par an, 100 ans par siècle. Au-delà, c'est l'unité supérieure qui augmente.
+        // (mois = 30 jours et année = 365 jours, comme dans tout l'outil)
+        function writeTopFromTotal(total) {
+            const whole = Math.floor(total);
+            const fraction = total - whole;
+            let rest = whole;
+            const parts = {};
+            ['century', 'year', 'month', 'day', 'hr', 'min'].forEach(u => {
+                parts[u] = Math.floor(rest / UNITS[u]);
+                rest -= parts[u] * UNITS[u];
+            });
+            parts.sec = round2(rest + fraction);
+
+            // Les unités AU-DESSUS de la plus grande unité utilisée restent vides ;
+            // celles en dessous affichent leur valeur, même 0 (ex : 5 min 0 s)
+            let started = false;
+            ORDER.forEach(u => {
+                if (parts[u] > 0) started = true;
+                el(u).value = started ? String(parts[u]) : '';
+            });
+        }
+
+        // Le bloc central est modifié (clavier, flèches ou roulette) : les champs du dessus s'adaptent
+        // et la conversion en dessous (selon l'unité choisie) se met à jour immédiatement.
+        function onCentralInput() {
+            if (centralBlank()) {
+                FIELDS.forEach(id => { el(id).value = ''; });
+                totalSeconds = null;
+            } else {
+                totalSeconds = centralTotal();
+                writeTopFromTotal(totalSeconds);
+                calculated = true; // un résultat est affiché : "Calculer" n'a plus lieu d'être
+            }
+            updateUnitResult();
+            updateButtonState();
+            renderCentralText();
+        }
+
+        // Validation (Entrée, changement de champ, pas de roulette ou de flèche) : le bloc central se remet
+        // lui-même "dans l'ordre" (ex : 90 min -> 1 h 30 min ; 59 s + 1 -> 1 min 0 s ; 0 s - 1 -> minute précédente)
+        function commitCentral() {
+            if (centralBlank()) return;
+            writeCentral(centralTotal());
+            onCentralInput();
+            centralDirty = false;
+        }
+
+        // Total en secondes d'après les champs du haut (un champ vide compte pour 0)
+        function topTotal() {
+            const val = (id) => Number(el(id).value || 0);
+            return val('sec') +
                 val('min') * 60 +
                 val('hr') * 3600 +
                 val('day') * 86400 +
                 val('month') * UNITS.month +
                 val('year') * UNITS.year +
                 val('century') * UNITS.century;
+        }
 
-            const h = Math.floor(totalSeconds / 3600);
-            const m = Math.floor((totalSeconds % 3600) / 60);
-            const s = Math.round((totalSeconds % 60) * 100) / 100; // évite 5.300000000000001
-
-            el('resultDefault').innerText = `${h} h, ${m} min, ${s} sec`;
-
+        // Un calcul est en place : on met à jour le bloc central et les résultats par unité
+        function refreshResults() {
+            totalSeconds = topTotal();
+            writeCentral(totalSeconds);
+            centralDirty = false;
+            if (centralEditing) { centralEditing = false; el('resultDefault').classList.remove('editing'); }
+            renderCentralText();
             updateUnitResult();
+        }
+
+        // Modification d'un champ du haut (clavier, flèches, roulette)
+        function onTopInput() {
+            if (calculated) {
+                // calcul déjà en place : tout se met à jour instantanément, sans rappuyer sur Calculer
+                if (FIELDS.some(id => el(id).value !== '')) {
+                    refreshResults();
+                } else {
+                    totalSeconds = null; // tous les champs vidés : résultats vides
+                    CENTRAL.forEach(id => { el(id).value = ''; });
+                    renderCentralText();
+                    updateUnitResult();
+                }
+            }
+            updateButtonState();
+        }
+
+        // Bouton "Calculer" : premier calcul seulement. Ensuite tout est instantané.
+        function convertTime() {
+            if (!FIELDS.some(id => el(id).value !== '')) return; // rien à calculer (aussi pour la touche Entrée)
+            const firstTime = !calculated;
+            calculated = true;
+            refreshResults();
+            updateButtonState();
+
+            if (!firstTime) return; // plus de défilement automatique une fois le calcul en place
 
             // Défilement vers les résultats
             root.querySelector('.result2cols').scrollIntoView({
@@ -331,23 +783,39 @@
 
             const result = totalSeconds / UNITS[currentUnit];
 
-            // Case de gauche : résultat dans l'unité choisie
-            el('resultUnitLeft').innerText = `${result.toFixed(2)} ${currentUnit}`;
+            // Case de gauche : résultat dans l'unité choisie, en français, avec UN chiffre après la virgule
+            // (ex : "1,0 heure", "61,0 minutes"). Le pluriel suit la valeur affichée.
+            const [singular, plural] = UNIT_NAMES[currentUnit];
+            const rounded = Math.round(result * 10) / 10;
+            const number = rounded.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+            el('resultUnitLeft').innerText = `${number} ${Math.abs(rounded) >= 2 ? plural : singular}`;
 
             // Case de droite : décomposition
             el('resultUnitRight').innerText = decomposeRelative(totalSeconds, currentUnit);
         }
 
-        // Le bouton "Calculer" devient vert dès qu'un champ est rempli
+        // Boutons :
+        //  • ouverture / après "supprimer" : "Calculer" seul, non cliquable ;
+        //  • au moins un champ rempli, pas encore de calcul : "Calculer" (vert, cliquable) + "supprimer" ;
+        //  • calcul en place : "Calculer" disparaît, "supprimer" reste seul.
         function updateButtonState() {
             const filled = FIELDS.some(id => el(id).value !== '');
-            el('btnCalculer').style.background = filled ? '#3ac74f' : '#ddd';
+            const calcBtn = el('btnCalculer');
+            calcBtn.hidden = calculated;
+            calcBtn.classList.toggle('ready', filled);
+            calcBtn.disabled = !filled; // pas de clic possible tant qu'il n'est pas vert
+            el('btnClear').hidden = !(filled || calculated || totalSeconds !== null);
         }
 
         function clearAll() {
             FIELDS.forEach(id => { el(id).value = ''; });
-            el('resultDefault').innerText = '';
+            CENTRAL.forEach(id => { el(id).value = ''; });
+            centralDirty = false;
+            centralEditing = false;
+            el('resultDefault').classList.remove('editing');
             totalSeconds = null; // sinon un clic sur une unité réaffichait l'ancien résultat
+            calculated = false;  // nouveau départ : "Calculer" réapparaît (seul, non cliquable)
+            renderCentralText();
             updateUnitResult();
             updateButtonState();
 
@@ -355,7 +823,10 @@
         }
 
         // --- Écouteurs ---
-        FIELDS.forEach(id => el(id).addEventListener('input', updateButtonState));
+        FIELDS.forEach(id => {
+            el(id).addEventListener('input', onTopInput);
+            enableWheel(el(id));
+        });
 
         el('btnCalculer').addEventListener('click', convertTime);
         el('btnClear').addEventListener('click', clearAll);
@@ -364,10 +835,38 @@
             btn.addEventListener('click', () => setUnit(btn.dataset.unit));
         });
 
+        // Bloc central : saisie au clavier, flèches du champ, roulette
+        CENTRAL.forEach(id => {
+            el(id).addEventListener('input', () => { centralDirty = true; onCentralInput(); });
+            el(id).addEventListener('change', commitCentral);
+            enableWheel(el(id), commitCentral);
+        });
+
+        // Un clic sur le bloc (hors des champs) active la modification ; en cliquant ailleurs, on la quitte
+        const centralBlock = el('resultDefault');
+        centralBlock.addEventListener('mousedown', (e) => {
+            // pendant l'édition, un clic sur le fond du bloc ne doit pas faire perdre le focus aux champs
+            if (centralEditing && !e.target.closest('input')) e.preventDefault();
+        });
+        centralBlock.addEventListener('click', (e) => {
+            if (!e.target.closest('input')) enterCentralEdit();
+        });
+        el('resultText').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); enterCentralEdit(); }
+        });
+        centralBlock.addEventListener('focusout', (e) => {
+            if (!centralBlock.contains(e.relatedTarget)) exitCentralEdit(); // le focus sort du bloc
+        });
+
         root.addEventListener('keydown', (e) => {
-            // Entrée dans un champ = lancer le calcul
+            // Entrée dans un champ du haut = lancer le calcul ; dans le bloc central = valider (remise en ordre)
             if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
-                convertTime();
+                if (CENTRAL.includes((e.target.id || '').replace('cv-', ''))) {
+                    centralDirty = true; // la validation remet toujours le bloc dans l'ordre
+                    exitCentralEdit();
+                } else {
+                    convertTime();
+                }
                 return;
             }
 
@@ -385,5 +884,9 @@
                 if (next) { e.preventDefault(); el(next).focus(); }
             }
         });
+
+        // État initial : "Calculer" seul (non cliquable), "supprimer" caché
+        updateButtonState();
+        renderCentralText();
     })();
 </script>

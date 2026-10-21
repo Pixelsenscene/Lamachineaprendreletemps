@@ -97,21 +97,22 @@
 
 <!-- === 2. LE STYLE (CSS) === -->
 <style>
-    /* Tout est limité à .tool-prepa. Comme pour "Convertir le temps", on rétablit à l'intérieur
-       de l'outil les valeurs par défaut du navigateur que le CSS du site modifie
-       (box-sizing, marges, interligne) pour obtenir EXACTEMENT le rendu de l'appli d'origine. */
+    /* Thème sombre (comme le métronome et "Convertir le temps") : fond transparent qui se confond avec la page,
+       texte clair, blocs signalés par un ENCADRÉ de couleur (jamais de fond de couleur).
+       Un bloc "éteint" a un encadré terne ; un bloc "allumé" (saisi ou calculé) a un encadré vif.
+       Tout est limité à .tool-prepa ; on rétablit à l'intérieur les valeurs par défaut du navigateur que le CSS
+       global du site modifie (box-sizing, marges, interligne). */
     .tool-prepa {
         box-sizing: border-box;
         max-width: 375px;
         margin: 0 auto;
         padding: 20px;
-        background: #f5f5f5;
-        color: #000;
+        background: transparent;
+        color: #f4f4f4;
+        color-scheme: dark;
         font-family: Arial, sans-serif;
         line-height: normal;
         text-align: center;
-        border-radius: 14px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
     }
 
     .tool-prepa *,
@@ -120,11 +121,22 @@
         box-sizing: content-box;
     }
 
+    /* Champs : saisie au clavier, flèches haut/bas natives ET roulette de la souris */
     .tool-prepa input {
         height: 32px;
         font-size: 16px;
         padding: 4px;
         text-align: center;
+        color: #fff;
+        background: #1a1a1a;
+        border: 1px solid #555;
+        border-radius: 6px;
+        outline: none;
+    }
+
+    .tool-prepa input:focus {
+        border-color: #6fcf8d;
+        box-shadow: 0 0 0 1px #6fcf8d;
     }
 
     /* Titre (cliquable : réinitialise tout) */
@@ -132,6 +144,7 @@
         font-size: 22px;
         font-weight: bold;
         text-align: center;
+        color: #fff;
         margin: 0 0 20px 0;
         padding: 0;
         line-height: 1.2;
@@ -161,86 +174,96 @@
         margin: 0 auto;
     }
 
-    /* --- Blocs : couleur pâle par défaut, couleur marquée quand le bloc est "actif" (.strong) ---
-       La bordure de 4px existe toujours (transparente au repos) : les blocs ne "sautent" plus
-       de 8px quand ils s'allument. */
+    /* --- Blocs : encadré de couleur, fond transparent ---
+       --dim    = encadré éteint
+       --bright = encadré allumé (couleur vive)
+       --tint   = fond du bloc allumé : la MÊME couleur que l'encadré, mais très translucide (20 %),
+                  pour rester sur une teinte sombre. Pour un fond plus marqué, augmenter le dernier
+                  chiffre de rgba(..., 0.20).
+       L'épaisseur de l'encadré ne change jamais (pas de "saut"). */
     .tool-prepa .bloc {
-        background: #eee;
         padding: 10px;
         margin-bottom: 12px;
         border-radius: 10px;
-        border: 4px solid transparent;
-        transition: background 0.2s ease, border-color 0.2s ease;
+        border: 3px solid var(--dim);
+        background: transparent;
+        transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .tool-prepa .bloc.strong {
+        border-color: var(--bright);
+        background: var(--tint);
+        font-weight: bold;
+    }
+
+    .tool-prepa #pt-blocTournage {
+        --dim: #375d43;
+        --bright: #6fcf8d;
+        --tint: rgba(111, 207, 141, 0.20);
+        margin-top: 0;
+    }
+
+    /* vert */
+    .tool-prepa #pt-blocVideo {
+        --dim: #665a35;
+        --bright: #e6c76a;
+        --tint: rgba(230, 199, 106, 0.20);
+    }
+
+    /* jaune doré */
+    .tool-prepa #pt-blocVitesse {
+        --dim: #664840;
+        --bright: #e59a86;
+        --tint: rgba(229, 154, 134, 0.20);
+    }
+
+    /* corail */
+
+    /* Vitesse allumée : la couleur (encadré ET fond) dépend du mode */
+    .tool-prepa[data-mode="accel"] #pt-blocVitesse {
+        --bright: #ff6b5e;
+        --tint: rgba(255, 107, 94, 0.20);
+    }
+
+    /* rouge : accélération */
+    .tool-prepa[data-mode="ralent"] #pt-blocVitesse {
+        --bright: #6ea8ff;
+        --tint: rgba(110, 168, 255, 0.20);
+    }
+
+    /* bleu : ralentissement */
+    .tool-prepa[data-mode="none"] #pt-blocVitesse {
+        --bright: #bdbdbd;
+        --tint: rgba(189, 189, 189, 0.16);
+    }
+
+    /* gris : mode pas encore choisi */
+
+    /* MODE DIRECT (les 3 blocs sont remplis) : les trois blocs gardent leur fond teinté, mais leur encadré
+       redevient discret. Seuls les deux blocs concernés par la modification en cours s'encadrent vivement :
+       celui où l'on saisit (.hl) et celui qui sera recalculé (.hl). Le 3e reste discret. */
+    .tool-prepa.live .bloc.strong {
+        border-color: var(--dim);
+    }
+
+    .tool-prepa.live .bloc.hl {
+        border-color: var(--bright);
+    }
+
+    /* En mode direct, un clic sur un bloc (hors de ses champs) choisit le bloc qui sera recalculé */
+    .tool-prepa.live .bloc {
+        cursor: pointer;
+    }
+
+    .tool-prepa.live .bloc input {
+        cursor: text;
     }
 
     .tool-prepa .titreBloc {
         font-size: 22px;
         margin: 5px 0;
         text-align: center;
-    }
-
-    .tool-prepa #pt-blocTournage {
-        background: #e4f7ea;
-        margin-top: 0;
-    }
-
-    .tool-prepa #pt-blocVideo {
-        background: #f7f4e1;
-    }
-
-    .tool-prepa #pt-blocVitesse {
-        background: #f2e9e6;
-    }
-
-    .tool-prepa #pt-blocTournage.strong {
-        background: #bae0c6;
-        border-color: #7aa88c;
-        font-weight: bold;
-    }
-
-    .tool-prepa #pt-blocVideo.strong {
-        background: #f7e9a0;
-        border-color: #c9b86f;
-        font-weight: bold;
-    }
-
-    .tool-prepa[data-mode="accel"] #pt-blocVitesse.strong {
-        background: #ed8882;
-        border-color: #b84f49;
-        color: white;
-        font-weight: bold;
-    }
-
-    .tool-prepa[data-mode="ralent"] #pt-blocVitesse.strong {
-        background: #86a8e3;
-        border-color: #4a6fb0;
-        color: white;
-        font-weight: bold;
-    }
-
-    /* Vitesse renseignée mais mode pas encore choisi : ton neutre */
-    .tool-prepa[data-mode="none"] #pt-blocVitesse.strong {
-        background: #e2d5d0;
-        border-color: #a89a94;
-        font-weight: bold;
-    }
-
-    /* --- Bouton de réinitialisation (même style que "Effacer tout" de Convertir le temps) --- */
-    .tool-prepa #pt-btnReset {
-        width: 140px;
-        padding: 10px;
-        margin: 10px auto 0;
-        font-size: 16px;
-        border-radius: 10px;
-        border: none;
-        background: #f06a6a;
-        color: white;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
-
-    .tool-prepa #pt-btnReset:hover {
-        background: #e85a5a;
+        color: #fff;
     }
 
     /* --- Champs h / min / s --- */
@@ -261,30 +284,26 @@
 
     .tool-prepa .champAvecUnite input {
         width: 55px;
-        height: 32px;
-        font-size: 16px;
-        padding: 4px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
         flex-shrink: 0;
     }
 
     .tool-prepa .champAvecUnite input::placeholder {
         font-size: 11px;
-        color: #bbb;
+        color: #777;
         opacity: 1;
     }
 
     .tool-prepa .unit {
         font-weight: bold;
-        color: #444;
+        color: #ccc;
         min-width: 22px;
         text-align: left;
     }
 
     .tool-prepa .sousTexte {
         font-size: 12px;
-        color: #666;
+        color: #aaa;
+        /* un peu plus clair : reste lisible sur le fond teinté d'un bloc allumé */
         margin-top: 10px;
         margin-bottom: -4px;
         text-align: center;
@@ -299,7 +318,7 @@
         margin-top: 8px;
         padding: 4px 8px;
         border-radius: 6px;
-        color: red;
+        color: #ff5a4f;
         font-weight: bold;
         cursor: pointer;
         animation: ptBlink 0.8s infinite;
@@ -346,7 +365,7 @@
 
     .tool-prepa .fleche {
         font-size: 40px;
-        color: #999;
+        color: #777;
         font-weight: 300;
         cursor: pointer;
         transition: all 0.2s ease;
@@ -355,14 +374,14 @@
 
     .tool-prepa[data-mode="accel"] #pt-flecheGauche {
         font-size: 80px;
-        color: #c41b16;
+        color: #ff6b5e;
         font-weight: 900;
         transform: scale(1.1);
     }
 
     .tool-prepa[data-mode="ralent"] #pt-flecheDroite {
         font-size: 80px;
-        color: #0d52bf;
+        color: #6ea8ff;
         font-weight: 900;
         transform: scale(1.1);
     }
@@ -372,14 +391,15 @@
         font-weight: bold;
         margin-bottom: 6px;
         text-align: center;
+        color: #aaa;
     }
 
     .tool-prepa[data-mode="accel"] #pt-v_type {
-        color: #c41b16;
+        color: #ff6b5e;
     }
 
     .tool-prepa[data-mode="ralent"] #pt-v_type {
-        color: #0d52bf;
+        color: #6ea8ff;
     }
 
     .tool-prepa .vitesseInputRow {
@@ -403,11 +423,29 @@
     }
 
     .tool-prepa[data-mode="accel"] .symboleVitesse {
-        color: #b84f49;
+        color: #ff6b5e;
     }
 
     .tool-prepa[data-mode="ralent"] .symboleVitesse {
-        color: #4a6fb0;
+        color: #6ea8ff;
+    }
+
+    /* --- Bouton de réinitialisation --- */
+    .tool-prepa #pt-btnReset {
+        width: 140px;
+        padding: 10px;
+        margin: 10px auto 0;
+        font-size: 16px;
+        border-radius: 10px;
+        border: none;
+        background: #f06a6a;
+        color: #1a0a0a;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .tool-prepa #pt-btnReset:hover {
+        background: #f47f7f;
     }
 </style>
 
@@ -440,6 +478,10 @@
             kind: { t: 'empty', v: 'empty', vf: 'empty' }, // 'empty' | 'input' (saisi) | 'result' (calculé)
             order: [],        // ordre dans lequel les blocs ont été saisis (sert à choisir le mode)
             mode: null,       // 'accel' | 'ralent' | null
+            invert: false,    // true : relation inversée (vidéo = tournage × vitesse) ; false : vidéo = tournage ÷ vitesse
+            live: false,      // MODE DIRECT : les 3 blocs sont remplis, modifier un bloc recalcule un autre instantanément
+            dirChosen: false, // en mode direct : une flèche (ou le bloc Vitesse) a-t-elle été choisie ? (change quel bloc est recalculé)
+            active: null,     // bloc dont un champ est en cours de saisie ('t' | 'v' | 'vf') ; reste mémorisé tant qu'on ne clique pas hors de l'outil
             computed: false,  // true juste après un CALCULER (résultat à jour)
             touched: false    // true dès la première saisie
         };
@@ -466,47 +508,186 @@
         }
 
         // ---------- logique ----------
+        // Les trois blocs sont reliés par UNE relation :  vidéo finale = tournage ÷ vitesse.
+        //
+        // • Deux blocs saisis  → le 3e est à CALCULER (bouton CALCULER).
+        // • Trois blocs remplis → MODE DIRECT : on modifie un bloc, un autre se recalcule instantanément.
+        //     - Au départ (aucune flèche cliquée) :
+        //         Tournage modifié → Vidéo finale recalculée  (la Vitesse ne bouge pas)
+        //         Vidéo finale modifiée → Tournage recalculé  (la Vitesse ne bouge pas)
+        //     - Après un clic sur l'une des deux flèches :
+        //         Tournage OU Vidéo finale modifié → c'est la Vitesse qui est recalculée
+        //     - Dans tous les cas, Vitesse modifiée → le bloc désigné par la flèche est recalculé :
+        //         flèche rouge ↓ (du Tournage vers la Vidéo finale) → Vidéo finale
+        //         flèche bleue ↑ (de la Vidéo finale vers le Tournage) → Tournage
+        const KEYS = Object.keys(BLOCS); // ['t', 'v', 'vf']
+        const flip = (m) => (m === 'accel' ? 'ralent' : 'accel');
+        const inputsList = () => KEYS.filter(b => state.kind[b] === 'input');
+
         // Le bloc à calculer = celui qui reste quand exactement 2 blocs sont saisis
         function getTarget() {
-            const inputs = Object.keys(BLOCS).filter(b => state.kind[b] === 'input');
+            const inputs = inputsList();
             if (inputs.length !== 2) return null;
-            return Object.keys(BLOCS).find(b => !inputs.includes(b));
+            return KEYS.find(b => !inputs.includes(b));
+        }
+
+        // Mode "naturel" d'un bloc à calculer
+        function autoMode(target) {
+            if (target === 'vf') return 'accel';
+            if (target === 't') return 'ralent';
+            // Tournage saisi en premier → accélération ; Vidéo finale en premier → ralentissement
+            return state.order.indexOf('t') < state.order.indexOf('vf') ? 'accel' : 'ralent';
+        }
+
+        // Mode utilisé = mode naturel, inversé si l'utilisateur a choisi l'autre flèche (relation inversée)
+        function modeFor(target) {
+            const m = autoMode(target);
+            return state.invert && target !== 'v' ? flip(m) : m;
         }
 
         function applyAutoMode() {
             const target = getTarget();
-            if (target === 'vf') state.mode = 'accel';
-            else if (target === 't') state.mode = 'ralent';
-            else if (target === 'v') {
-                // Tournage saisi en premier → accélération ; Vidéo finale en premier → ralentissement
-                state.mode = state.order.indexOf('t') < state.order.indexOf('vf') ? 'accel' : 'ralent';
+            if (target) state.mode = modeFor(target);
+        }
+
+        // Bloc entièrement vide (aucun champ rempli). Un champ à "0" n'est PAS vide.
+        function isBlank(block) {
+            return CHAMPS[block].every(id => $(id).value === '');
+        }
+
+        function clearBlock(block) {
+            CHAMPS[block].forEach(id => { $(id).value = ''; });
+        }
+
+        function touchOrder(block) {
+            state.order = state.order.filter(b => b !== block);
+            state.order.push(block); // le plus récent à la fin
+        }
+
+        // Calcule le bloc "target" à partir des deux autres. Renvoie false si les valeurs sont inutilisables.
+        function calcTarget(target) {
+            const tSec = secondsOf('t');
+            const vfSec = secondsOf('vf');
+            const v = Number($('v_val').value);
+            const inv = state.invert;
+
+            if (target === 'vf') {
+                if (!(v > 0)) return false;
+                setTime('vf', inv ? tSec * v : tSec / v);
+
+            } else if (target === 't') {
+                if (!(v > 0)) return false;
+                setTime('t', inv ? vfSec / v : vfSec * v);
+
+            } else { // 'v'
+                const value = inv ? vfSec / tSec : tSec / vfSec;
+                if (!(isFinite(value) && value > 0)) return false;
+                $('v_val').value = value.toFixed(1);
             }
+            return true;
+        }
+
+        // Mode direct : quel bloc est recalculé quand on modifie "block" ?
+        function liveDependent(block) {
+            if (block === 'v') return state.mode === 'ralent' ? 't' : 'vf'; // le bloc désigné par la flèche
+            if (state.dirChosen) return 'v';                                 // une flèche a été cliquée
+            return block === 't' ? 'vf' : 't';                               // Tournage <-> Vidéo finale
+        }
+
+        function liveEdit(block) {
+            const dep = liveDependent(block);
+            KEYS.forEach(b => { state.kind[b] = (b === dep ? 'result' : 'input'); });
+            touchOrder(block);
+            // résultat à jour, ou périmé (CALCULER clignote) si les valeurs sont inutilisables
+            state.computed = calcTarget(dep);
         }
 
         function onUserInput(block) {
             state.touched = true;
             state.computed = false;
+            state.active = block;
+
+            // ---- Mode direct (3 blocs remplis) : on modifie un bloc, un autre suit ----
+            // (tant que le bloc modifié n'est pas entièrement vidé : en passant d'un champ à l'autre, un "0"
+            //  transitoire ne doit pas faire sortir du mode direct)
+            if (state.live && !isBlank(block)) {
+                liveEdit(block);
+                render();
+                return;
+            }
 
             if (isFilled(block)) {
+                const inputs = inputsList();
+
+                if (inputs.length === 2 && state.kind[block] !== 'input') {
+                    // Deux blocs saisis, le 3e (vide) est celui qu'on CALCULE : on ne le remplit pas à la main.
+                    // Si on le remplit quand même, on repart de zéro avec CE bloc seul :
+                    // les deux autres sont vidés et éteints, comme pour un nouveau calcul.
+                    KEYS.filter(b => b !== block).forEach(b => {
+                        clearBlock(b);
+                        state.kind[b] = 'empty';
+                    });
+                    state.order = [];
+                    state.mode = null;
+                    state.invert = false;
+                    $('machineTitle').classList.remove('animatePulse');
+                }
                 state.kind[block] = 'input';
-                if (!state.order.includes(block)) state.order.push(block);
+                touchOrder(block);
+
             } else {
                 state.kind[block] = 'empty';
                 state.order = state.order.filter(b => b !== block);
+                // Un bloc est vidé alors que les trois étaient remplis : on quitte le mode direct.
+                // L'ancien résultat devient une donnée (il garde sa valeur) et le bloc vidé est à recalculer.
+                state.live = false;
+                state.dirChosen = false;
+                KEYS.filter(b => state.kind[b] === 'result').forEach(r => {
+                    state.kind[r] = 'input';
+                    if (!state.order.includes(r)) state.order.unshift(r);
+                });
             }
 
             applyAutoMode();
+            if (!getTarget()) state.invert = false;
             render();
         }
 
+        // Clic sur un BLOC (en dehors de ses champs), en mode direct : parmi les deux autres blocs,
+        // on choisit celui qui sera recalculé quand on modifie le champ actif.
+        function onBlockClick(clicked) {
+            if (!state.live || !state.active || clicked === state.active) return;
+
+            if (state.active === 'v') {
+                // Vitesse en cours de saisie : le bloc cliqué est celui qui sera recalculé (comme les flèches)
+                state.mode = clicked === 't' ? 'ralent' : 'accel';
+                state.dirChosen = true;
+            } else if (clicked === 'v') {
+                state.dirChosen = true;   // la Vitesse sera recalculée
+            } else {
+                state.dirChosen = false;  // l'autre bloc (Tournage <-> Vidéo finale) : comportement par défaut
+            }
+            render();
+        }
+
+        // Flèches accélération (rouge ↓) / ralentissement (bleue ↑)
         function setMode(mode) {
+            // Mode direct : la flèche choisit le bloc recalculé quand on modifie la Vitesse,
+            // et fait recalculer la Vitesse (au lieu de l'autre bloc) quand on modifie Tournage ou Vidéo finale.
+            // Cliquer une flèche ne change aucune valeur.
+            if (state.live) {
+                state.mode = mode;
+                state.dirChosen = true;
+                render();
+                return;
+            }
+
             if (state.mode === mode) return;
             state.mode = mode;
 
-            // Le mode change le calcul de Tournage / Vidéo finale : un résultat déjà affiché devient périmé
-            const hasStaleResult = ['t', 'vf'].some(b => state.kind[b] === 'result');
-            if (hasStaleResult) state.computed = false;
-
+            // Avant le calcul : pour Tournage / Vidéo finale, choisir la flèche "non naturelle" inverse la relation
+            const target = getTarget();
+            if (target && target !== 'v') state.invert = (mode !== autoMode(target));
             render();
         }
 
@@ -517,27 +698,17 @@
             setTimeout(() => { btn.textContent = 'CALCULER'; render(); }, 1800);
         }
 
+        // Bouton CALCULER (deux blocs saisis) : calcule le 3e, puis on passe en mode direct
         function compute(target) {
-            const tSec = secondsOf('t');
-            const vfSec = secondsOf('vf');
-            const v = Number($('v_val').value);
-
-            if (target === 'vf') {
-                if (!(v > 0)) return flashError(target);
-                setTime('vf', state.mode === 'ralent' ? tSec * v : tSec / v);
-
-            } else if (target === 't') {
-                if (!(v > 0)) return flashError(target);
-                // Même règle dans les deux sens : accélération = ÷ vitesse, ralentissement = × vitesse
-                setTime('t', state.mode === 'accel' ? vfSec / v : vfSec * v);
-
-            } else { // 'v'
-                if (!(vfSec > 0)) return flashError(target);
-                $('v_val').value = (tSec / vfSec).toFixed(1);
-            }
+            if (!calcTarget(target)) return flashError(target);
 
             state.kind[target] = 'result';
             state.computed = true;
+            if (!state.live) {
+                state.live = true;
+                state.dirChosen = false;
+            }
+            state.active = null; // juste après le calcul : aucun champ actif, les trois encadrés sont discrets
             $('machineTitle').classList.add('animatePulse'); // invite à cliquer le titre pour réinitialiser
             render();
         }
@@ -547,6 +718,10 @@
             state.kind = { t: 'empty', v: 'empty', vf: 'empty' };
             state.order = [];
             state.mode = null;
+            state.invert = false;
+            state.live = false;
+            state.dirChosen = false;
+            state.active = null;
             state.computed = false;
             state.touched = false;
             $('machineTitle').classList.remove('animatePulse');
@@ -557,6 +732,15 @@
 
         // ---------- affichage ----------
         function render() {
+            // Mode direct : on repère le bloc en cours de saisie et le bloc qui sera recalculé
+            root.classList.toggle('live', state.live);
+            const highlighted = new Set();
+            if (state.live && state.active) {
+                highlighted.add(state.active);
+                highlighted.add(liveDependent(state.active));
+            }
+            KEYS.forEach(b => $(BLOCS[b]).classList.toggle('hl', highlighted.has(b)));
+
             if (state.touched) {
                 $('t_seconds').textContent = `total de secondes = ${Math.round(secondsOf('t'))} s`;
                 $('vf_seconds').textContent = `total de secondes = ${Math.round(secondsOf('vf'))} s`;
@@ -587,10 +771,93 @@
             });
         }
 
+        // ---------- roulette de la souris ----------
+        // En plus de la saisie au clavier et des flèches haut/bas du champ : dans un champ sélectionné (cliqué),
+        // défiler vers le HAUT = flèche haut (+1), défiler vers le BAS = flèche bas (-1).
+        // Plus le défilement est rapide et fort, plus les chiffres défilent vite.
+        const WHEEL_NEEDS_FOCUS = true; // true : le champ doit avoir été cliqué (la page défile normalement sinon)
+        const PX_PER_UNIT = 100;        // un cran de molette de souris (~100 px) = 1 unité à vitesse normale
+        const FAST_FROM = 800;          // au-delà de cette vitesse de défilement (px/s), les chiffres accélèrent
+        const FAST_RANGE = 1200;        // plus cette valeur est petite, plus l'accélération est brutale
+        const MAX_FACTOR = 12;          // accélération maximale (×12)
+
+        function wheelPixels(e) {
+            let d = e.deltaY;
+            if (e.deltaMode === 1) d *= 33;       // "lignes" (Firefox avec une souris) -> pixels
+            else if (e.deltaMode === 2) d *= 400; // "pages"
+            return d;
+        }
+
+        function enableWheel(field) {
+            let acc = 0;   // fraction d'unité en attente
+            let vel = 0;   // vitesse de défilement lissée (px/s)
+            let last = 0;
+
+            field.addEventListener('wheel', (e) => {
+                if (WHEEL_NEEDS_FOCUS && document.activeElement !== field) return;
+
+                const d = wheelPixels(e);
+                if (!d) return;
+                e.preventDefault();
+
+                const now = performance.now();
+                const dt = Math.max(now - last, 8);
+                vel = dt > 300 ? 0 : 0.5 * vel + 0.5 * (Math.abs(d) / dt * 1000); // nouvelle séquence si pause
+                last = now;
+
+                const factor = Math.min(MAX_FACTOR, 1 + Math.max(0, vel - FAST_FROM) / FAST_RANGE);
+                const sign = d < 0 ? 1 : -1; // vers le haut = augmente
+                if (acc !== 0 && Math.sign(acc) !== sign) acc = 0; // changement de sens : on repart de zéro
+
+                // Un vrai "cran" de molette (≥ 40 px) vaut toujours au moins 1 unité ;
+                // les petits défilements du pavé tactile s'accumulent en fractions.
+                const abs = Math.abs(d);
+                const base = abs >= 40 ? Math.max(1, Math.round(abs / PX_PER_UNIT)) : abs / PX_PER_UNIT;
+                acc += sign * base * factor;
+
+                const steps = Math.trunc(acc);
+                if (steps === 0) return;
+                acc -= steps;
+
+                const min = field.min !== '' ? Number(field.min) : -Infinity;
+                const next = Math.max(min, (Number(field.value) || 0) + steps);
+                field.value = String(+next.toFixed(10)); // évite 0.30000000000000004
+                field.dispatchEvent(new Event('input', { bubbles: true })); // comme une saisie au clavier
+            }, { passive: false });
+        }
+
         // ---------- écouteurs ----------
         Object.keys(CHAMPS).forEach(block => {
-            CHAMPS[block].forEach(id => $(id).addEventListener('input', () => onUserInput(block)));
+            CHAMPS[block].forEach(id => {
+                $(id).addEventListener('input', () => onUserInput(block));
+                $(id).addEventListener('focus', () => { state.active = block; render(); }); // ce bloc devient "actif"
+                enableWheel($(id));
+            });
         });
+
+        // Clic sur un bloc : choix du bloc recalculé. Le "mousedown" est neutralisé pour que le champ en cours de
+        // saisie GARDE le focus (la roulette et le clavier continuent de fonctionner).
+        KEYS.forEach(b => {
+            const el = $(BLOCS[b]);
+            el.addEventListener('mousedown', (e) => {
+                if (state.live && state.active && !e.target.closest('input')) e.preventDefault();
+            });
+            el.addEventListener('click', (e) => {
+                if (e.target.closest('input')) return;
+                onBlockClick(b);
+            });
+        });
+
+        ['flecheGauche', 'flecheDroite'].forEach(id => {
+            $(id).addEventListener('mousedown', (e) => { if (state.live && state.active) e.preventDefault(); });
+        });
+
+        // Un clic EN DEHORS de l'outil éteint les encadrés (plus de champ actif)
+        function onOutsidePointer(e) {
+            if (!root.isConnected) { document.removeEventListener('pointerdown', onOutsidePointer); return; }
+            if (state.active && !root.contains(e.target)) { state.active = null; render(); }
+        }
+        document.addEventListener('pointerdown', onOutsidePointer);
 
         // Un élément "bouton" non natif (div) : clic + Entrée / Espace
         function onActivate(el, fn) {

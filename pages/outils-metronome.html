@@ -60,21 +60,22 @@
 
 <!-- === 2. LE STYLE (CSS) === -->
 <style>
-    /* Même habillage que les autres outils : carte claire de 375px, texte noir, Arial.
-       Tout est limité à .tool-metro ; on rétablit à l'intérieur les valeurs par défaut
-       du navigateur que le CSS global du site modifie (box-sizing, marges, interligne). */
+    /* Thème sombre : le fond de la carte se confond avec celui de la page (transparent), le texte est clair,
+       et chaque bloc est signalé par un ENCADRÉ de couleur (pas de fond de couleur).
+       Tout est limité à .tool-metro ; on rétablit à l'intérieur les valeurs par défaut du navigateur
+       que le CSS global du site modifie (box-sizing, marges, interligne). */
     .tool-metro {
         box-sizing: border-box;
         max-width: 375px;
         margin: 0 auto;
         padding: 20px;
-        background: #f5f5f5;
-        color: #000;
+        background: transparent;
+        color: #f4f4f4;
+        color-scheme: dark;
+        /* curseurs et contrôles natifs en version sombre */
         font-family: Arial, sans-serif;
         line-height: normal;
         text-align: center;
-        border-radius: 14px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
     }
 
     .tool-metro *,
@@ -85,47 +86,63 @@
 
     .tool-metro button {
         cursor: pointer;
-        border: none;
-        color: #000;
+        color: #f4f4f4;
+        background: #222;
+        border: 1px solid #555;
         touch-action: manipulation;
         /* pas de zoom au double-tap sur mobile */
         -webkit-tap-highlight-color: transparent;
+        transition: background 0.15s, border-color 0.15s;
+    }
+
+    .tool-metro button:hover {
+        background: #2e2e2e;
+        border-color: #777;
     }
 
     .tool-metro .titreTool {
         font-size: 26px;
         margin: 5px 0 14px;
+        color: #fff;
     }
 
+    /* --- Blocs : encadré de couleur, fond transparent --- */
     .tool-metro .bloc {
         padding: 12px;
         margin-bottom: 12px;
         border-radius: 10px;
+        border: 2px solid;
+        background: none;
     }
 
     .tool-metro .blocTempo {
-        background: #f2e9e6;
+        border-color: #e59a86;
     }
 
+    /* corail */
     .tool-metro .blocMesure {
-        background: #f7f4e1;
+        border-color: #e6c76a;
     }
 
+    /* jaune doré */
     .tool-metro .blocReglages {
-        background: #e4f7ea;
+        border-color: #6fcf8d;
     }
+
+    /* vert */
 
     /* --- Tempo --- */
     .tool-metro .bpmValue {
         font-size: 64px;
         font-weight: bold;
         line-height: 1.1;
+        color: #fff;
         font-variant-numeric: tabular-nums;
     }
 
     .tool-metro .bpmValue small {
         font-size: 14px;
-        color: #666;
+        color: #aaa;
         margin-left: 6px;
     }
 
@@ -150,19 +167,23 @@
     }
 
     .tool-metro .roundBtn {
+        box-sizing: border-box;
         width: 44px;
         height: 44px;
         padding: 0;
         flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         border-radius: 50%;
-        background: #ddd;
         font-size: 24px;
-        line-height: 44px;
+        line-height: 1;
         user-select: none;
     }
 
     .tool-metro .roundBtn:active {
-        background: #c3d9d5;
+        background: #1d2f24;
+        border-color: #6fcf8d;
     }
 
     .tool-metro #mt-tap {
@@ -173,18 +194,17 @@
         font-weight: bold;
         letter-spacing: 2px;
         border-radius: 10px;
-        background: #ddd;
-        transition: background 0.15s;
     }
 
     .tool-metro #mt-tap.flash {
-        background: #c3d9d5;
+        background: #1d2f24;
+        border-color: #6fcf8d;
     }
 
     .tool-metro .hint {
         margin-top: 6px;
         font-size: 12px;
-        color: #666;
+        color: #999;
     }
 
     /* --- Départ / arrêt --- */
@@ -195,14 +215,25 @@
         margin: 0 auto 12px;
         font-size: 20px;
         font-weight: bold;
+        border: none;
         border-radius: 12px;
         background: #3ac74f;
-        color: #fff;
+        color: #0b1a0e;
+        /* texte foncé : plus lisible sur le vert */
         transition: background 0.2s;
+    }
+
+    .tool-metro .startBtn:hover {
+        background: #4ad560;
     }
 
     .tool-metro .startBtn.running {
         background: #f06a6a;
+        color: #1a0a0a;
+    }
+
+    .tool-metro .startBtn.running:hover {
+        background: #f47f7f;
     }
 
     /* --- Temps / mesures / chrono --- */
@@ -219,34 +250,40 @@
         width: 14px;
         height: 14px;
         border-radius: 50%;
-        background: #e6dfb8;
+        background: #3a3a3a;
         border: 2px solid transparent;
         transition: background 0.05s;
     }
 
     /* le 1er temps (accentué) est cerclé */
     .tool-metro .dot:first-child {
-        border-color: #8a6d00;
+        border-color: #e6c76a;
     }
 
     .tool-metro .dot.on {
-        background: #b38600;
+        background: #e6c76a;
     }
 
     .tool-metro .dot:first-child.on {
-        background: #c41b16;
-        border-color: #c41b16;
+        background: #ff5a4f;
+        border-color: #ff5a4f;
     }
 
     .tool-metro .posLine {
         font-size: 16px;
         margin: 6px 0;
+        color: #ddd;
+    }
+
+    .tool-metro .posLine b {
+        color: #fff;
     }
 
     .tool-metro .chrono {
         font-size: 32px;
         font-weight: bold;
         letter-spacing: 1px;
+        color: #fff;
         font-variant-numeric: tabular-nums;
     }
 
@@ -255,7 +292,7 @@
         margin: 10px 0 4px;
         font-size: 13px;
         font-weight: bold;
-        color: #444;
+        color: #aaa;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
@@ -272,6 +309,7 @@
         min-width: 40px;
         font-size: 26px;
         font-weight: bold;
+        color: #fff;
     }
 
     .tool-metro .sounds {
@@ -284,11 +322,12 @@
         padding: 9px 2px;
         font-size: 13px;
         border-radius: 10px;
-        background: #ddd;
     }
 
     .tool-metro .sounds button.active {
-        background: #c3d9d5;
+        background: #1d2f24;
+        border-color: #6fcf8d;
+        color: #fff;
         font-weight: bold;
     }
 
@@ -296,6 +335,7 @@
         min-width: 44px;
         text-align: right;
         font-size: 14px;
+        color: #ddd;
     }
 </style>
 

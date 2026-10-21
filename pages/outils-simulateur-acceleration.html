@@ -6,7 +6,13 @@
     <!-- Vidéo brute : ni commandes, ni pause, ni plein écran.
          Deux vidéos superposées : la page passe de l'une à l'autre (fondu) quand le curseur
          change de palier de vitesse. -->
-    <div class="simuStage">
+    <!-- Lien "plein écran" : juste au-dessus de la vidéo, en haut à droite -->
+    <div class="simuTop">
+        <button type="button" id="simu-full" class="fsLink" aria-label="Afficher la vidéo en plein écran">plein
+            écran</button>
+    </div>
+
+    <div class="simuStage" id="simu-stage">
         <video id="simu-video-a" class="front" muted loop playsinline preload="none" tabindex="-1"
             disablePictureInPicture disableRemotePlayback controlsList="nodownload nofullscreen noremoteplayback"
             aria-label="Vidéo de démonstration"></video>
@@ -24,7 +30,8 @@
     <!-- Curseur de vitesse -->
     <div class="bloc blocVitesse">
         <div class="mtLabel">Vitesse de lecture</div>
-        <div class="speedValue">&times;<span id="simu-speed">1</span></div>
+        <div class="speedValue"><span class="speedNum">&times;<span id="simu-speed">1</span></span><span
+                class="speedTag" id="simu-tag"></span></div>
         <input type="range" id="simu-slider" min="0" max="100" step="0.5" value="0"
             aria-label="Vitesse de lecture, de ×1 à ×25">
         <div class="scale"><span>&times;1</span><span>&times;25</span></div>
@@ -37,20 +44,19 @@
 
 <!-- === 2. LE STYLE (CSS) === -->
 <style>
-    /* Même habillage que les autres outils (carte claire, texte noir, Arial), en plus large
-       pour afficher la vidéo en grand. Tout est limité à .tool-simu. */
+    /* Thème sombre (comme les autres outils) : fond transparent qui se confond avec la page, texte clair,
+       blocs signalés par un ENCADRÉ de couleur (jamais de fond de couleur). Tout est limité à .tool-simu. */
     .tool-simu {
         box-sizing: border-box;
         max-width: 1000px;
         margin: 0 auto;
         padding: 20px;
-        background: #f5f5f5;
-        color: #000;
+        background: transparent;
+        color: #f4f4f4;
+        color-scheme: dark;
         font-family: Arial, sans-serif;
         line-height: normal;
         text-align: center;
-        border-radius: 14px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
     }
 
     .tool-simu *,
@@ -62,19 +68,55 @@
     .tool-simu .titreTool {
         font-size: 26px;
         margin: 5px 0 14px;
+        color: #fff;
     }
 
-    /* --- Vidéo --- */
+    /* --- Lien "plein écran" au-dessus de la vidéo --- */
+    .tool-simu .simuTop {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 6px;
+    }
+
+    .tool-simu .fsLink {
+        padding: 0 2px;
+        border: none;
+        background: none;
+        font: inherit;
+        font-size: 13px;
+        color: #999;
+        cursor: pointer;
+        transition: color 0.15s;
+    }
+
+    .tool-simu .fsLink:hover {
+        color: #fff;
+        text-decoration: underline;
+    }
+
+    /* --- Vidéo ---
+       Taille normale : un clic remet la vidéo au début. Plein écran : un clic revient à la taille normale. */
     .tool-simu .simuStage {
         position: relative;
         width: 100%;
         aspect-ratio: 1080 / 608;
         /* format de la vidéo : la page ne "saute" pas au chargement */
         background: #000;
+        border: 2px solid #3a3a3a;
+        /* fin cadre gris : on distingue l'image du fond de la page */
         border-radius: 10px;
         overflow: hidden;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        /* pas de zoom au double-tap sur mobile */
+        -webkit-tap-highlight-color: transparent;
     }
 
+    /* Deux vidéos superposées. Pour passer de l'une à l'autre SANS "creux" de luminosité :
+       la nouvelle (.front) apparaît en fondu PAR-DESSUS l'ancienne (.back), qui reste opaque
+       jusqu'à la fin du fondu. (Avec deux fondus croisés, l'image passait brièvement à ~75 % de luminosité.) */
     .tool-simu .simuStage video {
         position: absolute;
         inset: 0;
@@ -82,20 +124,60 @@
         height: 100%;
         object-fit: contain;
         opacity: 0;
+        z-index: 0;
         transition: opacity 0.15s linear;
-        /* fondu entre deux paliers */
         pointer-events: none;
-        /* aucun clic ne peut mettre en pause ou ouvrir un lecteur */
+        /* les clics sont reçus par .simuStage */
+    }
+
+    .tool-simu .simuStage video.back {
+        opacity: 1;
+        z-index: 1;
     }
 
     .tool-simu .simuStage video.front {
         opacity: 1;
+        z-index: 2;
+    }
+
+    /* Plein écran : l'image occupe tout l'écran (bandes noires si le format diffère) */
+    .tool-simu .simuStage:fullscreen {
+        width: 100vw;
+        height: 100vh;
+        aspect-ratio: auto;
+        border: none;
+        border-radius: 0;
+    }
+
+    .tool-simu .simuStage:-webkit-full-screen {
+        width: 100vw;
+        height: 100vh;
+        aspect-ratio: auto;
+        border: none;
+        border-radius: 0;
+    }
+
+    /* Repli quand le navigateur ne propose pas le vrai plein écran (iPhone) : l'image couvre toute la fenêtre */
+    .tool-simu .simuStage.pseudoFull {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        width: 100vw;
+        height: 100vh;
+        aspect-ratio: auto;
+        border: none;
+        border-radius: 0;
+    }
+
+    body.simu-pseudo-full #main-header {
+        display: none;
     }
 
     .tool-simu .simuStart {
         position: absolute;
         inset: 0;
-        z-index: 2;
+        z-index: 5;
+        cursor: default;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -117,12 +199,19 @@
         border: none;
         border-radius: 12px;
         background: #3ac74f;
-        color: #fff;
+        color: #0b1a0e;
+        /* texte foncé : lisible sur le vert */
         cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .tool-simu #simu-load:hover {
+        background: #4ad560;
     }
 
     .tool-simu #simu-load:disabled {
-        background: #888;
+        background: #555;
+        color: #bbb;
         cursor: default;
     }
 
@@ -132,28 +221,46 @@
         color: #ccc;
     }
 
-    /* --- Vitesse --- */
+    /* --- Vitesse : ni cadre ni fond, le bloc se fond dans la page --- */
     .tool-simu .bloc {
         margin-top: 14px;
         padding: 12px;
-        border-radius: 10px;
-        background: #f2e9e6;
+        border: none;
+        background: none;
     }
 
     .tool-simu .mtLabel {
         font-size: 13px;
         font-weight: bold;
-        color: #444;
+        color: #aaa;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
 
     .tool-simu .speedValue {
+        display: flex;
+        align-items: center;
+        /* centrage haut/bas de la mention par rapport au chiffre */
+        justify-content: center;
+        gap: 8px;
         margin: 4px 0 8px;
         font-size: 48px;
         font-weight: bold;
         line-height: 1.1;
+        color: #fff;
         font-variant-numeric: tabular-nums;
+    }
+
+    /* Mention discrète à côté de la vitesse : "(vitesse réelle)" à ×1, centrée verticalement sur le chiffre */
+    .tool-simu .speedTag {
+        font-size: 14px;
+        font-weight: normal;
+        letter-spacing: 0;
+        color: #5fc2bb;
+    }
+
+    .tool-simu .speedTag:empty {
+        display: none;
     }
 
     .tool-simu input[type="range"] {
@@ -166,20 +273,21 @@
         display: flex;
         justify-content: space-between;
         font-size: 13px;
-        color: #666;
+        color: #999;
     }
 
     .tool-simu .simuInfo {
         margin-top: 8px;
         font-size: 13px;
-        color: #555;
+        color: #aaa;
         min-height: 1.2em;
     }
 
     .tool-simu .simuFile {
         margin-top: 2px;
         font-size: 12px;
-        color: #888;
+        color: #ff8a80;
+        /* messages d'erreur éventuels */
     }
 
     /* Messages vides : aucune place réservée */
@@ -219,7 +327,7 @@
         // 'log'    : chaque pas du curseur multiplie la vitesse (le milieu du curseur = ×5)
         // 'linear' : proportionnel (le milieu du curseur = ×13)
         const SCALE = 'log';
-        const AUTO_START = false;           // true : démarrage automatique à l'ouverture de la page
+        const AUTO_START = true;            // true : la lecture démarre dès l'ouverture de la page (à vitesse réelle)
         const SWITCH_DEBOUNCE_MS = 150;     // attente avant de changer de version quand on déplace le curseur
         const MIN_RATE = 0.9;               // une version reste utilisée tant que sa vitesse de lecture est dans [0,9 ; 1,6[
         const MAX_RATE = 1.6;
@@ -229,6 +337,7 @@
         const PREFETCH_DELAY_MS = 1500;     // le palier voisin est préchargé quand le curseur ne bouge plus
 
         const slider = $('slider');
+        const stage = $('stage');
         const videos = [$('video-a'), $('video-b')];
 
         let front = 0;          // vidéo actuellement visible (0 ou 1)
@@ -237,6 +346,9 @@
         let target = -1;        // palier vers lequel on bascule (-1 = aucun)
         let token = 0;          // permet d'annuler une bascule devenue inutile
         let running = false;
+        let starting = false;   // chargement du premier fichier en cours
+        let autoPending = false; // démarrage automatique en attente (onglet ouvert en arrière-plan)
+        let interacted = false; // le visiteur a-t-il touché au curseur ? (le préchargement n'a lieu qu'ensuite)
         let extIndex = 0;
         let lastDir = 1;
         let lastSlider = 0;
@@ -309,6 +421,8 @@
 
         function updateDisplay(S) {
             $('speed').textContent = fmt(S);
+            const p = Number(slider.value);
+            $('tag').textContent = p <= 0 ? '(vitesse réelle)' : '';
             $('info').textContent =
                 `La vidéo (${fmtDuration(SOURCE_SECONDS)}) défile en ${fmtDuration(SOURCE_SECONDS / S)} à cette vitesse.`;
         }
@@ -400,15 +514,20 @@
                 await framePresented(next);
                 if (my !== token) { next.pause(); return; }
 
+                // La nouvelle vidéo apparaît en fondu PAR-DESSUS l'ancienne, qui reste visible jusqu'au bout
                 const old = cur;
+                next.classList.remove('back');
                 next.classList.add('front');
                 old.classList.remove('front');
+                old.classList.add('back');
                 front = 1 - front;
                 const previous = ci;
                 ci = ti;
                 si = previous;      // l'ancienne version reste chargée : un retour en arrière est instantané
                 target = -1;
-                setTimeout(() => { if (activeVideo() !== old) old.pause(); }, 250);
+                setTimeout(() => {
+                    if (activeVideo() !== old) { old.classList.remove('back'); old.pause(); }
+                }, 250);
 
                 applySpeed();
                 updateFileInfo();
@@ -469,7 +588,7 @@
         function scheduleIdlePrefetch() {
             clearTimeout(idleTimer);
             idleTimer = setTimeout(() => {
-                if (!running || target >= 0) return;
+                if (!running || target >= 0 || !interacted) return; // pas de préchargement tant que le curseur n'a pas bougé
                 const idx = ci + lastDir;
                 if (idx < 0 || idx >= LADDER.length || failed.has(idx) || si === idx) return;
                 si = idx;
@@ -479,34 +598,115 @@
 
         // ---------------------------------------------------------------- lancement
         async function start() {
-            if (running) return;
-            $('load').disabled = true;
+            if (running || starting) return;
+            starting = true;
+
+            // Pendant le chargement : un simple message, sans bouton
+            $('start').hidden = false;
+            $('load').hidden = true;
             $('note').textContent = 'Chargement\u2026';
 
             const S = currentSpeed();
             const first = chooseFile(S);
             const av = activeVideo();
+            ci = first;
+            si = -1;
+
             try {
-                ci = first;
-                si = -1;
                 await loadFile(av, first);
-                setRate(av, S / LADDER[first]);
-                await av.play();
-                running = true;
-                $('start').hidden = true;
-                applySpeed();
             } catch (e) {
+                starting = false;
+                $('load').hidden = false;
                 $('load').disabled = false;
                 $('note').textContent =
                     `Impossible de lire ${FILE_PREFIX}${Math.round(LADDER[first] * 100)}.${EXTENSIONS[extIndex]}. ` +
                     `Vérifiez que les fichiers sont bien en MP4 (H.264), avec ce nom, dans le bon dossier.`;
+                return;
             }
+
+            try {
+                setRate(av, S / LADDER[first]);
+                await av.play();
+            } catch (e) {
+                // Lecture automatique refusée (mode économie d'énergie, économiseur de données...) : on propose le bouton
+                starting = false;
+                $('load').hidden = false;
+                $('load').disabled = false;
+                $('note').textContent = '';
+                return;
+            }
+
+            starting = false;
+            running = true;
+            $('start').hidden = true;
+            applySpeed();
         }
+
+        // Connexion lente ou économiseur de données activé : pas de démarrage automatique
+        function connectionIsLimited() {
+            const c = navigator.connection;
+            return !!(c && (c.saveData || /^(slow-)?2g$|^3g$/.test(c.effectiveType || '')));
+        }
+
+        // ---------------------------------------------------------------- clic et plein écran
+        // Retour au début de la vidéo (à la même vitesse)
+        function resetVideo() {
+            const v = activeVideo();
+            try { v.currentTime = 0; } catch (e) { /* vidéo pas encore prête */ }
+        }
+
+        function isFull() {
+            return document.fullscreenElement === stage || document.webkitFullscreenElement === stage ||
+                stage.classList.contains('pseudoFull');
+        }
+
+        function setPseudoFull(on) {
+            stage.classList.toggle('pseudoFull', on);
+            document.body.classList.toggle('simu-pseudo-full', on);
+        }
+
+        function enterFull() {
+            const request = stage.requestFullscreen || stage.webkitRequestFullscreen;
+            if (request) {
+                try {
+                    const p = request.call(stage);
+                    if (p && typeof p.catch === 'function') p.catch(() => setPseudoFull(true));
+                    return;
+                } catch (e) { /* on passe au repli */ }
+            }
+            setPseudoFull(true); // iPhone : pas de plein écran pour un élément -> on couvre toute la fenêtre
+        }
+
+        function exitFull() {
+            if (document.fullscreenElement || document.webkitFullscreenElement) {
+                const exit = document.exitFullscreen || document.webkitExitFullscreen;
+                if (exit) exit.call(document);
+            }
+            setPseudoFull(false);
+        }
+
+        // Taille normale : 1 clic sur l'image = retour au début.
+        // Plein écran : 1 clic = retour à la taille normale (sans remise à zéro).
+        stage.addEventListener('click', (e) => {
+            if (!running) return;                                             // pas pendant le chargement
+            if (e.target.closest && e.target.closest('#simu-start')) return;  // clic sur l'écran de lancement
+            if (isFull()) exitFull();
+            else resetVideo();
+        });
+        $('full').addEventListener('click', enterFull); // lien "plein écran" au-dessus de la vidéo
+        stage.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        function onKeydown(e) {
+            if (!root.isConnected) { document.removeEventListener('keydown', onKeydown); return; }
+            if (e.key === 'Escape' && stage.classList.contains('pseudoFull')) setPseudoFull(false);
+        }
+        document.addEventListener('keydown', onKeydown);
 
         // ---------------------------------------------------------------- écouteurs
         slider.addEventListener('input', () => {
             const v = Number(slider.value);
             if (v !== lastSlider) { lastDir = v > lastSlider ? 1 : -1; lastSlider = v; }
+            interacted = true;
             applySpeed();
         });
         videos.forEach(v => v.addEventListener('contextmenu', (e) => e.preventDefault()));
@@ -516,6 +716,7 @@
         function onVisibility() {
             if (!root.isConnected) { document.removeEventListener('visibilitychange', onVisibility); return; }
             if (document.hidden) videos.forEach(v => v.pause());
+            else if (autoPending) { autoPending = false; start(); }
             else if (running) activeVideo().play().catch(() => { });
         }
         document.addEventListener('visibilitychange', onVisibility);
@@ -530,10 +731,17 @@
             token++;
             running = false;
             document.removeEventListener('visibilitychange', onVisibility);
+            document.removeEventListener('keydown', onKeydown);
+            document.body.classList.remove('simu-pseudo-full');
             videos.forEach(v => { v.pause(); v.removeAttribute('src'); v.load(); });
         }, 1000);
 
         updateDisplay(currentSpeed());
-        if (AUTO_START) start();
+
+        if (AUTO_START && !connectionIsLimited()) {
+            $('start').hidden = true;          // pas de bouton : la vidéo démarre toute seule
+            if (document.hidden) autoPending = true; // onglet ouvert en arrière-plan : on attend qu'il s'affiche
+            else start();
+        }
     })();
 </script>

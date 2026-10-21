@@ -1,0 +1,1530 @@
+<!-- === 1. LE CONTENU === -->
+<section class="tool-chrono" id="tool-chrono">
+
+    <div class="panels">
+
+        <!-- LE CHRONOMÈTRE (la référence : ses temps sont réels et fixes) -->
+        <div class="panel" id="ch-fixed">
+            <h2 class="titreTool">Chronomètre</h2>
+
+            <!-- Affichage : heures : minutes : secondes : centièmes (unité abrégée sous chaque zone) -->
+            <div class="display" role="timer" aria-label="Chronomètre">
+                <div class="cell"><span class="digits" id="ch-h">00</span><span class="ulab">h</span></div>
+                <span class="sep">:</span>
+                <div class="cell"><span class="digits" id="ch-m">00</span><span class="ulab">min</span></div>
+                <span class="sep">:</span>
+                <div class="cell"><span class="digits" id="ch-s">00</span><span class="ulab">s</span></div>
+                <span class="sep">:</span>
+                <div class="cell"><span class="digits" id="ch-c">00</span><span class="ulab">cs</span></div>
+            </div>
+
+            <!-- Boutons : remise à zéro (rouge) / démarrer-arrêter (vert) / temps intermédiaire (orange) -->
+            <div class="controls">
+                <div class="ctl side">
+                    <button type="button" id="ch-reset" class="round red" aria-label="Remise à zéro" disabled></button>
+                    <span class="sub" id="ch-sub-reset">remise à zéro</span>
+                </div>
+                <div class="ctl main">
+                    <button type="button" id="ch-start" class="rect green"
+                        aria-label="Démarrer ou arrêter le chronomètre"></button>
+                    <span class="sub" id="ch-sub-start">démarrer</span>
+                </div>
+                <div class="ctl side">
+                    <button type="button" id="ch-lap" class="round orange"
+                        aria-label="Enregistrer un temps intermédiaire" disabled></button>
+                    <span class="sub" id="ch-sub-lap">temps intermédiaire</span>
+                </div>
+            </div>
+
+            <hr class="sepLine">
+
+            <!-- Fenêtre des temps intermédiaires : n'apparaît qu'après le premier clic sur le bouton orange -->
+            <div class="lapsWindow" id="ch-laps" hidden>
+                <div class="lapList" id="ch-list"></div>
+            </div>
+        </div>
+
+        <!-- AU CENTRE (modes Ralentissement / Accélération) : le mode, sa vitesse modifiable, et une flèche -->
+        <div class="panelCenter" id="ch-center" hidden>
+            <div class="modePill" id="ch-pill">Ralentissement</div>
+            <div class="ralentiRow">
+                <label class="xl" for="ch-x">X</label>
+                <input id="ch-x" type="number" min="0" step="any" placeholder="---" aria-label="Vitesse (facteur)">
+            </div>
+            <svg class="modeArrow" id="ch-arrow" viewBox="0 0 120 24" width="120" height="24" aria-hidden="true">
+                <path d="M3 12 H112 M99 3 L114 12 L99 21" fill="none" stroke="currentColor" stroke-width="3.5"
+                    stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </div>
+
+        <!-- LE TIMER : copie convertie du chronomètre. Un clic sur "Timer" l'affiche seul, avec ses propres boutons. -->
+        <div class="panel" id="ch-timer" hidden>
+            <h2 class="titreTool timerTitle" id="ch-timer-title" role="button" tabindex="0">Timer</h2>
+
+            <div class="display" role="timer" aria-label="Timer">
+                <div class="cell"><span class="digits" id="ch-rh">00</span><span class="ulab">h</span></div>
+                <span class="sep">:</span>
+                <div class="cell"><span class="digits" id="ch-rm">00</span><span class="ulab">min</span></div>
+                <span class="sep">:</span>
+                <div class="cell"><span class="digits" id="ch-rs">00</span><span class="ulab">s</span></div>
+                <span class="sep">:</span>
+                <div class="cell"><span class="digits" id="ch-rc">00</span><span class="ulab">cs</span></div>
+            </div>
+
+            <!-- Boutons du Timer (vue "Timer" seule) : remise au début (rouge) / lancer-pause (vert) / flèches = temps intermédiaires -->
+            <div class="controls" id="ch-tcontrols" hidden>
+                <div class="ctl side">
+                    <button type="button" id="ch-treset" class="round red"
+                        aria-label="Remise au début du timer"></button>
+                    <span class="sub">remise au début</span>
+                </div>
+                <div class="ctl main">
+                    <button type="button" id="ch-tstart" class="rect green"
+                        aria-label="Lancer ou mettre en pause le timer"></button>
+                    <span class="sub" id="ch-tsub">lancer</span>
+                </div>
+                <div class="ctl side">
+                    <div class="arrowsCol">
+                        <button type="button" id="ch-tup" class="arrowBtn"
+                            aria-label="Temps intermédiaire précédent">&#9650;</button>
+                        <button type="button" id="ch-tdown" class="arrowBtn"
+                            aria-label="Temps intermédiaire suivant">&#9660;</button>
+                    </div>
+                    <span class="sub">temps intermédiaires</span>
+                </div>
+            </div>
+
+            <!-- Son du Timer (vue "Timer" seule) : haut-parleur actif / barré + volume -->
+            <div class="soundRow" id="ch-soundrow" hidden>
+                <button type="button" id="ch-sound" class="soundBtn" aria-pressed="false"
+                    aria-label="Son : activer ou désactiver" title="Son aux approches des temps intermédiaires">
+                    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+                        <path class="cone" d="M4 9.5 H8 L13 5.5 V18.5 L8 14.5 H4 Z" fill="currentColor"></path>
+                        <g class="waves" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <path d="M16 9.2 C17.4 10.6 17.4 13.4 16 14.8"></path>
+                            <path d="M18.6 6.6 C21.4 9.4 21.4 14.6 18.6 17.4"></path>
+                        </g>
+                        <path class="slash" d="M3.5 3.5 L20.5 20.5" stroke="#f06a6a" stroke-width="2.4"
+                            stroke-linecap="round"></path>
+                    </svg>
+                </button>
+                <input type="range" id="ch-vol" class="volBar" min="0" max="100" value="70" aria-label="Volume du son">
+            </div>
+
+            <!-- place réservée, à la hauteur des boutons de gauche : les deux fenêtres restent alignées -->
+            <div class="controlsGhost" id="ch-ghost" aria-hidden="true"></div>
+
+            <hr class="sepLine">
+
+            <div class="lapsWindow" id="ch-rlaps" hidden>
+                <div class="lapList" id="ch-rlist"></div>
+            </div>
+
+            <div class="retourRow" id="ch-retour-row" hidden>
+                <button type="button" id="ch-retour" class="retourBtn">Retour</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Deux modes de conversion -->
+    <div class="convRow" id="ch-modes">
+        <button type="button" id="ch-mode-ralent" class="modeBtn blue" aria-pressed="false">Ralentissement</button>
+        <button type="button" id="ch-mode-accel" class="modeBtn red" aria-pressed="false">Accélération</button>
+    </div>
+
+    <!-- Message affiché seulement si une erreur JavaScript survient dans l'outil (aide au dépannage) -->
+    <div class="chError" id="ch-error" hidden></div>
+
+</section>
+
+
+<!-- === 2. LE STYLE (CSS) === -->
+<style>
+    /* Même habillage que les autres outils : fond transparent qui se confond avec la page, texte clair, Arial.
+       Tout est limité à .tool-chrono ; on rétablit à l'intérieur les valeurs par défaut du navigateur que le CSS
+       global du site modifie (box-sizing, marges, interligne). */
+    .tool-chrono {
+        box-sizing: border-box;
+        max-width: 375px;
+        margin: 0 auto;
+        padding: 20px;
+        background: transparent;
+        color: #f4f4f4;
+        color-scheme: dark;
+        font-family: Arial, sans-serif;
+        line-height: normal;
+        text-align: center;
+    }
+
+    .tool-chrono *,
+    .tool-chrono *::before,
+    .tool-chrono *::after {
+        box-sizing: content-box;
+    }
+
+    /* Mode conversion : trois colonnes (chronomètre / Ralenti / Timer). Sur petit écran : l'une sous l'autre. */
+    .tool-chrono .panels {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 26px;
+        justify-items: center;
+    }
+
+    .tool-chrono .panel {
+        width: 100%;
+        max-width: 335px;
+    }
+
+    .tool-chrono.conv {
+        max-width: 980px;
+    }
+
+    @media (min-width: 840px) {
+        .tool-chrono.conv .panels {
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            align-items: start;
+            gap: 20px;
+        }
+    }
+
+    .tool-chrono .panel[hidden],
+    .tool-chrono .panelCenter[hidden],
+    .tool-chrono .controls[hidden],
+    .tool-chrono .controlsGhost[hidden],
+    .tool-chrono .retourRow[hidden],
+    .tool-chrono .convRow[hidden] {
+        display: none;
+    }
+
+    /* Ordre des colonnes : Ralentissement = chronomètre | centre | Timer ; Accélération = Timer | centre | chronomètre */
+    .tool-chrono #ch-fixed {
+        order: 1;
+    }
+
+    .tool-chrono #ch-center {
+        order: 2;
+    }
+
+    .tool-chrono #ch-timer {
+        order: 3;
+    }
+
+    .tool-chrono.v-accel #ch-fixed {
+        order: 3;
+    }
+
+    .tool-chrono.v-accel #ch-timer {
+        order: 1;
+    }
+
+    /* Vue "Timer" seule */
+    .tool-chrono.v-timer #ch-fixed,
+    .tool-chrono.v-timer #ch-center {
+        display: none;
+    }
+
+    /* Le Timer apparaît en fondu (1 s) */
+    .tool-chrono .fadeIn {
+        animation: chFade 1s ease both;
+    }
+
+    @keyframes chFade {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .tool-chrono .titreTool {
+        font-size: 26px;
+        margin: 5px 0 22px;
+        color: #fff;
+    }
+
+    /* --- Affichage --- */
+    .tool-chrono .display {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 2px;
+        margin-bottom: 26px;
+    }
+
+    .tool-chrono .cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tool-chrono .digits,
+    .tool-chrono .sep {
+        font-size: 54px;
+        font-weight: bold;
+        line-height: 1.05;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .tool-chrono .digits {
+        color: #fff;
+    }
+
+    .tool-chrono .sep {
+        color: #8a8a8a;
+    }
+
+    .tool-chrono .ulab {
+        margin-top: 2px;
+        font-size: 12px;
+        letter-spacing: 1px;
+        color: #888;
+    }
+
+    /* --- Boutons --- */
+    .tool-chrono .controls {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .tool-chrono .ctl {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* place réservée à droite, à la hauteur des boutons de gauche : les deux fenêtres restent alignées */
+    .tool-chrono .controlsGhost {
+        height: 101px;
+    }
+
+    .tool-chrono .ctl.side {
+        width: 84px;
+    }
+
+    .tool-chrono .ctl.main {
+        width: 140px;
+    }
+
+    .tool-chrono .sub {
+        min-height: 2.4em;
+        /* même hauteur avec un ou deux lignes de texte */
+        font-size: 12px;
+        line-height: 1.2;
+        color: #888;
+    }
+
+    .tool-chrono button {
+        padding: 0;
+        border: none;
+        cursor: pointer;
+        touch-action: manipulation;
+        /* pas de zoom au double-tap sur mobile */
+        -webkit-tap-highlight-color: transparent;
+        transition: transform 0.08s, filter 0.15s, opacity 0.15s, box-shadow 0.2s;
+    }
+
+    .tool-chrono button:hover:not(:disabled) {
+        filter: brightness(1.12);
+    }
+
+    .tool-chrono button:active:not(:disabled) {
+        transform: scale(0.96);
+    }
+
+    .tool-chrono button:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+    .tool-chrono .round {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+    }
+
+    .tool-chrono .rect {
+        width: 140px;
+        height: 64px;
+        border-radius: 14px;
+    }
+
+    .tool-chrono .green {
+        background: #3ac74f;
+    }
+
+    .tool-chrono .orange {
+        background: #f5a524;
+    }
+
+    .tool-chrono .red {
+        background: #f06a6a;
+    }
+
+    /* le chrono tourne : un halo discret autour du bouton vert */
+    .tool-chrono .green.running {
+        box-shadow: 0 0 0 4px rgba(58, 199, 79, 0.3);
+    }
+
+    /* demande de confirmation de la remise à zéro */
+    .tool-chrono .sub.warn {
+        color: #f06a6a;
+    }
+
+    /* --- Séparateur discret --- */
+    .tool-chrono .sepLine {
+        margin: 24px 0 18px;
+        border: none;
+        border-top: 1px solid #333;
+    }
+
+    /* --- Fenêtre des temps intermédiaires --- */
+    .tool-chrono .lapsWindow {
+        padding: 6px 10px;
+        border: 1px solid #8a6a3a;
+        /* orange discret, comme le bouton */
+        border-radius: 10px;
+        text-align: left;
+    }
+
+    .tool-chrono .lapsWindow[hidden] {
+        display: none;
+    }
+
+    .tool-chrono .lapList {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .tool-chrono .lapRow {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 0;
+        border-bottom: 1px solid #2a2a2a;
+        font-size: 15px;
+    }
+
+    .tool-chrono .lapRow:last-child {
+        border-bottom: none;
+    }
+
+    .tool-chrono .lapNum {
+        min-width: 2.4em;
+        text-align: right;
+        color: #999;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .tool-chrono .lapTime {
+        font-weight: bold;
+        color: #fff;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .tool-chrono .lapDash {
+        color: #666;
+    }
+
+    .tool-chrono .lapName {
+        flex: 1;
+        min-width: 0;
+        padding: 2px 0;
+        font: inherit;
+        color: #e0e0e0;
+        background: transparent;
+        border: none;
+        border-bottom: 1px dashed #555;
+        outline: none;
+    }
+
+    .tool-chrono .lapName::placeholder {
+        color: #666;
+    }
+
+    .tool-chrono .lapName:focus {
+        border-bottom-color: #f5a524;
+    }
+
+    /* --- Timer (copie convertie) : le titre clignote en rouge (cycle de 1,5 s) --- */
+    .tool-chrono .timerTitle {
+        color: #f06a6a;
+        /* "Timer" est rouge ; il clignote dans les modes Ralentissement / Accélération */
+    }
+
+    .tool-chrono .timerTitle.blink {
+        animation: chBlink 1.5s ease-in-out infinite;
+    }
+
+    /* tant qu'on est dans un mode, un clic sur "Timer" l'affiche seul */
+    .tool-chrono.conv .timerTitle {
+        cursor: pointer;
+    }
+
+    @keyframes chBlink {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.12;
+        }
+    }
+
+    .tool-chrono .lapNameStatic {
+        flex: 1;
+        min-width: 0;
+        color: #e0e0e0;
+        overflow-wrap: anywhere;
+    }
+
+    .tool-chrono .lapNameStatic.empty {
+        color: #666;
+    }
+
+    /* --- Centre : mode, vitesse, flèche --- */
+    .tool-chrono .panelCenter {
+        padding-top: 52px;
+        /* à hauteur de l'affichage du temps */
+        text-align: center;
+    }
+
+    .tool-chrono .modePill {
+        display: inline-block;
+        height: 36px;
+        line-height: 36px;
+        padding: 0 20px;
+        border-radius: 18px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #06182b;
+    }
+
+    .tool-chrono .modePill.blue {
+        background: #4ea1ef;
+    }
+
+    .tool-chrono .modePill.red {
+        background: #f06a6a;
+        color: #1a0a0a;
+    }
+
+    .tool-chrono .ralentiRow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 14px;
+    }
+
+    .tool-chrono .xl {
+        font-size: 20px;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .tool-chrono #ch-x {
+        width: 76px;
+        height: 32px;
+        padding: 4px;
+        font-size: 18px;
+        text-align: center;
+        color: #fff;
+        background: #1a1a1a;
+        border: 1px solid #555;
+        border-radius: 6px;
+        outline: none;
+    }
+
+    .tool-chrono #ch-x::placeholder {
+        color: #777;
+    }
+
+    .tool-chrono #ch-x:focus {
+        border-color: #6fcf8d;
+        box-shadow: 0 0 0 1px #6fcf8d;
+    }
+
+    /* Flèche sous la vitesse : bleue de gauche à droite (Ralentissement), rouge de droite à gauche (Accélération) */
+    .tool-chrono .modeArrow {
+        display: block;
+        margin: 22px auto 0;
+    }
+
+    .tool-chrono.v-ralent .modeArrow {
+        color: #4ea1ef;
+    }
+
+    .tool-chrono.v-accel .modeArrow {
+        color: #f06a6a;
+        transform: scaleX(-1);
+    }
+
+    /* petits écrans : les colonnes sont empilées, la flèche pointe vers le bas (ralentissement) ou le haut (accélération) */
+    @media (max-width: 839px) {
+        .tool-chrono .panelCenter {
+            padding-top: 0;
+        }
+
+        .tool-chrono.v-ralent .modeArrow {
+            transform: rotate(90deg);
+            margin: 34px auto 34px;
+        }
+
+        .tool-chrono.v-accel .modeArrow {
+            transform: rotate(-90deg);
+            margin: 34px auto 34px;
+        }
+    }
+
+    /* --- Boutons du Timer : flèches haut / bas --- */
+    .tool-chrono .arrowsCol {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .tool-chrono .arrowBtn {
+        width: 44px;
+        height: 30px;
+        border-radius: 8px;
+        background: #f5a524;
+        color: #2b1a00;
+        font-size: 14px;
+        line-height: 1;
+    }
+
+    /* ligne sélectionnée dans les temps intermédiaires du Timer */
+    .tool-chrono .lapRow.sel {
+        background: rgba(245, 165, 36, 0.14);
+        border-radius: 6px;
+    }
+
+    /* --- Son du Timer --- */
+    .tool-chrono .soundRow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .tool-chrono .soundRow[hidden] {
+        display: none;
+    }
+
+    .tool-chrono .soundBtn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #222;
+        border: 1px solid #555;
+        color: #f4f4f4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* haut-parleur actif : ondes visibles ; inactif : barré en rouge */
+    .tool-chrono .soundBtn .slash {
+        display: block;
+    }
+
+    .tool-chrono .soundBtn .waves {
+        display: none;
+    }
+
+    .tool-chrono .soundBtn[aria-pressed="true"] .slash {
+        display: none;
+    }
+
+    .tool-chrono .soundBtn[aria-pressed="true"] .waves {
+        display: inline;
+    }
+
+    .tool-chrono .soundBtn[aria-pressed="false"] {
+        color: #888;
+    }
+
+    .tool-chrono .volBar {
+        width: 110px;
+        accent-color: #f5a524;
+        cursor: pointer;
+    }
+
+    /* --- Temps intermédiaire visé par le compte à rebours --- */
+    .tool-chrono .lapRow.target {
+        background: rgba(245, 165, 36, 0.2);
+        border-radius: 6px;
+    }
+
+    .tool-chrono .lapRow.target.blink {
+        animation: chTarget 1s ease-in-out infinite;
+    }
+
+    @keyframes chTarget {
+
+        0%,
+        100% {
+            background: rgba(245, 165, 36, 0.5);
+        }
+
+        50% {
+            background: rgba(245, 165, 36, 0.04);
+        }
+    }
+
+    /* --- Retour --- */
+    .tool-chrono .retourRow {
+        margin-top: 18px;
+    }
+
+    .tool-chrono .retourBtn {
+        height: 36px;
+        padding: 0 24px;
+        border-radius: 18px;
+        background: #222;
+        border: 1px solid #555;
+        color: #f4f4f4;
+        font-size: 14px;
+    }
+
+    /* --- Boutons de mode (bas de l'outil) --- */
+    .tool-chrono .convRow {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 26px;
+    }
+
+    .tool-chrono .modeBtn {
+        height: 36px;
+        padding: 0 22px;
+        border-radius: 18px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #06182b;
+    }
+
+    .tool-chrono .modeBtn.blue {
+        background: #4ea1ef;
+    }
+
+    .tool-chrono .modeBtn.red {
+        background: #f06a6a;
+        color: #1a0a0a;
+    }
+
+    .tool-chrono .modeBtn[aria-pressed="true"] {
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.28);
+    }
+
+    .tool-chrono .chError {
+        margin-top: 16px;
+        font-size: 12px;
+        color: #f06a6a;
+        word-break: break-word;
+    }
+
+    .tool-chrono .chError[hidden] {
+        display: none;
+    }
+
+    @media (max-width: 380px) {
+
+        .tool-chrono .digits,
+        .tool-chrono .sep {
+            font-size: 44px;
+        }
+    }
+</style>
+
+<!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
+<script>
+    // Aide au dépannage : si une erreur JavaScript survient pendant que l'outil est affiché, elle s'écrit sous l'outil.
+    (function () {
+        var root = document.getElementById('tool-chrono');
+        if (!root) return;
+        if (window.__chErrHandler) window.removeEventListener('error', window.__chErrHandler);
+        window.__chErrHandler = function (e) {
+            var box = document.getElementById('ch-error');
+            if (!box) return;
+            box.hidden = false;
+            box.textContent = 'Erreur dans l\u2019outil : ' + (e.message || 'inconnue') + ' (ligne ' + (e.lineno || '?') + ')';
+        };
+        window.addEventListener('error', window.__chErrHandler);
+    })();
+</script>
+
+<script>
+    // CHRONOMÈTRE + modes Ralentissement / Accélération + Timer (compte à rebours).
+    //  • Chronomètre : vert = démarrer-arrêter, orange = temps intermédiaire, rouge = remise à zéro.
+    //  • Ralentissement : le chronomètre reste à gauche ; le Timer (à droite) affiche les temps × X.
+    //  • Accélération   : le chronomètre passe à droite ; le Timer (à gauche) affiche les temps ÷ X.
+    //  • Un clic sur "Timer" l'affiche seul : c'est alors un COMPTE À REBOURS (lancer / pause / remise au début /
+    //    flèches vers les temps intermédiaires, listés du dernier au premier). "Retour" recharge l'outil.
+    (function () {
+        const root = document.getElementById('tool-chrono');
+        if (!root) return;
+
+        const $ = (id) => document.getElementById('ch-' + id);
+
+        const MAX_LAPS = 30;            // nombre maximum de temps intermédiaires (sans compter le "départ")
+        const START_NAME = 'départ';    // nom par défaut de la première ligne
+        const CONFIRM_MS = 3000;        // délai pour confirmer une remise à zéro qui efface des temps nommés
+        const FADE_MS = 1000;           // apparition en fondu du Timer
+        const MOVE_MS = 600;            // glissement du chronomètre vers sa nouvelle place
+
+        // ---- chronomètre (réel, fixe) ----
+        let running = false;
+        let startedAt = 0;              // instant (performance.now) du dernier démarrage
+        let accumulated = 0;            // temps déjà écoulé avant le dernier démarrage (ms)
+        let laps = [];                  // temps intermédiaires : { ms, name }
+        let startName = START_NAME;     // nom de la ligne "départ"
+        let resetArmed = false;
+        let resetTimer = null;
+
+        // ---- vue : 'solo' | 'ralent' | 'accel' | 'timer' ----
+        let view = 'solo';
+        const factors = { ralent: '', accel: '' }; // vitesse saisie dans chaque mode
+
+        // ---- Timer autonome (vue 'timer') ----
+        let tBase = 0;                  // valeur affichée au dernier lancement / chargement (ms)
+        let tStart = 0;                 // instant du dernier lancement
+        let tRunning = false;
+        let tLoaded = 0;                // valeur de départ du compte à rebours : la remise au début y revient
+        let frozenTimes = [];           // temps intermédiaires convertis, du PLUS GRAND au plus petit
+        // (dernier temps en premier, "départ" = 0 en dernier)
+        let frozenNums = [];            // numéros d'origine des lignes (1 = départ)
+        let frozenNames = [];
+        let timerRows = [];             // lignes (éléments) de la liste du Timer
+        let rowTarget = -2;             // ligne actuellement visée (clignotante)
+        let rowLine = -2;               // ligne actuellement "chargée"
+        let rowBlink = null;
+
+        let rafId = null;
+
+        const now = () => performance.now();
+        const elapsed = () => accumulated + (running ? now() - startedAt : 0);
+        // Compte à rebours : la valeur DIMINUE depuis le lancement, jusqu'à 0
+        const timerNow = () => tRunning ? Math.max(0, tBase - (now() - tStart)) : tBase;
+        const pad = (n) => String(n).padStart(2, '0');
+
+        // 12345 ms -> { h:'00', m:'00', s:'12', c:'34' }  (centièmes : on tronque, comme un chronomètre)
+        function parts(ms) {
+            const cs = Math.floor(ms / 10);
+            return {
+                h: pad(Math.floor(cs / 360000)),
+                m: pad(Math.floor(cs / 6000) % 60),
+                s: pad(Math.floor(cs / 100) % 60),
+                c: pad(cs % 100)
+            };
+        }
+
+        const fmt = (ms) => { const p = parts(ms); return `${p.h}:${p.m}:${p.s}:${p.c}`; };
+
+        const inMode = () => view === 'ralent' || view === 'accel';
+
+        // ---------------------------------------------------------------- conversion
+        // Facteur saisi dans le mode courant ; vide ou invalide = pas de conversion (×1)
+        function getFactor() {
+            const v = Number($('x').value);
+            return v > 0 ? v : 1;
+        }
+
+        // Ralentissement : temps × X (10 s réelles ralenties ×3 durent 30 s). Accélération : temps ÷ X.
+        function convert(ms) {
+            return view === 'accel' ? ms / getFactor() : ms * getFactor();
+        }
+
+        // ---------------------------------------------------------------- boucle d'affichage
+        function needLoop() { return running || tRunning; }
+        function ensureLoop() { if (rafId === null) rafId = requestAnimationFrame(frame); }
+
+        function frame() {
+            rafId = null;
+            if (!root.isConnected) { running = false; tRunning = false; return; } // page quittée : on s'arrête
+            if (tRunning && tBase - (now() - tStart) <= 0) finishTimer();                         // 0 atteint
+            renderTime();
+            if (needLoop()) ensureLoop();
+        }
+
+        // ---------------------------------------------------------------- affichage
+        function renderDisplay(prefix, ms) {
+            const p = parts(ms);
+            ['h', 'm', 's', 'c'].forEach(k => {
+                const el = $(prefix + k);
+                if (el.textContent !== p[k]) el.textContent = p[k];
+            });
+        }
+
+        function renderTime() {
+            const ms = elapsed();
+            renderDisplay('', ms);
+            if (inMode()) renderDisplay('r', convert(ms));      // Timer = copie convertie
+            else if (view === 'timer') {
+                renderDisplay('r', timerNow());                    // Timer autonome (compte à rebours)
+                refreshTimerRows();
+            }
+        }
+
+        function renderButtons() {
+            const start = $('start');
+            start.classList.toggle('running', running);
+            $('sub-start').textContent = running ? 'arrêter' : (accumulated > 0 ? 'reprendre' : 'démarrer');
+
+            const full = laps.length >= MAX_LAPS;
+            $('lap').disabled = !running || full;
+            $('sub-lap').textContent = full ? `limite atteinte (${MAX_LAPS})` : 'temps intermédiaire';
+
+            // Remise à zéro : seulement à l'arrêt, et s'il y a quelque chose à remettre à zéro
+            $('reset').disabled = running || (accumulated === 0 && laps.length === 0);
+            $('sub-reset').textContent = resetArmed ? 'cliquer encore pour confirmer' : 'remise à zéro';
+            $('sub-reset').classList.toggle('warn', resetArmed);
+        }
+
+        // Une ligne de la liste : "2/  00:00:20:88 - nom"
+        function makeRow(number, ms, name, placeholder, onName) {
+            const row = document.createElement('div');
+            row.className = 'lapRow';
+
+            const num = document.createElement('span');
+            num.className = 'lapNum';
+            num.textContent = `${number}/`;
+
+            const time = document.createElement('span');
+            time.className = 'lapTime';
+            time.textContent = fmt(ms);
+
+            const dash = document.createElement('span');
+            dash.className = 'lapDash';
+            dash.textContent = '-';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'lapName';
+            input.value = name;
+            input.placeholder = placeholder;
+            input.maxLength = 60;
+            input.setAttribute('aria-label', `Nom du temps n° ${number}`);
+            input.addEventListener('input', () => onName(input.value));
+
+            row.appendChild(num);
+            row.appendChild(time);
+            row.appendChild(dash);
+            row.appendChild(input);
+            return row;
+        }
+
+        // Même ligne, en lecture seule (copie du Timer) : temps converti, nom recopié
+        function makeStaticRow(number, ms, name, placeholder) {
+            const row = makeRow(number, ms, '', '', () => { });
+            row.removeChild(row.children[3]);
+            const label = document.createElement('span');
+            label.className = 'lapNameStatic' + (name ? '' : ' empty');
+            label.textContent = name || placeholder;
+            row.appendChild(label);
+            return row;
+        }
+
+        // La fenêtre n'apparaît qu'à partir du premier temps intermédiaire
+        function renderLaps(scrollToEnd) {
+            const box = $('laps');
+            const list = $('list');
+            box.hidden = laps.length === 0;
+            list.innerHTML = '';
+            if (laps.length > 0) {
+                list.appendChild(makeRow(1, 0, startName, START_NAME, (v) => { startName = v; renderLapsRight(); }));
+                laps.forEach((lap, i) => {
+                    list.appendChild(makeRow(i + 2, lap.ms, lap.name, 'temps intermédiaire', (v) => { lap.name = v; renderLapsRight(); }));
+                });
+                if (scrollToEnd) list.scrollTop = list.scrollHeight;
+            }
+            renderLapsRight();
+        }
+
+        // Timer (modes) : mêmes lignes que le chronomètre, temps convertis, noms recopiés en direct
+        function renderLapsRight() {
+            if (!inMode()) return;
+            const box = $('rlaps');
+            const list = $('rlist');
+            box.hidden = laps.length === 0;
+            list.innerHTML = '';
+            if (laps.length === 0) return;
+
+            list.appendChild(makeStaticRow(1, 0, startName, START_NAME));
+            laps.forEach((lap, i) => {
+                list.appendChild(makeStaticRow(i + 2, convert(lap.ms), lap.name, 'temps intermédiaire'));
+            });
+            list.scrollTop = $('list').scrollTop; // les deux listes défilent ensemble
+        }
+
+        // ---------------------------------------------------------------- chronomètre : actions
+        function toggle() {
+            if (running) {
+                accumulated += now() - startedAt;
+                running = false;
+                renderTime();
+            } else {
+                startedAt = now();
+                running = true;
+                ensureLoop();
+            }
+            renderButtons();
+        }
+
+        function lap() {
+            if (!running || laps.length >= MAX_LAPS) return;
+            laps.push({ ms: elapsed(), name: '' });
+            renderLaps(true);
+            renderButtons();
+        }
+
+        function disarmReset() {
+            resetArmed = false;
+            clearTimeout(resetTimer);
+        }
+
+        function reset() {
+            if (running) return;
+            // S'il y a des temps (éventuellement nommés), on demande une seconde pression pour confirmer
+            if (laps.length > 0 && !resetArmed) {
+                resetArmed = true;
+                resetTimer = setTimeout(() => { resetArmed = false; renderButtons(); }, CONFIRM_MS);
+                renderButtons();
+                return;
+            }
+            disarmReset();
+            accumulated = 0;
+            laps = [];
+            startName = START_NAME;
+            renderTime();
+            renderLaps(false);
+            renderButtons();
+        }
+
+        // ---------------------------------------------------------------- changement de vue
+        // Glissement : le chronomètre (et le Timer, s'il change de côté) se déplacent en douceur vers leur nouvelle place
+        function slidePanels(change) {
+            const panels = [$('fixed'), $('timer')].filter(p => !p.hidden && typeof p.getBoundingClientRect === 'function');
+            const before = panels.map(p => p.getBoundingClientRect().left);
+            change();
+            panels.forEach((p, i) => {
+                if (p.hidden) return;
+                const dx = before[i] - p.getBoundingClientRect().left;
+                if (Math.abs(dx) < 1) return;
+                p.style.transition = 'none';
+                p.style.transform = `translateX(${dx}px)`;
+                void p.offsetWidth; // force le calcul avant l'animation
+                p.style.transition = `transform ${MOVE_MS}ms ease`;
+                p.style.transform = '';
+            });
+        }
+
+        function fadeIn(el) {
+            el.classList.remove('fadeIn');
+            void el.offsetWidth;
+            el.classList.add('fadeIn');
+            setTimeout(() => el.classList.remove('fadeIn'), FADE_MS + 50);
+        }
+
+        function applyView(next) {
+            view = next;
+            const mode = next === 'ralent' || next === 'accel';
+
+            root.classList.toggle('v-ralent', next === 'ralent');
+            root.classList.toggle('v-accel', next === 'accel');
+            root.classList.toggle('v-timer', next === 'timer');
+            root.classList.toggle('conv', mode);            // élargit l'outil pour les trois colonnes
+
+            $('center').hidden = !mode;
+            $('timer').hidden = next === 'solo';
+            $('timer-title').classList.toggle('blink', mode); // "Timer" clignote (1,5 s) dans les modes seulement
+            $('modes').hidden = next === 'timer';
+            $('tcontrols').hidden = next !== 'timer';
+            $('ghost').hidden = next === 'timer';
+            $('retour-row').hidden = next !== 'timer';
+            $('soundrow').hidden = next !== 'timer';        // haut-parleur + volume : vue Timer seule
+
+            $('mode-ralent').setAttribute('aria-pressed', String(next === 'ralent'));
+            $('mode-accel').setAttribute('aria-pressed', String(next === 'accel'));
+
+            if (mode) {
+                const pill = $('pill');
+                pill.textContent = next === 'ralent' ? 'Ralentissement' : 'Accélération';
+                pill.classList.toggle('blue', next === 'ralent');
+                pill.classList.toggle('red', next === 'accel');
+                $('x').value = factors[next];
+            }
+        }
+
+        // Clic sur un bouton de mode : ouvre ce mode ; un second clic le referme ; l'autre bouton change de mode
+        function setMode(mode) {
+            if (view === 'timer') return;
+            const prev = view;
+            if (inMode()) factors[view] = $('x').value; // on mémorise la vitesse du mode quitté
+            const next = (prev === mode) ? 'solo' : mode;
+
+            slidePanels(() => applyView(next));
+            if (prev === 'solo' && next !== 'solo') fadeIn($('timer'));
+            renderTime();
+            renderLapsRight();
+        }
+
+        // ---------------------------------------------------------------- vue "Timer" seule (compte à rebours)
+        // Où se trouve la valeur v dans la liste (décroissante) :
+        //   line   = première ligne (en partant du haut) dont le temps est <= v ;
+        //   onLine = v tombe exactement sur cette ligne ;
+        //   target = ligne VERS LAQUELLE le compte à rebours se dirige (le plus grand temps strictement inférieur à v).
+        function locate(v) {
+            let line = frozenTimes.length;
+            for (let i = 0; i < frozenTimes.length; i++) {
+                if (frozenTimes[i] <= v) { line = i; break; }
+            }
+            const onLine = line < frozenTimes.length && frozenTimes[line] === v;
+            let target = onLine ? line + 1 : line;
+            if (v <= 0 || target >= frozenTimes.length) target = -1; // plus rien devant nous
+            return { line: line, onLine: onLine, target: target };
+        }
+
+        function renderTimerLaps() {
+            const box = $('rlaps');
+            const list = $('rlist');
+            box.hidden = frozenTimes.length === 0;
+            list.innerHTML = '';
+            timerRows = [];
+            frozenTimes.forEach((ms, i) => {
+                const row = makeStaticRow(frozenNums[i], ms, frozenNames[i], frozenNums[i] === 1 ? START_NAME : 'temps intermédiaire');
+                list.appendChild(row);
+                timerRows.push(row);
+            });
+            rowTarget = -2; rowLine = -2; rowBlink = null;
+            refreshTimerRows();
+        }
+
+        // Met en valeur le temps visé (il clignote pendant le compte à rebours) et la ligne éventuellement chargée
+        function refreshTimerRows() {
+            const loc = locate(timerNow());
+            if (timerRows.length > 0) {
+                const line = loc.onLine ? loc.line : -1;
+
+                if (loc.target !== rowTarget || tRunning !== rowBlink) {
+                    if (rowTarget >= 0 && timerRows[rowTarget]) {
+                        timerRows[rowTarget].classList.remove('target');
+                        timerRows[rowTarget].classList.remove('blink');
+                    }
+                    if (loc.target >= 0) {
+                        const row = timerRows[loc.target];
+                        row.classList.add('target');
+                        row.classList.toggle('blink', tRunning);
+                        // la ligne visée reste visible dans la liste
+                        const list = $('rlist');
+                        if (typeof row.offsetTop === 'number' && list.clientHeight) {
+                            list.scrollTop = Math.max(0, row.offsetTop - list.clientHeight / 2);
+                        }
+                    }
+                    rowTarget = loc.target;
+                    rowBlink = tRunning;
+                }
+                if (line !== rowLine) {
+                    if (rowLine >= 0 && timerRows[rowLine]) timerRows[rowLine].classList.remove('sel');
+                    if (line >= 0) timerRows[line].classList.add('sel');
+                    rowLine = line;
+                }
+            }
+            // ▲ = ligne au-dessus (temps plus grand) ; ▼ = ligne en dessous (temps plus petit : celle que vise le rebours)
+            const n = frozenTimes.length;
+            $('tup').disabled = n === 0 || loc.line - 1 < 0;
+            $('tdown').disabled = n === 0 || loc.target < 0;
+        }
+
+        function renderTimerButtons() {
+            // Un compte à rebours à 00:00:00:00 n'a rien à décompter : on le dit au lieu de ne rien faire
+            const empty = !tRunning && tBase <= 0 && tLoaded <= 0;
+            $('tstart').disabled = empty;
+            $('tsub').textContent = tRunning ? 'pause' : (empty ? 'rien à décompter' : 'lancer');
+            $('tstart').classList.toggle('running', tRunning);
+        }
+
+        // Clic sur "Timer" (dans un mode) : on affiche ce bloc seul, figé sur la valeur affichée à cet instant
+        function enterTimerView() {
+            if (!inMode()) return;
+
+            const value = convert(elapsed());
+            if (running) { accumulated += now() - startedAt; running = false; renderButtons(); } // le chronomètre caché s'arrête
+
+            // Liste INVERSÉE : le dernier temps intermédiaire devient le premier, le "départ" (0) est tout en bas
+            frozenTimes = []; frozenNums = []; frozenNames = [];
+            if (laps.length > 0) {
+                for (let i = laps.length - 1; i >= 0; i--) {
+                    frozenTimes.push(convert(laps[i].ms));
+                    frozenNums.push(i + 2);
+                    frozenNames.push(laps[i].name);
+                }
+                frozenTimes.push(0);
+                frozenNums.push(1);
+                frozenNames.push(startName);
+            }
+
+            tBase = value;
+            tLoaded = value;
+            tRunning = false;
+
+            applyView('timer');
+            renderTimerLaps();
+            renderTimerButtons();
+            renderTime();
+        }
+
+        // Lancer / pause du compte à rebours
+        function timerToggle() {
+            if (tRunning) {
+                tBase = timerNow();
+                tRunning = false;
+            } else {
+                if (tBase <= 0) {            // compte à rebours terminé : on repart de la valeur de départ
+                    if (tLoaded <= 0) return;
+                    tBase = tLoaded;
+                }
+                tStart = now();
+                tRunning = true;
+                ensureLoop();
+            }
+            renderTimerButtons();
+            renderTime();
+        }
+
+        function finishTimer() {
+            tBase = 0;
+            tRunning = false;
+            renderTimerButtons();
+        }
+
+        // Remise au début : retour à la valeur de départ (celle affichée à l'entrée, ou le dernier temps chargé)
+        function timerReset() {
+            tRunning = false;
+            tBase = tLoaded;
+            renderTimerButtons();
+            renderTime();
+        }
+
+        // Flèches : l'affichage charge le temps intermédiaire de la ligne au-dessus (▲) ou en dessous (▼)
+        function timerStep(dir) {
+            if (frozenTimes.length === 0) return;
+            const loc = locate(timerNow());
+            const idx = dir < 0 ? loc.line - 1 : loc.target;
+            if (idx < 0 || idx >= frozenTimes.length) return;
+
+            tBase = frozenTimes[idx];
+            tLoaded = tBase;
+            tStart = now(); // si le compte à rebours tourne, il repart à partir de ce temps
+            renderTimerButtons();
+            renderTime();
+        }
+
+        // Retour : recharge l'outil, comme à l'ouverture de la page (avec le chronomètre à zéro)
+        function goBack() {
+            if (typeof window !== 'undefined' && typeof window.loadSubPage === 'function') {
+                window.loadSubPage('outils-chronometre');
+            } else {
+                location.reload();
+            }
+        }
+
+        // ---------------------------------------------------------------- vitesse : clavier, flèches du champ, roulette
+        // Défiler vers le haut = +1, vers le bas = -1 (après un clic dans le champ) ; plus on défile fort, plus ça va vite.
+        const WHEEL_NEEDS_FOCUS = true;
+        const PX_PER_UNIT = 100;
+        const FAST_FROM = 800;
+        const FAST_RANGE = 1200;
+        const MAX_FACTOR = 12;
+
+        function enableWheel(field, onChange) {
+            let acc = 0, vel = 0, last = 0;
+
+            field.addEventListener('wheel', (e) => {
+                if (WHEEL_NEEDS_FOCUS && document.activeElement !== field) return;
+
+                let d = e.deltaY;
+                if (e.deltaMode === 1) d *= 33; else if (e.deltaMode === 2) d *= 400;
+                if (!d) return;
+                e.preventDefault();
+
+                const t = performance.now();
+                const dt = Math.max(t - last, 8);
+                vel = dt > 300 ? 0 : 0.5 * vel + 0.5 * (Math.abs(d) / dt * 1000);
+                last = t;
+
+                const boost = Math.min(MAX_FACTOR, 1 + Math.max(0, vel - FAST_FROM) / FAST_RANGE);
+                const sign = d < 0 ? 1 : -1; // vers le haut = augmente
+                if (acc !== 0 && Math.sign(acc) !== sign) acc = 0;
+
+                const abs = Math.abs(d);
+                const base = abs >= 40 ? Math.max(1, Math.round(abs / PX_PER_UNIT)) : abs / PX_PER_UNIT;
+                acc += sign * base * boost;
+
+                const steps = Math.trunc(acc);
+                if (steps === 0) return;
+                acc -= steps;
+
+                const min = field.min !== '' ? Number(field.min) : -Infinity;
+                const next = Math.max(min, (Number(field.value) || 0) + steps);
+                field.value = String(+next.toFixed(10));
+                onChange();
+            }, { passive: false });
+        }
+
+        function onFactorChange() {
+            if (inMode()) factors[view] = $('x').value;
+            renderTime();
+            renderLapsRight();
+        }
+
+        // Le son (script séparé) lit l'état du compte à rebours ; il ne modifie rien ici.
+        root.chTimer = {
+            state: function () {
+                return {
+                    running: tRunning, base: tBase, start: tStart,
+                    targets: frozenTimes.length ? frozenTimes : [0]
+                };
+            }
+        };
+
+        // ---------------------------------------------------------------- écouteurs
+        $('mode-ralent').addEventListener('click', () => setMode('ralent'));
+        $('mode-accel').addEventListener('click', () => setMode('accel'));
+        $('x').addEventListener('input', onFactorChange);
+        enableWheel($('x'), onFactorChange);
+
+        $('timer-title').addEventListener('click', enterTimerView);
+        $('timer-title').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); enterTimerView(); }
+        });
+        $('tstart').addEventListener('click', timerToggle);
+        $('treset').addEventListener('click', timerReset);
+        $('tup').addEventListener('click', () => timerStep(-1));
+        $('tdown').addEventListener('click', () => timerStep(1));
+        $('retour').addEventListener('click', goBack);
+
+        $('start').addEventListener('click', toggle);
+        $('lap').addEventListener('click', lap);
+        $('reset').addEventListener('click', reset);
+
+        renderTime();
+        renderLaps(false);
+        renderButtons();
+    })();
+
+</script>
+
+<script>
+    // Son du Timer : clics de bois aux approches des temps intermédiaires.
+    // Script SÉPARÉ du chronomètre : s'il rencontrait un problème, le chronomètre et le Timer continueraient de fonctionner.
+    // Il ne fait que LIRE l'état du compte à rebours (root.chTimer.state()), sans jamais le modifier.
+    (function () {
+        const root = document.getElementById('tool-chrono');
+        if (!root) return;
+
+        const $ = (id) => document.getElementById('ch-' + id);
+        const btn = $('sound');
+        const volBar = $('vol');
+        if (!btn || !volBar) return;
+
+        const WARN_SECONDS = 10;     // un clic par seconde pendant les 10 s avant chaque temps, accent à la seconde 0
+        const LOOKAHEAD_MS = 150;    // les clics sont programmés à l'avance sur l'horloge audio
+        const POLL_MS = 25;
+
+        let soundOn = false;         // haut-parleur barré à l'ouverture
+        let volume = Number(volBar.value) || 70;
+        let audioCtx = null, master = null, bus = null, noiseBuf = null;
+        let pollId = null;
+        let lastBase = null, lastStart = null;
+        let done = {};               // clics déjà programmés (clé = valeur du rebours en ms)
+
+        // iPhone / iPad : le Web Audio est coupé par le commutateur de sonnerie ; on le place sur le canal "média"
+        const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        let silentAudio = null, silentUrl = null;
+
+        function unlockIOSAudio() {
+            try {
+                if (navigator.audioSession) { navigator.audioSession.type = 'playback'; return; }
+            } catch (e) { /* repli ci-dessous */ }
+            if (!IS_IOS) return;
+            try {
+                if (!silentAudio) {
+                    const rate = 8000, n = rate;
+                    const buf = new ArrayBuffer(44 + n);
+                    const dv = new DataView(buf);
+                    const text = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
+                    text(0, 'RIFF'); dv.setUint32(4, 36 + n, true); text(8, 'WAVE'); text(12, 'fmt ');
+                    dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
+                    dv.setUint32(24, rate, true); dv.setUint32(28, rate, true); dv.setUint16(32, 1, true);
+                    dv.setUint16(34, 8, true); text(36, 'data'); dv.setUint32(40, n, true);
+                    for (let i = 0; i < n; i++) dv.setUint8(44 + i, 128);
+                    silentUrl = URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+                    silentAudio = new Audio(silentUrl);
+                    silentAudio.loop = true;
+                }
+                const p = silentAudio.play();
+                if (p && typeof p.catch === 'function') p.catch(function () { });
+            } catch (e) { /* sans conséquence */ }
+        }
+
+        function ensureAudio() {
+            unlockIOSAudio();
+            if (!audioCtx) {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return false;
+                audioCtx = new AC();
+                master = audioCtx.createGain();
+                master.connect(audioCtx.destination);
+                noiseBuf = audioCtx.createBuffer(1, Math.floor(audioCtx.sampleRate * 0.05), audioCtx.sampleRate);
+                const data = noiseBuf.getChannelData(0);
+                for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+                applyVolume();
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return true;
+        }
+
+        function applyVolume() {
+            if (master) master.gain.value = Math.pow(volume / 100, 2); // courbe plus naturelle qu'une droite
+        }
+
+        function envelope(gainNode, t, peak, dur) {
+            const g = gainNode.gain;
+            g.setValueAtTime(0.0001, t);
+            g.exponentialRampToValueAtTime(peak, t + 0.002);
+            g.exponentialRampToValueAtTime(0.0001, t + dur);
+        }
+
+        function tone(out, t, freq, peak, dur, freqEnd) {
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, t);
+            if (freqEnd) osc.frequency.exponentialRampToValueAtTime(freqEnd, t + 0.03);
+            envelope(g, t, peak, dur);
+            osc.connect(g);
+            g.connect(out);
+            osc.start(t);
+            osc.stop(t + dur + 0.02);
+        }
+
+        // Clic "bois" (même son que le métronome). À la seconde 0 : version plus aiguë, plus forte et plus longue.
+        function woodClick(t, accent, out) {
+            const level = accent ? 1.4 : 0.7;
+            tone(out, t, accent ? 1700 : 1050, 0.9 * level, accent ? 0.1 : 0.06, accent ? 1100 : 700);
+
+            const noise = audioCtx.createBufferSource();
+            const filter = audioCtx.createBiquadFilter();
+            const g = audioCtx.createGain();
+            noise.buffer = noiseBuf;
+            filter.type = 'bandpass';
+            filter.frequency.value = accent ? 2200 : 1800;
+            filter.Q.value = 3;
+            envelope(g, t, 0.5 * level, 0.03);
+            noise.connect(filter);
+            filter.connect(g);
+            g.connect(out);
+            noise.start(t);
+            noise.stop(t + 0.04);
+        }
+
+        function cutBus() {
+            if (bus) { try { bus.disconnect(); } catch (e) { } bus = null; }
+        }
+
+        function newTimeline(st) {
+            cutBus();
+            bus = audioCtx.createGain();
+            bus.connect(master);
+            done = {};
+            lastBase = st.base;
+            lastStart = st.start;
+        }
+
+        // Programme à l'avance les clics des prochaines 150 ms : un par seconde pendant les 10 s qui précèdent
+        // chaque temps, et le clic distinctif à la seconde 0.
+        function schedule(st) {
+            const nowMs = performance.now();
+            const horizon = nowMs + LOOKAHEAD_MS;
+            const accents = {};
+            st.targets.forEach(function (T) { accents[Math.round(T)] = true; });
+
+            st.targets.forEach(function (T) {
+                for (let m = WARN_SECONDS; m >= 0; m--) {
+                    const point = T + m * 1000;                       // valeur du rebours à laquelle on clique
+                    if (point >= st.base - 1) continue;               // déjà passé (ou point de départ) : pas de clic
+                    const eventMs = st.start + (st.base - point);     // instant où le rebours atteint cette valeur
+                    if (eventMs > horizon || eventMs < nowMs - 30) continue;
+                    const key = Math.round(point);
+                    if (done[key]) continue;                          // deux temps proches : un seul clic
+                    done[key] = true;
+                    woodClick(audioCtx.currentTime + Math.max(0, (eventMs - nowMs) / 1000), accents[key] === true, bus);
+                }
+            });
+        }
+
+        // Surveille le compte à rebours toutes les 25 ms tant que le haut-parleur est actif
+        function poll() {
+            pollId = null;
+            if (!root.isConnected) { shutdown(); return; }
+            if (!soundOn || !audioCtx) return;
+
+            const st = root.chTimer && root.chTimer.state ? root.chTimer.state() : null;
+            if (st && st.running) {
+                if (!bus || st.base !== lastBase || st.start !== lastStart) newTimeline(st); // nouveau lancement / nouveau temps chargé
+                schedule(st);
+            } else if (bus && st && st.base > 0) {
+                cutBus();            // pause ou remise au début : on coupe les clics déjà programmés
+                lastBase = lastStart = null;
+            }                        // (fin naturelle : base = 0, on laisse jouer le dernier clic)
+            pollId = setTimeout(poll, POLL_MS);
+        }
+
+        function shutdown() {
+            clearTimeout(pollId);
+            pollId = null;
+            cutBus();
+            if (audioCtx) { try { audioCtx.close(); } catch (e) { } audioCtx = null; master = null; }
+            if (silentAudio) { try { silentAudio.pause(); } catch (e) { } silentAudio = null; }
+            if (silentUrl) { URL.revokeObjectURL(silentUrl); silentUrl = null; }
+        }
+
+        // Haut-parleur : actif = clics ; barré = silence. Un petit clic confirme l'activation.
+        function toggleSound() {
+            soundOn = !soundOn;
+            btn.setAttribute('aria-pressed', String(soundOn));
+            if (soundOn) {
+                if (!ensureAudio()) { soundOn = false; btn.setAttribute('aria-pressed', 'false'); return; }
+                woodClick(audioCtx.currentTime + 0.01, false, master);
+                lastBase = lastStart = null;
+                if (pollId === null) poll();
+            } else {
+                clearTimeout(pollId);
+                pollId = null;
+                cutBus();
+            }
+        }
+
+        btn.addEventListener('click', toggleSound);
+
+        volBar.addEventListener('input', function () { volume = Number(volBar.value); applyVolume(); });
+        volBar.addEventListener('change', function () { // petit clic d'essai quand on relâche la barre
+            if (soundOn && ensureAudio()) woodClick(audioCtx.currentTime + 0.01, false, master);
+        });
+
+        // Un clic sur "lancer" est un geste de l'utilisateur : on en profite pour réveiller l'audio s'il s'est endormi
+        const tstart = $('tstart');
+        if (tstart) tstart.addEventListener('click', function () { if (soundOn) ensureAudio(); });
+    })();
+</script>
