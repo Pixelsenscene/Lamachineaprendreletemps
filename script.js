@@ -165,9 +165,25 @@ function updateHeroDots() {
 
 // Affiche la vidéo n° "index" du hero, avec fondu au noir.
 // Si c'est déjà la vidéo en cours, on la remet simplement au début (sans la recharger).
+let heroPendingIndex = null; // vidéo demandée pendant un changement en cours : elle sera affichée ensuite
+let heroTargetIndex = 0;     // dernière vidéo DEMANDÉE (même si elle n'est pas encore affichée) : base des gestes rapides
+let heroTransitionToken = 0;
+
 function showHeroVideo(index) {
-    if (isTransitioning) return;
+    heroTargetIndex = index;
+    if (isTransitioning) { heroPendingIndex = index; return; } // on se souvient de la demande au lieu de l'ignorer
     isTransitioning = true;
+    const token = ++heroTransitionToken;
+
+    // Sécurité : si la vidéo ne devient jamais lisible (réseau lent ou coupé), on ne reste pas bloqué
+    setTimeout(() => {
+        if (isTransitioning && token === heroTransitionToken) {
+            isTransitioning = false;
+            const pending = heroPendingIndex;
+            heroPendingIndex = null;
+            if (pending !== null && pending !== currentHeroIndex) showHeroVideo(pending);
+        }
+    }, 6000);
 
     const heroVideo = document.getElementById('hero-video');
     const heroSource = document.getElementById('hero-source');
@@ -178,7 +194,12 @@ function showHeroVideo(index) {
     setTimeout(() => {
         const done = () => {
             setTimeout(() => {
+                if (token !== heroTransitionToken) return; // la sécurité a déjà pris le relais
                 isTransitioning = false;
+                // une autre vidéo a été demandée entre-temps (geste rapide) : on l'affiche maintenant
+                const pending = heroPendingIndex;
+                heroPendingIndex = null;
+                if (pending !== null && pending !== currentHeroIndex) showHeroVideo(pending);
             }, CONFIG.transitionDuration);
         };
 
@@ -200,7 +221,7 @@ function showHeroVideo(index) {
 
 // Clic sur le hero : vidéo suivante
 function switchHeroVideo() {
-    showHeroVideo((currentHeroIndex + 1) % CONFIG.videos.length);
+    showHeroVideo((heroTargetIndex + 1) % CONFIG.videos.length);
 }
 window.switchHeroVideo = switchHeroVideo;
 
@@ -210,6 +231,147 @@ function restartHeroVideo(e) {
     showHeroVideo(0);
 }
 window.restartHeroVideo = restartHeroVideo;
+
+// ---------------------------------------------------------------------
+// GESTES HORIZONTAUX (pavé tactile à deux doigts, molette inclinable, Maj + molette)
+//   • sur la vidéo d'accueil : à droite = vidéo suivante, à gauche = vidéo précédente ;
+//   • partout ailleurs : à droite = menu suivant, à gauche = menu précédent
+//     (Accueil [bloc "Éloge de la lenteur"] > Galeries > Évènements > Outils > Dossiers > Contact).
+// Le défilement vertical de la page n'est pas touché.
+// ---------------------------------------------------------------------
+
+// Détecteur de geste. Il lit le flux d'événements de la molette / du pavé tactile en tenant compte de l'INERTIE
+// (les mouvements qui continuent et s'éteignent après que les doigts ont quitté le pavé) :
+//  • le sens du geste (horizontal ou vertical) est jugé sur les derniers mouvements seulement : un balayage un peu
+//    en diagonale compte comme horizontal ;
+//  • un changement est déclenché quand la distance cumulée dans un sens atteint le seuil (même en geste lent) ;
+//  • après un changement, les mouvements qui s'éteignent sont de l'inertie : ils sont ignorés. Un NOUVEAU balayage
+//    est reconnu dès que l'énergie REMONTE après être descendue (ou que le sens s'inverse), sans attendre un silence :
+//    c'est ce qui permet d'enchaîner les balayages sans « s'y reprendre à plusieurs fois ».
+// Renvoie true si l'événement fait partie d'un geste horizontal (il faut alors le retenir).
+function makeSwipeDetector({ threshold, horizontal, refractoryMs, onSwipe }) {
+    const SILENCE_MS = 70;   // silence : le geste précédent (et son inertie) est terminé
+    const AXIS_MS = 120;     // fenêtre pour juger du sens
+    const SUM_MS = 500;      // fenêtre de cumul de la distance
+    const PUSH_MS = 100;     // fenêtre de mesure de la poussée (énergie)
+    const RISE_REL = 1.6;    // une poussée = énergie > 1,6 x le creux + 8 px
+    const RISE_ABS = 8;
+
+    let hist = [];           // mouvements récents (jamais effacés en cours de geste)
+    let accStart = -1e9;     // le cumul ne compte que les mouvements à partir de cet instant
+    let lastT = -1e9, lastTrigger = -1e9, lastDir = 0;
+    let locked = false, peak = 0, valley = Infinity, valleyT = 0;
+
+    return function (now, dx, dy) {
+        // Silence : on repart de zéro
+        if (now - lastT > SILENCE_MS) { hist = []; locked = false; accStart = -1e9; }
+        lastT = now;
+        hist.push({ t: now, dx: dx, dy: dy });
+        while (hist.length && now - hist[0].t > SUM_MS) hist.shift();
+
+        // 1) Sens du geste, énergie et direction de la poussée récente
+        let sx = 0, sy = 0, er = 0, sr = 0;
+        for (const e of hist) {
+            const age = now - e.t;
+            if (age <= AXIS_MS) { sx += Math.abs(e.dx); sy += Math.abs(e.dy); }
+            if (age <= PUSH_MS) { er += Math.abs(e.dx); sr += e.dx; }
+        }
+        if (sx + sy < 4) return Math.abs(dx) > Math.abs(dy);   // trop petit pour trancher
+        if (sx < sy * horizontal) return false;                // geste vertical : la page défile normalement
+
+        // 2) Après un changement : inertie à ignorer... sauf nouveau balayage (l'énergie remonte, ou le sens s'inverse)
+        if (locked) {
+            if (er > peak) { peak = er; valley = Infinity; }                           // le geste monte encore
+            else if (er < peak * 0.85 && er < valley) { valley = er; valleyT = now; } // l'énergie descend : on suit le creux
+            const pushed = valley !== Infinity && er > valley * RISE_REL + RISE_ABS;
+            const reversed = lastDir !== 0 && Math.sign(sr) === -lastDir && Math.abs(sr) >= 30;
+            if (!(pushed || reversed)) return true;
+            locked = false;
+            accStart = pushed ? valleyT : now - PUSH_MS;       // le cumul repart du creux
+        }
+
+        // 3) Cumul signé : assez de distance, dans un sens cohérent
+        let s = 0, a = 0;
+        for (const e of hist) if (e.t >= accStart) { s += e.dx; a += Math.abs(e.dx); }
+        if (Math.abs(s) < threshold || Math.abs(s) < 0.6 * a) return true;
+        if (now - lastTrigger < refractoryMs) return true;     // pas deux changements coup sur coup
+
+        lastDir = s > 0 ? 1 : -1;
+        lastTrigger = now;
+        locked = true; peak = er; valley = Infinity;
+        accStart = now + 0.001;
+        onSwipe(lastDir);
+        return true;
+    };
+}
+
+// --- Vidéo d'accueil ---
+const heroSwipe = makeSwipeDetector({
+    threshold: 24,       // distance cumulée (px) qui déclenche le changement : plus petit = plus sensible
+    horizontal: 0.75,    // un geste est horizontal si |x| >= 75 % de |y| (sur les derniers mouvements)
+    refractoryMs: 220,   // délai de repos après un changement (les balayages rapides s'enchaînent ensuite)
+    onSwipe: (dir) => showHeroVideo((heroTargetIndex + dir + CONFIG.videos.length) % CONFIG.videos.length)
+});
+
+function heroUnderPointer(e) {
+    const hero = document.getElementById('hero-section');
+    if (!hero) return false;
+    const r = hero.getBoundingClientRect();
+    return r.width > 0 && e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+}
+
+// --- Menus : un changement de page est plus lourd qu'un changement de vidéo, le geste doit être plus net ---
+const MENU_SWIPE_ORDER = ['accueil', 'galeries', 'evenements', 'outils', 'dossiers', 'contact'];
+
+const menuSwipe = makeSwipeDetector({
+    threshold: 40,       // distance cumulée (px) : plus petit = plus sensible
+    horizontal: 1.3,     // geste nettement horizontal (|x| >= 130 % de |y|) : une diagonale ne change pas de page
+    refractoryMs: 450,   // délai de repos : pas deux changements de page coup sur coup
+    onSwipe: (dir) => {
+        // (un changement demandé pendant le chargement d'une page est pris en compte : la dernière demande l'emporte)
+        const i = MENU_SWIPE_ORDER.indexOf(currentActivePage);
+        const next = i + dir;
+        if (i < 0 || next < 0 || next >= MENU_SWIPE_ORDER.length) return; // page hors menu, ou bout de la liste : rien
+        const target = MENU_SWIPE_ORDER[next];
+        // "Accueil" = le premier bloc de la page d'accueil ("Éloge de la lenteur"), pas la vidéo d'accueil
+        if (target === 'accueil') navigate('accueil', '', { block: true });
+        else navigate(target);
+    }
+});
+
+// Un élément qui défile horizontalement (barre de boutons sur petit écran...) garde TOUT le geste, même
+// arrivé au bout : on ne change pas de page par accident en poussant trop loin. Idem pour les champs de saisie
+// et le lecteur vidéo agrandi.
+function keepsHorizontalGesture(target) {
+    if (!target || !target.closest) return false;
+    if (target.closest('input, textarea, select, [contenteditable="true"], #lb-overlay.open')) return true;
+    for (let n = target; n && n !== document.body && n !== document.documentElement; n = n.parentElement) {
+        const ox = getComputedStyle(n).overflowX;
+        if ((ox === 'auto' || ox === 'scroll') && n.scrollWidth > n.clientWidth + 1) return true;
+    }
+    return false;
+}
+
+function onHorizontalWheel(e) {
+    let dx = e.deltaX;
+    let dy = e.deltaY;
+    if (e.shiftKey && !dx) { dx = dy; dy = 0; }              // Maj + molette = défilement horizontal
+    if (e.deltaMode === 1) { dx *= 33; dy *= 33; }           // lignes -> pixels
+    else if (e.deltaMode === 2) { dx *= 400; dy *= 400; }    // pages -> pixels
+
+    const onHero = !body.classList.contains('page-mode') && heroUnderPointer(e);
+    if (!onHero && keepsHorizontalGesture(e.target)) return;
+
+    const claimed = (onHero ? heroSwipe : menuSwipe)(e.timeStamp, dx, dy);
+    if (claimed) {
+        // Ni retour arrière du navigateur, ni défilement de la page, ni double traitement par la molette de l'accueil
+        if (e.cancelable) e.preventDefault(); // (les événements d'inertie ne sont pas annulables : inutile d'insister)
+        e.stopPropagation();
+    }
+}
+
+// En phase de capture : le geste est traité avant la molette de l'accueil (qui gère le défilement vertical)
+document.addEventListener('wheel', onHorizontalWheel, { passive: false, capture: true });
 
 function initHero() {
     const heroSection = document.getElementById('hero-section');
@@ -348,20 +510,44 @@ function injectHTML(container, html) {
     initMediaObserver(container);
 }
 
+// Outils qui gardent leur affichage ET leur état (temps, réglages, chronomètre en marche...) quand on change d'outil :
+// tous sauf le "Simulateur d'accélération" (vidéos lourdes : il est recréé à chaque visite).
+// Tout est remis à zéro dès qu'on quitte le menu Outils : la page Outils est alors reconstruite.
+const KEEP_ALIVE_TOOLS = new Set([
+    'outils-preparation-tournage',
+    'outils-convertir-le-temps',
+    'outils-metronome',
+    'outils-chronometre'
+]);
+
 async function loadSubPage(subPageName) {
     const subContainer = document.getElementById('sub-page-content');
     if (!subContainer) return;
 
     const requestId = ++subRequestId;
+    const keep = currentActivePage === 'outils' && KEEP_ALIVE_TOOLS.has(subPageName);
+    // Un outil déjà ouvert est simplement réaffiché, tel qu'on l'a laissé (pas de rechargement)
+    const kept = keep ? Array.from(subContainer.children).find(c => c.dataset.keep === subPageName) : null;
     subContainer.style.opacity = '0';
 
     // Le chargement et le fondu au noir se font en parallèle
-    const [html] = await Promise.all([fetchHTML(`pages/${subPageName}.html`), wait(FADE_MS)]);
+    const [html] = await Promise.all([kept ? '' : fetchHTML(`pages/${subPageName}.html`), wait(FADE_MS)]);
 
     // Un clic plus récent a pris le relais (ou la page a changé) : on abandonne
     if (requestId !== subRequestId || !subContainer.isConnected) return;
 
-    injectHTML(subContainer, html);
+    // Ce qui n'est pas conservé (le simulateur) est supprimé ; les outils conservés restent en place, cachés
+    Array.from(subContainer.children).forEach(c => { if (!c.dataset.keep) c.remove(); });
+    Array.from(subContainer.children).forEach(c => { c.hidden = true; });
+
+    let holder = kept;
+    if (!holder) {
+        holder = document.createElement('div');
+        if (keep) holder.dataset.keep = subPageName;
+        subContainer.appendChild(holder);
+        injectHTML(holder, html);
+    }
+    holder.hidden = false;
     subContainer.style.opacity = '1';
 
     document.querySelectorAll('.sub-btn').forEach(btn => {
@@ -399,6 +585,12 @@ async function loadPageContent(pageName) {
     injectHTML(pageContainer, html);
     pageContainer.style.opacity = '1';
 
+    // Arrivée par un geste vers l'accueil : on se place sur le 1er bloc, maintenant que le contenu est là
+    if (window.pendingHomeBlock) {
+        window.pendingHomeBlock = false;
+        showFirstHomeBlock();
+    }
+
     if (window.pendingSubPage) {
         const subToLoad = window.pendingSubPage;
         window.pendingSubPage = '';
@@ -410,8 +602,15 @@ async function loadPageContent(pageName) {
 // ---------------------------------------------------------------------
 // 5. NAVIGATION
 // ---------------------------------------------------------------------
-function navigate(page, sub = '', { push = true } = {}) {
+function navigate(page, sub = '', { push = true, block = false } = {}) {
     if (!validPages.has(page)) { page = 'accueil'; sub = ''; }
+
+    // Déjà dans Outils et clic sur le menu "Outils" : on garde l'outil affiché, avec son état.
+    // La remise à zéro n'a lieu qu'après être passé par un autre menu.
+    if (!sub && page === 'outils' && page === currentActivePage && document.getElementById('sub-page-content')) {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        return;
+    }
 
     setActiveNav(page, sub);
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -425,9 +624,19 @@ function navigate(page, sub = '', { push = true } = {}) {
     }
 
     window.pendingSubPage = sub;
+    window.pendingHomeBlock = block && page === 'accueil';
     setMode(page === 'accueil' ? 'home' : 'page');
+    if (window.pendingHomeBlock) showFirstHomeBlock(); // on ne repasse pas par la vidéo d'accueil
     loadPageContent(page);
     currentActivePage = page;
+}
+
+// Affiche le 1er bloc de l'accueil ("Éloge de la lenteur") : la page est descendue juste sous la vidéo d'accueil
+function showFirstHomeBlock() {
+    const hero = document.getElementById('hero-section');
+    if (!hero) return;
+    body.classList.add('scrolled-mode');
+    window.scrollTo({ top: hero.offsetHeight, behavior: 'instant' });
 }
 
 // Retour à l'accueil (clic sur le titre manuscrit)

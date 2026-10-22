@@ -1,25 +1,513 @@
-<!-- === 1. LE CONTENU (MAIN) === -->
-<main class="dossiers-container">
-    <p class="construction-text">Site actuellement en construction</p>
-</main>
+<!-- === 1. LE CONTENU === -->
+<section class="galerie-container">
 
+    <!-- Les vidéos, dans l'ordre :
+         • ligne 1 : les 4 premières (portrait), sur une seule ligne ;
+         • ligne 2 : « Bonne année 2021 » et « Italie » (portrait), puis « Le fil du temps » (paysage).
+         Dans chaque ligne, TOUTES les vidéos ont la même hauteur, et les deux lignes ont la même longueur :
+         la vidéo paysage est donc plus large que les portraits. Les largeurs sont calculées d'après le VRAI format
+         de chaque vidéo (relu dès que son début est chargé) ; is-v / is-h n'est que le format de départ. -->
+    <div class="videos-layout">
+
+        <div class="video-row">
+            <!-- 1. Danse 1 -->
+            <div class="video-item is-v">
+                <div class="custom-video-wrapper"
+                    data-src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/StorieMAPT%20Danse1-SiteWeb%20MPEG-4.mp4"
+                    role="button" tabindex="0" aria-label="Lire : Danse 1">
+                    <video class="gallery-video" muted playsinline preload="none" tabindex="-1"
+                        aria-hidden="true"></video>
+                    <div class="play-button"></div>
+                </div>
+                <div class="video-info">
+                    <h3>Danse 1</h3>
+                </div>
+            </div>
+            <!-- 2. OniriQ 1 -->
+            <div class="video-item is-v">
+                <div class="custom-video-wrapper"
+                    data-src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/StorieMAPT%20OniriQ1-SiteWeb%20MPEG-4.mp4"
+                    role="button" tabindex="0" aria-label="Lire : OniriQ 1">
+                    <video class="gallery-video" muted playsinline preload="none" tabindex="-1"
+                        aria-hidden="true"></video>
+                    <div class="play-button"></div>
+                </div>
+                <div class="video-info">
+                    <h3>OniriQ 1</h3>
+                </div>
+            </div>
+            <!-- 3. OniriQ 2 -->
+            <div class="video-item is-v">
+                <div class="custom-video-wrapper"
+                    data-src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/StorieMAPT%20OniriQ2-SiteWeb%20MPEG-4.mp4"
+                    role="button" tabindex="0" aria-label="Lire : OniriQ 2">
+                    <video class="gallery-video" muted playsinline preload="none" tabindex="-1"
+                        aria-hidden="true"></video>
+                    <div class="play-button"></div>
+                </div>
+                <div class="video-info">
+                    <h3>OniriQ 2</h3>
+                </div>
+            </div>
+            <!-- 4. Burlesque 1 -->
+            <div class="video-item is-v">
+                <div class="custom-video-wrapper"
+                    data-src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/StorieMAPT%20Burlesque1-SiteWeb%20MPEG-4.mp4"
+                    role="button" tabindex="0" aria-label="Lire : Burlesque 1">
+                    <video class="gallery-video" muted playsinline preload="none" tabindex="-1"
+                        aria-hidden="true"></video>
+                    <div class="play-button"></div>
+                </div>
+                <div class="video-info">
+                    <h3>Burlesque 1</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="video-row">
+            <!-- 5. Bonne année 2021 -->
+            <div class="video-item is-v">
+                <div class="custom-video-wrapper"
+                    data-src="https://MaptDiff.b-cdn.net/montages%20sp%C3%A9cifiques/BONNE%20ANNEE%202021%20ok-SiteWeb%20MPEG-4%20Low%2B%20-%20AVEC%20audio.mp4"
+                    role="button" tabindex="0" aria-label="Lire : Bonne année 2021">
+                    <video class="gallery-video" muted playsinline preload="none" tabindex="-1"
+                        aria-hidden="true"></video>
+                    <div class="play-button"></div>
+                </div>
+                <div class="video-info">
+                    <h3>Bonne année 2021</h3>
+                </div>
+            </div>
+            <!-- 6. Italie, Ligurie (mai 2022) -->
+            <div class="video-item is-v">
+                <div class="custom-video-wrapper"
+                    data-src="https://MaptDiff.b-cdn.net/montages%20sp%C3%A9cifiques/Italie%20Ligurie%20Mai22-SiteWeb%20MPEG-4%20Low%2B%20-%20AVEC%20audio.mp4"
+                    role="button" tabindex="0" aria-label="Lire : Italie, Ligurie (mai 2022)">
+                    <video class="gallery-video" muted playsinline preload="none" tabindex="-1"
+                        aria-hidden="true"></video>
+                    <div class="play-button"></div>
+                </div>
+                <div class="video-info">
+                    <h3>Italie, Ligurie (mai 2022)</h3>
+                </div>
+            </div>
+            <!-- 7. Le fil du temps – Hiver 1 -->
+            <div class="video-item is-h">
+                <div class="custom-video-wrapper"
+                    data-src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/LeFilduTemps%20-%20Hiver1-SiteWebok.mp4"
+                    role="button" tabindex="0" aria-label="Lire : Le fil du temps – Hiver 1">
+                    <video class="gallery-video" muted playsinline preload="none" tabindex="-1"
+                        aria-hidden="true"></video>
+                    <div class="play-button"></div>
+                </div>
+                <div class="video-info">
+                    <h3>Le fil du temps – Hiver 1</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Lecteur agrandi : s'ouvre au clic sur une vidéo, centré dans la page (le son est celui de la vidéo) -->
+    <div id="lb-overlay" class="lb-overlay" aria-hidden="true">
+        <div class="lb-panel" role="dialog" aria-modal="true" aria-label="Lecteur vidéo">
+            <video id="lb-video" class="lb-video" controls playsinline></video>
+            <div class="lb-bar">
+                <h3 id="lb-title" class="lb-title"></h3>
+                <div class="lb-nav">
+                    <button type="button" id="lb-prev" class="lb-arrow" aria-label="Vidéo précédente">&#10094;</button>
+                    <button type="button" id="lb-next" class="lb-arrow" aria-label="Vidéo suivante">&#10095;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 
 <!-- === 2. LE STYLE (CSS) === -->
 <style>
-    .dossiers-container {
-        text-align: center;
-        padding: 60px 20px;
+    /* .galerie-container est dans style.css */
+
+    /* Deux lignes de même longueur. Dans une ligne, chaque vidéo reçoit une largeur PROPORTIONNELLE à son format
+       (--grow = format x 1000) : toutes ont donc exactement la même hauteur, et la ligne est toujours pleine.
+       Ici : ligne 1 = 4 portraits ; ligne 2 = 2 portraits + 1 paysage (plus large, de même hauteur). */
+    .videos-layout {
+        --gap: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap);
+        margin: 0 auto 60px;
     }
 
-    .construction-text {
+    .video-row {
+        display: flex;
+        align-items: stretch;
+        gap: var(--gap);
+    }
+
+    .video-item {
+        --grow: 562;
+        /* portrait 9/16 par défaut, remplacé par le vrai format */
+        flex: var(--grow) 1 0px;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        background: #161616;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .video-item:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .video-item.is-h {
+        --grow: 1778;
+        /* paysage 16/9 par défaut */
+    }
+
+    .custom-video-wrapper {
+        position: relative;
+        width: 100%;
+        cursor: pointer;
+        background-color: #000;
+    }
+
+    /* Format provisoire avant le chargement du début de la vidéo (le format réel de la vidéo le remplace ensuite) */
+    .is-v .custom-video-wrapper {
+        aspect-ratio: 9 / 16;
+    }
+
+    .is-h .custom-video-wrapper {
+        aspect-ratio: 16 / 9;
+    }
+
+    /* La vignette est la 1ère image de la vidéo (muette, sans lecture) */
+    .custom-video-wrapper video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        pointer-events: none;
+    }
+
+    .play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60px;
+        height: 60px;
+        background-color: rgba(0, 0, 0, 0.7);
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        pointer-events: none;
+    }
+
+    .play-button::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 54%;
+        transform: translate(-50%, -50%);
+        border-style: solid;
+        border-width: 10px 0 10px 18px;
+        border-color: transparent transparent transparent #fff;
+    }
+
+    .custom-video-wrapper:hover .play-button {
+        background-color: rgba(0, 0, 0, 0.9);
+        transform: translate(-50%, -50%) scale(1.1);
+        border-color: #fff;
+    }
+
+    .video-info {
+        flex: 1;
+        padding: 12px 14px;
+    }
+
+    .video-info h3 {
+        color: #ffffff;
         font-family: 'Avenir', sans-serif;
-        color: #888;
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.25;
+    }
+
+    /* Cellules étroites : bouton lecture plus petit */
+    .play-button {
+        width: 46px;
+        height: 46px;
+    }
+
+    .play-button::after {
+        border-width: 8px 0 8px 14px;
+    }
+
+    /* Téléphone : 2 portraits par ligne, la vidéo paysage sur toute la largeur */
+    @media (max-width: 700px) {
+        .videos-layout {
+            --gap: 12px;
+        }
+
+        .video-row {
+            flex-wrap: wrap;
+        }
+
+        .video-item.is-v {
+            flex: 0 0 calc(50% - var(--gap) / 2);
+        }
+
+        .video-item.is-h {
+            flex: 0 0 100%;
+        }
+
+        .video-info {
+            padding: 10px 11px;
+        }
+
+        .video-info h3 {
+            font-size: 0.85rem;
+        }
+    }
+
+    /* --- Lecteur agrandi (centré dans la page, hors plein écran ; le bouton plein écran du lecteur reste disponible) --- */
+    .lb-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 80px 20px 20px;
+        /* 70px de bandeau + marge : le lecteur est centré sous le bandeau */
+        background: rgba(0, 0, 0, 0.88);
+    }
+
+    .lb-overlay.open {
+        display: flex;
+        animation: lbFade 0.25s ease;
+    }
+
+    @keyframes lbFade {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .lb-panel {
+        width: min(1100px, 100%);
+        background: #161616;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    }
+
+    .lb-video {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: calc(100vh - 210px);
+        max-height: calc(100dvh - 210px);
+        object-fit: contain;
+        background: #000;
+    }
+
+    .lb-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 14px 18px;
+    }
+
+    .lb-title {
+        color: #fff;
+        font-family: 'Avenir', sans-serif;
         font-size: 1.1rem;
-        letter-spacing: 1px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .lb-nav {
+        display: flex;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+
+    .lb-arrow {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .lb-arrow:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: scale(1.05);
+    }
+
+    @media (max-width: 600px) {
+        .lb-overlay {
+            padding: 75px 10px 10px;
+        }
+
+        .lb-title {
+            font-size: 0.95rem;
+        }
+
+        .lb-video {
+            max-height: calc(100vh - 190px);
+            max-height: calc(100dvh - 190px);
+        }
     }
 </style>
 
 
 <!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
-<script></script>
+<script>
+    (function () {
+        // Nettoyage d'une éventuelle visite précédente d'une page à lecteur agrandi
+        if (window.__mpKeydown) document.removeEventListener('keydown', window.__mpKeydown);
+
+        const overlay = document.getElementById('lb-overlay');
+        const video = document.getElementById('lb-video');
+        const titleEl = document.getElementById('lb-title');
+        const prevBtn = document.getElementById('lb-prev');
+        const nextBtn = document.getElementById('lb-next');
+        const wrappers = Array.from(document.querySelectorAll('.galerie-container .custom-video-wrapper'));
+        if (!overlay || !video || wrappers.length === 0) return;
+
+        // ---------------------------------------------------------------- vignettes
+        // 1) Chargement économe : le début d'une vignette n'est téléchargé que lorsqu'elle approche de l'écran.
+        // 2) Chaque cadre prend le VRAI format de sa vidéo (jamais de rognage), et sa largeur en dépend :
+        //    dans une ligne, toutes les vidéos ont la même hauteur et la ligne est pleine.
+        // Les vignettes restent EN PAUSE (1ère image, muettes) : seule la lecture dans le lecteur agrandi démarre toute seule.
+        function loadThumb(w) {
+            const v = w.querySelector('video');
+            if (!v || v.dataset.loaded) return;
+            v.dataset.loaded = '1';
+            v.preload = 'metadata';
+            v.src = w.dataset.src + '#t=0.1'; // #t=0.1 : la vignette est la 1ère image
+        }
+
+        wrappers.forEach(w => {
+            const v = w.querySelector('video');
+            const item = w.closest('.video-item');
+            if (!v || !item) return;
+            v.addEventListener('loadedmetadata', () => {
+                if (!v.videoWidth || !v.videoHeight) return;
+                const ratio = v.videoWidth / v.videoHeight;
+                w.style.aspectRatio = v.videoWidth + ' / ' + v.videoHeight;  // cadre exactement au format de la vidéo
+                item.style.setProperty('--grow', String(Math.round(ratio * 1000))); // largeur proportionnelle au format : même hauteur dans la ligne
+                item.classList.toggle('is-v', ratio < 1);
+                item.classList.toggle('is-h', ratio >= 1);
+            });
+        });
+
+        if ('IntersectionObserver' in window) {
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) { loadThumb(entry.target); io.unobserve(entry.target); }
+                });
+            }, { rootMargin: '400px 0px' });
+            wrappers.forEach(w => io.observe(w));
+        } else {
+            wrappers.forEach(loadThumb);
+        }
+
+        // ---------------------------------------------------------------- lecteur agrandi
+        // Un clic sur une vignette ouvre la vidéo au centre de la page, avec les flèches ◀ ▶ (à droite du titre)
+        // pour parcourir toutes les vidéos de la page, dans l'ordre. Le son est celui de la vidéo.
+        // La lecture démarre toute seule à l'ouverture du lecteur ET à chaque changement de vidéo.
+        // En sortant (clic en dehors du lecteur ou Échap), la vidéo s'arrête : la page revient en pause.
+        const items = wrappers.map(w => {
+            const card = w.closest('.video-item');
+            const h3 = card && card.querySelector('h3');
+            return { src: w.dataset.src, title: h3 ? h3.textContent.trim() : '' };
+        });
+        let current = -1;
+
+        function show(index) {
+            current = (index + items.length) % items.length; // boucle : après la dernière, la première
+            titleEl.textContent = items[current].title;
+            video.preload = 'auto';
+            video.src = items[current].src;
+            const p = video.play(); // lecture automatique (avec le son : le clic ou la touche de l'utilisateur l'autorise)
+            if (p && typeof p.catch === 'function') p.catch(() => { }); // si le navigateur refuse, le bouton lecture reste disponible
+        }
+
+        function openPlayer(index) {
+            overlay.classList.add('open');
+            overlay.setAttribute('aria-hidden', 'false');
+            show(index);
+        }
+
+        function closePlayer() {
+            const last = wrappers[current];
+            video.pause();
+            video.removeAttribute('src'); // coupe aussi le téléchargement en cours
+            video.load();
+            overlay.classList.remove('open');
+            overlay.setAttribute('aria-hidden', 'true');
+            current = -1;
+            if (last) last.focus({ preventScroll: true });
+        }
+
+        wrappers.forEach((w, i) => {
+            w.addEventListener('click', () => openPlayer(i));
+            w.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayer(i); }
+            });
+        });
+
+        prevBtn.addEventListener('click', () => show(current - 1));
+        nextBtn.addEventListener('click', () => show(current + 1));
+
+        // Clic en dehors du lecteur (sur le fond sombre) = retour à la page
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closePlayer();
+        });
+
+        // La page derrière ne défile pas tant que le lecteur est ouvert
+        overlay.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
+        overlay.addEventListener('touchmove', (e) => {
+            if (e.target === overlay) e.preventDefault();
+        }, { passive: false });
+
+        // Clavier : Échap ferme ; ← → changent de vidéo (sauf si le lecteur a le focus : il s'en sert pour avancer/reculer dans la vidéo)
+        function onKeydown(e) {
+            if (!overlay.isConnected) { // page quittée : on se désabonne
+                document.removeEventListener('keydown', onKeydown);
+                return;
+            }
+            if (!overlay.classList.contains('open')) return;
+
+            if (e.key === 'Escape') {
+                closePlayer();
+            } else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && document.activeElement !== video) {
+                show(current + (e.key === 'ArrowLeft' ? -1 : 1));
+            }
+        }
+        window.__mpKeydown = onKeydown;
+        document.addEventListener('keydown', onKeydown);
+    })();
+</script>

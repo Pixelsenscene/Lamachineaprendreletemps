@@ -1,214 +1,720 @@
 <!-- === 1. LE CONTENU === -->
 <section class="galerie-container">
 
-    <!-- === CARROUSEL 1 (7 Vidéos) === -->
-    <div class="vr-carousel-container" id="vrCarouselContainer1">
-        <button class="carousel-btn prev-btn" type="button" aria-label="Vidéo précédente"
-            onclick="moveCarousel(1, -1, event)">&#10094;</button>
+    <!-- Toutes les vidéos, dans l'ordre. Le script les répartit en lignes d'après le VRAI format de chaque vidéo
+         (portrait ou paysage) : 4 vidéos au maximum par ligne, toutes les vidéos d'une ligne ont la même hauteur,
+         et toutes les lignes ont la même longueur. -->
+    <div id="th-layout" class="videos-layout">
 
-        <div class="carousel-viewport">
-            <div class="carousel-track" id="vrCarouselTrack1">
-
-                <!-- 1. Danse cumulus 1 -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/danse%20cumulus%201-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 2. Danse cumulus 2 -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/danse%20cumulus%202-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 3. Emprise du temps -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/emprise%20du%20temps-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 4. Envolée dansante -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Envole%CC%81e%20dansante-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 5. Eolienne souffle fort -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Eolienne%20souffle%20fort-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 6. Etretat -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Etretat-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 7. Fondre le temps -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Fondre%20le%20temps-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
+        <!-- 1. Danse cumulus 1 -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/danse%20cumulus%201-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : Danse cumulus 1">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>Danse cumulus 1</h3>
             </div>
         </div>
 
-        <button class="carousel-btn next-btn" type="button" aria-label="Vidéo suivante"
-            onclick="moveCarousel(1, 1, event)">&#10095;</button>
-    </div>
-
-
-    <!-- === CARROUSEL 2 (7 Vidéos) === -->
-    <div class="vr-carousel-container" id="vrCarouselContainer2">
-        <button class="carousel-btn prev-btn" type="button" aria-label="Vidéo précédente"
-            onclick="moveCarousel(2, -1, event)">&#10094;</button>
-
-        <div class="carousel-viewport">
-            <div class="carousel-track" id="vrCarouselTrack2">
-
-                <!-- 8. Griffe -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/griffe-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 9. Harpe fenêtre -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Harpe%20fene%CC%82tre-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 10. MAPT Râto1 -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/MAPT%20Ra%CC%82to1-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 11. MAPT Râto6 -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/MAPT%20Ra%CC%82to6-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 12. MAPT&amp;LesGensDeLaVoix -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/MAPT%26LesGensDeLaVoix-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 13. Marteler nuage -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/marteler%20nuage%20-%20copie-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 14. Mirage -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/mirage-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
+        <!-- 2. Danse cumulus 2 -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/danse%20cumulus%202-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : Danse cumulus 2">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>Danse cumulus 2</h3>
             </div>
         </div>
 
-        <button class="carousel-btn next-btn" type="button" aria-label="Vidéo suivante"
-            onclick="moveCarousel(2, 1, event)">&#10095;</button>
-    </div>
-
-
-    <!-- === CARROUSEL 3 (6 Vidéos) === -->
-    <div class="vr-carousel-container" id="vrCarouselContainer3">
-        <button class="carousel-btn prev-btn" type="button" aria-label="Vidéo précédente"
-            onclick="moveCarousel(3, -1, event)">&#10094;</button>
-
-        <div class="carousel-viewport">
-            <div class="carousel-track" id="vrCarouselTrack3">
-
-                <!-- 15. N1-FaceAlaMer -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/N1-FaceAlaMer-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 16. N3-NappesDePlage -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/N3-NappesDePlage-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 17. NeigeC1 -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/NeigeC1-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 18. Penseur -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Penseur-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 19. Phare StMathieu -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/phare%20StMathieu1%20PL%20web-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
-                <!-- 20. TchinTchin -->
-                <div class="carousel-slide">
-                    <video class="gallery-video" muted loop playsinline preload="none"
-                        onclick="handleCarouselVideoClick(this, event)">
-                        <source src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/TchinTchin_-SiteWeb%20MPEG-4.mp4" type="video/mp4">
-                    </video>
-                </div>
-
+        <!-- 3. Emprise du temps -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/emprise%20du%20temps-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : Emprise du temps">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>Emprise du temps</h3>
             </div>
         </div>
 
-        <button class="carousel-btn next-btn" type="button" aria-label="Vidéo suivante"
-            onclick="moveCarousel(3, 1, event)">&#10095;</button>
+        <!-- 4. Envolée dansante -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Envole%CC%81e%20dansante-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : Envolée dansante">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>Envolée dansante</h3>
+            </div>
+        </div>
+
+        <!-- 5. Eolienne souffle fort -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Eolienne%20souffle%20fort-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : Eolienne souffle fort">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>Eolienne souffle fort</h3>
+            </div>
+        </div>
+
+        <!-- 6. Etretat -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Etretat-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : Etretat">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>Etretat</h3>
+            </div>
+        </div>
+
+        <!-- 7. Fondre le temps -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Fondre%20le%20temps-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : Fondre le temps">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>Fondre le temps</h3>
+            </div>
+        </div>
+
+        <!-- 8. Griffe -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/griffe-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : Griffe">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>Griffe</h3>
+            </div>
+        </div>
+
+        <!-- 9. Harpe fenêtre -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Harpe%20fene%CC%82tre-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : Harpe fenêtre">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>Harpe fenêtre</h3>
+            </div>
+        </div>
+
+        <!-- 10. MAPT Râto1 -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/MAPT%20Ra%CC%82to1-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : MAPT Râto1">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>MAPT Râto1</h3>
+            </div>
+        </div>
+
+        <!-- 11. MAPT Râto6 -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/MAPT%20Ra%CC%82to6-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : MAPT Râto6">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>MAPT Râto6</h3>
+            </div>
+        </div>
+
+        <!-- 12. MAPT&amp;LesGensDeLaVoix -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/MAPT%26LesGensDeLaVoix-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : MAPT&amp;LesGensDeLaVoix">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>MAPT&amp;LesGensDeLaVoix</h3>
+            </div>
+        </div>
+
+        <!-- 13. Marteler nuage -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/marteler%20nuage%20-%20copie-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : Marteler nuage">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>Marteler nuage</h3>
+            </div>
+        </div>
+
+        <!-- 14. Mirage -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/mirage-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : Mirage">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>Mirage</h3>
+            </div>
+        </div>
+
+        <!-- 15. N1-FaceAlaMer -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/N1-FaceAlaMer-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : N1-FaceAlaMer">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>N1-FaceAlaMer</h3>
+            </div>
+        </div>
+
+        <!-- 16. N3-NappesDePlage -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/N3-NappesDePlage-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : N3-NappesDePlage">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>N3-NappesDePlage</h3>
+            </div>
+        </div>
+
+        <!-- 17. NeigeC1 -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/NeigeC1-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : NeigeC1">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>NeigeC1</h3>
+            </div>
+        </div>
+
+        <!-- 18. Penseur -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Penseur-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : Penseur">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>Penseur</h3>
+            </div>
+        </div>
+
+        <!-- 19. Phare StMathieu -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/phare%20StMathieu1%20PL%20web-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : Phare StMathieu">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>Phare StMathieu</h3>
+            </div>
+        </div>
+
+        <!-- 20. TchinTchin -->
+        <div class="video-item">
+            <div class="custom-video-wrapper"
+                data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/TchinTchin_-SiteWeb%20MPEG-4.mp4"
+                role="button" tabindex="0" aria-label="Lire : TchinTchin">
+                <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+                <div class="play-button"></div>
+            </div>
+            <div class="video-info">
+                <h3>TchinTchin</h3>
+            </div>
+        </div>
     </div>
 
+    <!-- Carrousel plein écran : s'ouvre au clic sur une vidéo. Lecture automatique avec le son, flèches de part et
+         d'autre de la vidéo, pas de bouton lecture / pause. Un clic sur la vidéo (ou Échap) ferme le carrousel.
+         (id="lb-overlay" : le script du site s'en sert pour ne pas changer de menu au geste horizontal pendant qu'il est ouvert) -->
+    <div id="lb-overlay" class="th-stage" aria-hidden="true" role="dialog" aria-modal="true"
+        aria-label="Carrousel vidéo">
+        <button type="button" id="th-prev" class="carousel-btn prev-btn" aria-label="Vidéo précédente">&#10094;</button>
+        <video id="th-video" class="th-video" playsinline loop></video>
+        <button type="button" id="th-next" class="carousel-btn next-btn" aria-label="Vidéo suivante">&#10095;</button>
+    </div>
 </section>
 
-<!-- Le CSS des carrousels est dans style.css, leur JavaScript (moveCarousel, plein écran)
-     dans script.js : cette sous-page ne contient que du contenu. -->
+
+<!-- === 2. LE STYLE (CSS) === -->
+<style>
+    /* .galerie-container est dans style.css */
+
+    /* Les lignes sont construites par le script ; la page apparaît en fondu une fois la répartition calculée */
+    .videos-layout {
+        --gap: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap);
+        margin: 0 auto 60px;
+        min-height: 300px;
+        opacity: 0;
+        transition: opacity 0.35s ease;
+    }
+
+    .videos-layout.ready {
+        opacity: 1;
+    }
+
+    /* Dans une ligne, chaque vidéo reçoit une largeur PROPORTIONNELLE à son format (--grow = format x 1000) :
+       toutes ont donc la même hauteur, et la ligne est toujours pleine. */
+    .video-row {
+        display: flex;
+        align-items: stretch;
+        gap: var(--gap);
+    }
+
+    .video-item {
+        --grow: 562;
+        /* portrait 9/16 par défaut, remplacé par le vrai format */
+        flex: var(--grow) 1 0px;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        background: #161616;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .video-item:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .custom-video-wrapper {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 9 / 16;
+        /* format provisoire, remplacé par le vrai format */
+        cursor: pointer;
+        background-color: #000;
+    }
+
+    /* La vignette est la 1ère image de la vidéo (muette, sans lecture) */
+    .custom-video-wrapper video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        pointer-events: none;
+    }
+
+    .play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 46px;
+        height: 46px;
+        background-color: rgba(0, 0, 0, 0.7);
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        pointer-events: none;
+    }
+
+    .play-button::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 54%;
+        transform: translate(-50%, -50%);
+        border-style: solid;
+        border-width: 8px 0 8px 14px;
+        border-color: transparent transparent transparent #fff;
+    }
+
+    .custom-video-wrapper:hover .play-button {
+        background-color: rgba(0, 0, 0, 0.9);
+        transform: translate(-50%, -50%) scale(1.1);
+        border-color: #fff;
+    }
+
+    .video-info {
+        flex: 1;
+        padding: 12px 14px;
+    }
+
+    .video-info h3 {
+        color: #ffffff;
+        font-family: 'Avenir', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.25;
+    }
+
+    @media (max-width: 700px) {
+        .videos-layout {
+            --gap: 12px;
+        }
+
+        .video-info {
+            padding: 9px 10px;
+        }
+
+        .video-info h3 {
+            font-size: 0.8rem;
+        }
+    }
+
+    /* --- Carrousel plein écran (même aspect que le carrousel actuel : fond sombre, flèches de part et d'autre) --- */
+    .th-stage {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.95);
+    }
+
+    .th-stage.open {
+        display: flex;
+        animation: thFade 0.25s ease;
+    }
+
+    @keyframes thFade {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .th-video {
+        display: block;
+        max-width: 100vw;
+        max-height: 100vh;
+        max-height: 100dvh;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        cursor: pointer;
+        /* aucun bouton lecture / pause : un clic sur la vidéo ferme le carrousel */
+    }
+
+    .th-stage .carousel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+        width: 50px;
+        height: 80px;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .th-stage .carousel-btn:hover {
+        background: rgba(0, 0, 0, 0.6);
+        color: rgba(255, 255, 255, 0.9);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .th-stage .prev-btn {
+        left: 20px;
+    }
+
+    .th-stage .next-btn {
+        right: 20px;
+    }
+
+    @media (max-width: 600px) {
+        .th-stage .carousel-btn {
+            width: 40px;
+            height: 64px;
+        }
+
+        .th-stage .prev-btn {
+            left: 8px;
+        }
+
+        .th-stage .next-btn {
+            right: 8px;
+        }
+    }
+</style>
+
+
+<!-- === 3. LE SCRIPT (JAVASCRIPT) === -->
+<script>
+    (function () {
+        // Nettoyage d'une éventuelle visite précédente d'une page à lecteur / carrousel agrandi
+        if (window.__mpKeydown) document.removeEventListener('keydown', window.__mpKeydown);
+
+        const layout = document.getElementById('th-layout');
+        const overlay = document.getElementById('lb-overlay');
+        const video = document.getElementById('th-video');
+        const prevBtn = document.getElementById('th-prev');
+        const nextBtn = document.getElementById('th-next');
+        if (!layout || !overlay || !video) return;
+
+        const items = Array.from(layout.querySelectorAll('.video-item'));
+        if (items.length === 0) return;
+        const wrappers = items.map(it => it.querySelector('.custom-video-wrapper'));
+
+        // ================================================================ 1. FORMATS
+        // Format (largeur / hauteur) de chaque vidéo : supposé portrait (9/16) tant qu'il n'est pas connu.
+        const PORTRAIT = 9 / 16;
+        const ratios = items.map(() => PORTRAIT);
+
+        function setRatio(i, w, h) {
+            if (!w || !h) return;
+            ratios[i] = w / h;
+            wrappers[i].style.aspectRatio = w + ' / ' + h;                    // cadre exactement au format de la vidéo
+            items[i].style.setProperty('--grow', String(Math.round(ratios[i] * 1000))); // largeur proportionnelle au format
+        }
+
+        // Le format ne se connaît qu'en lisant le début de la vidéo : on le relit pour toutes, quelques-unes à la fois
+        // (métadonnées seulement, la vidéo n'est pas téléchargée), pour calculer la répartition en lignes.
+        function probe(i) {
+            return new Promise(resolve => {
+                const v = document.createElement('video');
+                let finished = false;
+                const finish = () => {
+                    if (finished) return;
+                    finished = true;
+                    v.removeAttribute('src');
+                    v.load(); // coupe le téléchargement
+                    resolve();
+                };
+                v.preload = 'metadata';
+                v.muted = true;
+                v.addEventListener('loadedmetadata', () => { setRatio(i, v.videoWidth, v.videoHeight); finish(); });
+                v.addEventListener('error', finish);
+                setTimeout(finish, 8000);
+                v.src = wrappers[i].dataset.src;
+            });
+        }
+
+        // ================================================================ 2. RÉPARTITION EN LIGNES
+        // Chaque ligne a la longueur du conteneur ; la hauteur d'une ligne de n vidéos vaut
+        // (largeur - écarts) / somme des formats. On cherche, SANS changer l'ordre, le découpage en lignes
+        // (4 vidéos maximum) dont les hauteurs sont les plus proches possible d'une hauteur idéale,
+        // celle d'une ligne pleine de vidéos portrait.
+        function partition(r, width, gap, max) {
+            const n = r.length;
+            const target = (width - (max - 1) * gap) / (max * PORTRAIT);
+            const cost = new Array(n + 1).fill(Infinity);
+            const from = new Array(n + 1).fill(0);
+            cost[0] = 0;
+            for (let j = 1; j <= n; j++) {
+                for (let k = 1; k <= max && k <= j; k++) {
+                    let sum = 0;
+                    for (let t = j - k; t < j; t++) sum += r[t];
+                    const h = (width - (k - 1) * gap) / sum;
+                    const c = cost[j - k] + Math.pow(Math.log(h / target), 2);
+                    if (c < cost[j]) { cost[j] = c; from[j] = j - k; }
+                }
+            }
+            const rows = [];
+            for (let j = n; j > 0; j = from[j]) rows.unshift(Array.from({ length: j - from[j] }, (_, q) => from[j] + q));
+            return rows;
+        }
+
+        let lastKey = '';
+        let lastWidth = 0;
+
+        function buildRows() {
+            const width = layout.clientWidth;
+            if (!width) return;
+            lastWidth = width;
+            const gap = parseFloat(getComputedStyle(layout).getPropertyValue('--gap')) || 20;
+            const max = width >= 760 ? 4 : (width >= 480 ? 3 : 2); // 4 vidéos maximum par ligne (moins sur petit écran)
+            const rows = partition(ratios, width, gap, max);
+
+            const key = max + '|' + rows.map(r => r.join(',')).join(';');
+            if (key !== lastKey) {
+                lastKey = key;
+                const frag = document.createDocumentFragment();
+                rows.forEach(idx => {
+                    const row = document.createElement('div');
+                    row.className = 'video-row';
+                    idx.forEach(i => row.appendChild(items[i]));
+                    frag.appendChild(row);
+                });
+                layout.querySelectorAll('.video-row').forEach(r => r.remove());
+                layout.appendChild(frag);
+            }
+            layout.classList.add('ready');
+        }
+
+        // On calcule la répartition dès que tous les formats sont connus (ou au bout de 4 s au plus : les formats
+        // qui arrivent ensuite ajustent seulement les largeurs, les lignes restent pleines et de même hauteur).
+        let nextProbe = 0;
+        const workers = Array.from({ length: 4 }, async () => {
+            while (nextProbe < items.length) await probe(nextProbe++);
+        });
+        Promise.race([Promise.all(workers), new Promise(r => setTimeout(r, 4000))]).then(buildRows);
+
+        // Largeur de la page qui change (fenêtre, rotation) : nouvelle répartition si besoin
+        let resizeTimer = null;
+        function onResize() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (!layout.isConnected) return;
+                if (Math.abs(layout.clientWidth - lastWidth) > 24) buildRows();
+            }, 150);
+        }
+        window.addEventListener('resize', onResize);
+
+        // ================================================================ 3. VIGNETTES (1ère image, en pause)
+        // Chargement économe : le début d'une vignette n'est téléchargé que lorsqu'elle approche de l'écran.
+        // Toutes les vidéos sont EN PAUSE à l'ouverture de la page.
+        function loadThumb(w) {
+            const v = w.querySelector('video');
+            if (!v || v.dataset.loaded) return;
+            v.dataset.loaded = '1';
+            v.preload = 'metadata';
+            v.src = w.dataset.src + '#t=0.1'; // #t=0.1 : la vignette est la 1ère image
+        }
+
+        wrappers.forEach((w, i) => {
+            const v = w.querySelector('video');
+            if (v) v.addEventListener('loadedmetadata', () => setRatio(i, v.videoWidth, v.videoHeight));
+        });
+
+        if ('IntersectionObserver' in window) {
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) { loadThumb(entry.target); io.unobserve(entry.target); }
+                });
+            }, { rootMargin: '400px 0px' });
+            wrappers.forEach(w => io.observe(w));
+        } else {
+            wrappers.forEach(loadThumb);
+        }
+
+        // ================================================================ 4. CARROUSEL PLEIN ÉCRAN
+        // Un clic sur une vignette ouvre le carrousel sur cette vidéo : lecture AUTOMATIQUE, avec le SON, en boucle.
+        // Flèches ◀ ▶ de part et d'autre (ou touches ← →) pour changer de vidéo, la lecture repart seule.
+        // Aucun bouton lecture / pause : un clic sur la vidéo (ou Échap) ferme le carrousel.
+        // À la fermeture, la vidéo s'arrête : la page revient en pause.
+        const titles = items.map(it => { const h3 = it.querySelector('h3'); return h3 ? h3.textContent.trim() : ''; });
+        let current = -1;
+
+        function show(index) {
+            current = (index + items.length) % items.length; // boucle : après la dernière, la première
+            video.setAttribute('aria-label', titles[current]);
+            video.muted = false;
+            video.src = wrappers[current].dataset.src;
+            const p = video.play();
+            if (p && typeof p.catch === 'function') {
+                p.catch(() => { // lecture avec son refusée par le navigateur : on lit au moins l'image
+                    video.muted = true;
+                    video.play().catch(() => { });
+                });
+            }
+        }
+
+        function openStage(index) {
+            overlay.classList.add('open');
+            overlay.setAttribute('aria-hidden', 'false');
+            show(index);
+        }
+
+        function closeStage() {
+            const last = wrappers[current];
+            video.pause();
+            video.removeAttribute('src'); // coupe aussi le téléchargement en cours
+            video.load();
+            overlay.classList.remove('open');
+            overlay.setAttribute('aria-hidden', 'true');
+            current = -1;
+            if (last) last.focus({ preventScroll: true });
+        }
+
+        wrappers.forEach((w, i) => {
+            w.addEventListener('click', () => openStage(i));
+            w.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openStage(i); }
+            });
+        });
+
+        prevBtn.addEventListener('click', (e) => { e.stopPropagation(); show(current - 1); });
+        nextBtn.addEventListener('click', (e) => { e.stopPropagation(); show(current + 1); });
+
+        // Un clic sur la vidéo (ou sur le fond sombre autour) ferme le carrousel
+        overlay.addEventListener('click', (e) => {
+            if (e.target.closest('.carousel-btn')) return;
+            closeStage();
+        });
+
+        // La page derrière ne défile pas tant que le carrousel est ouvert
+        overlay.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
+        overlay.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+
+        // Clavier : Échap ferme ; ← → changent de vidéo
+        function onKeydown(e) {
+            if (!overlay.isConnected) { // page quittée : on se désabonne
+                document.removeEventListener('keydown', onKeydown);
+                window.removeEventListener('resize', onResize);
+                return;
+            }
+            if (!overlay.classList.contains('open')) return;
+
+            if (e.key === 'Escape') {
+                closeStage();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                show(current + (e.key === 'ArrowLeft' ? -1 : 1));
+            }
+        }
+        window.__mpKeydown = onKeydown;
+        document.addEventListener('keydown', onKeydown);
+    })();
+</script>
