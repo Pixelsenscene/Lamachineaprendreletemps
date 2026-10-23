@@ -1,0 +1,199 @@
+/* ==============================================================================================================
+   aide-outils.css : style du bouton rond "?" et de la fenêtre d'explication des outils (voir aide-outils.js)
+   ============================================================================================================== */
+
+.hasToolHelp {
+    position: relative;
+}
+
+/* Le bouton "?" : le style propre à chaque outil (ex. ".tool-convertir button") est plus spécifique que
+   ".toolHelpBtn" : on monte la spécificité pour que le "?" soit identique partout. */
+.hasToolHelp .toolHelpBtn,
+.tool-simu .toolHelpBtn,
+.tool-prepa .toolHelpBtn,
+.tool-convertir .toolHelpBtn,
+.tool-metro .toolHelpBtn,
+.tool-chrono .toolHelpBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 30px;
+    height: 30px;
+    min-width: 0;
+    min-height: 0;
+    max-width: none;
+    margin: 0 0 0 12px;
+    padding: 0;
+    vertical-align: middle;
+    position: relative;
+    top: -2px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    font: 600 17px/1 Arial, sans-serif;
+    letter-spacing: normal;
+    text-transform: none;
+    text-shadow: none;
+    box-shadow: none;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.hasToolHelp .toolHelpBtn:hover,
+.tool-simu .toolHelpBtn:hover,
+.tool-prepa .toolHelpBtn:hover,
+.tool-convertir .toolHelpBtn:hover,
+.tool-metro .toolHelpBtn:hover,
+.tool-chrono .toolHelpBtn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #fff;
+}
+
+.hasToolHelp .toolHelpBtn:focus-visible,
+.tool-simu .toolHelpBtn:focus-visible,
+.tool-prepa .toolHelpBtn:focus-visible,
+.tool-convertir .toolHelpBtn:focus-visible,
+.tool-metro .toolHelpBtn:focus-visible,
+.tool-chrono .toolHelpBtn:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* explication ouverte : bouton "plein" */
+.hasToolHelp .toolHelpBtn[aria-expanded="true"],
+.tool-simu .toolHelpBtn[aria-expanded="true"],
+.tool-prepa .toolHelpBtn[aria-expanded="true"],
+.tool-convertir .toolHelpBtn[aria-expanded="true"],
+.tool-metro .toolHelpBtn[aria-expanded="true"],
+.tool-chrono .toolHelpBtn[aria-expanded="true"] {
+    background: #fff;
+    color: #111;
+    border-color: #fff;
+}
+
+/* Fenêtre d'explication : posée sur l'outil, sous le titre (sous le bandeau et la barre de sous-menus) */
+.toolHelp {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    display: none;
+    box-sizing: border-box;
+    padding: 6px 14px 20px;
+    background: rgba(8, 8, 8, 0.62);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+}
+
+.toolHelp.open {
+    display: block;
+    animation: toolHelpIn 0.2s ease;
+}
+
+@keyframes toolHelpIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.toolHelpPanel {
+    box-sizing: border-box;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 22px 26px;
+    background: rgba(20, 20, 20, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 12px;
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.65);
+    color: #ececec;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.toolHelpPanel p {
+    margin: 0 0 14px;
+}
+
+.toolHelpPanel p:last-child {
+    margin-bottom: 0;
+}
+
+/* mot cliquable qui ouvre une vidéo */
+.helpLink {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #9fcdf7;
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+
+.helpLink:hover {
+    color: #fff;
+}
+
+.helpLink:focus-visible {
+    outline: 2px solid #9fcdf7;
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+.toolHelpMedia {
+    text-align: center;
+}
+
+.toolHelpVideo {
+    display: block;
+    max-width: 100%;
+    max-height: min(68vh, 620px);
+    margin: 0 auto;
+    border-radius: 8px;
+    background: #000;
+    cursor: pointer;
+    /* un clic sur la vidéo ramène à l'explication */
+}
+
+.toolHelpHint {
+    margin: 12px 0 0;
+    font-size: 13px;
+    color: #9a9a9a;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .toolHelpPanel {
+        padding: 18px 18px;
+        font-size: 15px;
+    }
+
+    .toolHelp {
+        padding: 6px 8px 16px;
+    }
+}
+
+@media (pointer: coarse) {
+
+    .hasToolHelp .toolHelpBtn,
+    .tool-simu .toolHelpBtn,
+    .tool-prepa .toolHelpBtn,
+    .tool-convertir .toolHelpBtn,
+    .tool-metro .toolHelpBtn,
+    .tool-chrono .toolHelpBtn {
+        width: 34px;
+        height: 34px;
+    }
+}

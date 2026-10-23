@@ -5,7 +5,7 @@
 
         <!-- LE CHRONOMÈTRE (la référence : ses temps sont réels et fixes) -->
         <div class="panel" id="ch-fixed">
-            <h2 class="titreTool">Chronomètre</h2>
+            <h2 class="titreTool" data-help-title>Chronomètre</h2>
 
             <!-- Affichage : heures : minutes : secondes : centièmes (unité abrégée sous chaque zone) -->
             <div class="display" role="timer" aria-label="Chronomètre">
@@ -59,7 +59,7 @@
 
         <!-- LE TIMER : copie convertie du chronomètre. Un clic sur "Timer" l'affiche seul, avec ses propres boutons. -->
         <div class="panel" id="ch-timer" hidden>
-            <h2 class="titreTool timerTitle" id="ch-timer-title" role="button" tabindex="0">Timer</h2>
+            <h2 class="titreTool timerTitle" id="ch-timer-title" data-help-title role="button" tabindex="0">Timer</h2>
 
             <!-- Bloc des deux décomptes (encadré en blanc dans la vue "Timer" seule) :
                  en haut le décompte TOTAL, dessous le décompte INTERMÉDIAIRE (temps restant avant le point suivant). -->
@@ -158,7 +158,76 @@
     <!-- Message affiché seulement si une erreur JavaScript survient dans l'outil (aide au dépannage) -->
     <div class="chError" id="ch-error" hidden></div>
 
+    <!-- TEXTE DU BOUTON "?" (explication de l'outil), affiché dans une fenêtre posée sur l'outil.
+         • <p> = un paragraphe, <br> = un retour à la ligne.
+         • Un mot peut ouvrir une vidéo :  <button type="button" class="helpLink" data-video="adresse de la vidéo" data-loop>mot</button>
+           (data-loop = en boucle ; sans data-loop, la vidéo se joue une fois). Un clic sur la vidéo ramène à l'explication.
+         • Le "?" est placé sur les titres qui portent l'attribut  data-help-title  (code : aide-outils.js). -->
+    <template class="toolHelpContent">
+        <p>Un outil utile pour réaliser certaines machines...<br>
+            Découper une action effectuée à vitesse réelle en de multiples étapes intermédiaires. L'outil recalcule la
+            durée de chaque étape si on veut effectuer les mêmes actions au ralenti.<br>
+            Par exemple : effectuer 3 pas &gt; se retourner &gt; changer de direction &gt; attraper un objet... etc<br>
+            Le temps pour ces actions apparaîtra à vitesse chronométrée et à vitesse ralentie ou accélérée.</p>
+        <p>La vidéo "<button type="button" class="helpLink"
+                data-video="https://MaptDiff.b-cdn.net/montages%20sp%C3%A9cifiques/BONNE%20ANNEE%202021%20ok-SiteWeb%20MPEG-4%20Low%2B%20-%20AVEC%20audio.mp4">Bonne
+                année 2021</button>" a été ainsi réalisée (avec un scénario préalable timé et une bande audio dans les
+            oreilles).<br>
+            Dans le cas d'un scénario précis cet outil est très aidant, mais...</p>
+        <p>Majoritairement les vidéos réalisées n'utilisent pas cet outil et reposent sur notre capacité à ressentir
+            l'écoulement du temps.<br>
+            À méditer... Dans la lenteur la notion de vitesse existe. On peut ralentir tout en gardant cette sensation
+            de vitesse...</p>
+        <p>Concrètement :<br>
+            1/ Démarrer le chrono (bouton vert)<br>
+            2/ créer des temps intermédiaires <br>
+            et les renommer<br>
+            3/ Choisir RALENTISSEMENT (ou accélération)<br>
+            + ajuster la valeur<br>
+            A gauche apparaît le temps le plus petit à droite le plus élevé<br>
+            4/ Cliquer sur TIMER qui clignotte<br>
+            5/ C'est parti pour une Machine ! (le décompte est donné pour chaque temps intermédiaire)<br>
+            ... avec possibilité d'avoir un son qui annonce le passage à l'étape suivante.
+        </p>
+
+    </template>
+
 </section>
+
+<!-- Bouton "?" : le code est dans aide-outils.js (chargé une seule fois). S'il manque, seul le "?" est absent. -->
+<script>
+    (function () {
+        function go() { if (window.MPTAide) window.MPTAide.attach(document.getElementById('tool-chrono')); }
+        if (window.MPTAide) { go(); return; }
+        var s = document.createElement('script');
+        s.src = 'aide-outils.js';
+        s.onload = go;
+        document.head.appendChild(s);
+    })();
+</script>
+
+<!-- Un clic sur "Chrono & Timer" dans la barre des outils, alors que le chronomètre est DÉJÀ affiché, le RÉINITIALISE :
+     chronomètre seul, sans les temps ni les réglages mémorisés (le site le recrée à neuf).
+     Depuis un autre outil, l'état est conservé comme avant. -->
+<script>
+    (function () {
+        var root = document.getElementById('tool-chrono');
+        var nav = document.querySelector('.sub-nav-buttons');
+        if (!root || !nav) return;
+        // Une seule écoute à la fois : la nouvelle version de l'outil remplace celle de l'ancienne
+        if (nav.__chResetHandler) nav.removeEventListener('click', nav.__chResetHandler, true);
+        nav.__chResetHandler = function (e) {
+            var btn = e.target && e.target.closest ? e.target.closest('.sub-btn') : null;
+            if (!btn || btn.getAttribute('data-subpage') !== 'outils-chronometre') return;
+            var holder = root.parentElement;
+            if (!root.isConnected || !holder || holder.hidden) return; // outil non affiché : on garde son état
+            // Cette écoute passe AVANT le clic du bouton : sans "data-keep", le site ne réutilise pas cet outil
+            // et en recrée un tout neuf (voir loadSubPage dans script.js).
+            holder.removeAttribute('data-keep');
+        };
+        nav.addEventListener('click', nav.__chResetHandler, true);
+    })();
+</script>
 
 
 <!-- === 2. LE STYLE (CSS) === -->
@@ -265,6 +334,11 @@
         font-size: 26px;
         margin: 5px 0 22px;
         color: #fff;
+    }
+
+    /* Bouton "?" (aide) : à côté de "Timer" seulement dans la vue Timer seule ; sinon, celui de "Chronomètre" suffit */
+    .tool-chrono:not(.v-timer) #ch-timer .toolHelpBtn {
+        display: none;
     }
 
     /* --- Affichage --- */

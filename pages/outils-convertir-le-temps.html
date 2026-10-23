@@ -2,7 +2,7 @@
 <!-- Outil repris de l'appli Python "AppliRalentir" (page "Convertir le temps") -->
 <section class="tool-convertir" id="tool-convertir">
 
-    <h2 class="titreConvertir">Convertir le temps</h2>
+    <h2 class="titreConvertir" data-help-title>Convertir le temps</h2>
 
     <!-- Ligne 1 : Heures / Minutes / Secondes (chaque champ est cerclé de bleu clair) -->
     <div class="zoneMain">
@@ -98,7 +98,29 @@
         </div>
     </div>
 
+    <!-- TEXTE DU BOUTON "?" (explication de l'outil), affiché dans une fenêtre posée sur l'outil.
+         • <p> = un paragraphe, <br> = un retour à la ligne.
+         • Un mot peut ouvrir une vidéo :  <button type="button" class="helpLink" data-video="adresse de la vidéo" data-loop>mot</button>
+           (data-loop = en boucle ; sans data-loop, la vidéo se joue une fois). Un clic sur la vidéo ramène à l'explication.
+         • Le "?" est placé sur les titres qui portent l'attribut  data-help-title  (code : aide-outils.js). -->
+    <template class="toolHelpContent">
+        <p>À toute fin utile...<br>
+            Mais combien de secondes y a-t-il dans 3 mois, 6 heures, 23 minutes ?...</p>
+    </template>
+
 </section>
+
+<!-- Bouton "?" : le code est dans aide-outils.js (chargé une seule fois). S'il manque, seul le "?" est absent. -->
+<script>
+    (function () {
+        function go() { if (window.MPTAide) window.MPTAide.attach(document.getElementById('tool-convertir')); }
+        if (window.MPTAide) { go(); return; }
+        var s = document.createElement('script');
+        s.src = 'aide-outils.js';
+        s.onload = go;
+        document.head.appendChild(s);
+    })();
+</script>
 
 
 <!-- === 2. LE STYLE (CSS) === -->

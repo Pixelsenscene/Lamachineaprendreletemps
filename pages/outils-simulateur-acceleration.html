@@ -1,7 +1,7 @@
 <!-- === 1. LE CONTENU === -->
 <section class="tool-simu" id="tool-simu">
 
-    <h2 class="titreTool">Simulateur d'accélération</h2>
+    <h2 class="titreTool" data-help-title>Simulateur d'accélération</h2>
 
     <!-- Vidéo brute : ni commandes, ni pause, ni plein écran.
          Deux vidéos superposées : la page passe de l'une à l'autre (fondu) quand le curseur
@@ -39,7 +39,40 @@
         <div class="simuFile" id="simu-file"></div>
     </div>
 
+    <!-- TEXTE DU BOUTON "?" (explication de l'outil), affiché dans une fenêtre posée sur l'outil.
+         • <p> = un paragraphe, <br> = un retour à la ligne.
+         • Un mot peut ouvrir une vidéo :  <button type="button" class="helpLink" data-video="adresse de la vidéo" data-loop>mot</button>
+           (data-loop = en boucle ; sans data-loop, la vidéo se joue une fois). Un clic sur la vidéo ramène à l'explication.
+         • Le "?" est placé sur les titres qui portent l'attribut  data-help-title  (code : aide-outils.js). -->
+    <template class="toolHelpContent">
+        <p>L'accélération appliquée est proportionnelle à la lenteur des mouvements lors du tournage.<br>
+            Plus les mouvements ont été lents (Tournage) plus l'accélération est grande (Montage) afin d'approcher un
+            rendu final où les mouvements semblent être "à vitesse réelle".<br>
+            Pour cette vidéo l'accélération fut de 25 fois.</p>
+        <p>Selon l'élément à rendre rapide en arrière fond cette accélération varie au montage.<br>
+            Par exemple une accélération X10 peut suffire pour avoir une foule très rapide (exemple : <button
+                type="button" class="helpLink"
+                data-video="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/rire%20char%20a%CC%80%20voile-SiteWeb%20MPEG-4.mp4"
+                data-loop>Chars à voile</button>).<br>
+            Pour la course du soleil, une accélération beaucoup plus importante est nécessaire.<br>
+            C'est le cas de la vidéo "<button type="button" class="helpLink"
+                data-video="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/griffe-SiteWeb%20MPEG-4.mp4"
+                data-loop>Griffe</button>" qui a été accélérée 400 fois (20 min filmées = 3 sec montage final)</p>
+    </template>
+
 </section>
+
+<!-- Bouton "?" : le code est dans aide-outils.js (chargé une seule fois). S'il manque, seul le "?" est absent. -->
+<script>
+    (function () {
+        function go() { if (window.MPTAide) window.MPTAide.attach(document.getElementById('tool-simu')); }
+        if (window.MPTAide) { go(); return; }
+        var s = document.createElement('script');
+        s.src = 'aide-outils.js';
+        s.onload = go;
+        document.head.appendChild(s);
+    })();
+</script>
 
 
 <!-- === 2. LE STYLE (CSS) === -->
