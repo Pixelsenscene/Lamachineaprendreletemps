@@ -3,14 +3,23 @@
 
     <!-- Toutes les vidéos, dans l'ordre. Le script les répartit en lignes d'après le VRAI format de chaque vidéo
          (portrait ou paysage) : 4 vidéos au maximum par ligne, toutes les vidéos d'une ligne ont la même hauteur,
-         et toutes les lignes ont la même longueur. -->
+         et toutes les lignes ont la même longueur.
+
+         VIGNETTES EN IMAGE (facultatif, mais bien plus rapide) : pour qu'une vidéo ait une vignette image, ajoute sur sa
+         ligne  <div class="custom-video-wrapper" ...  l'attribut   data-poster="img/nom-de-l-image.webp"
+         L'image (créée avec vignette.sh, à un instant choisi) donne aussi le format de la vidéo, sans rien télécharger
+         de la vidéo. Sans cet attribut, ou si l'image est introuvable, la page utilise la vidéo comme vignette.
+
+         POUR AJOUTER UNE VIDÉO : copie un bloc <div class="video-item"> ... </div> ci-dessous, à l'endroit voulu
+         (l'ordre de la page est l'ordre d'affichage), puis change data-src (adresse de la vidéo), le titre, et
+         ajoute data-poster si tu as l'image. Les lignes se recalculent toutes seules. -->
     <div id="th-layout" class="videos-layout">
 
         <!-- 1. Danse cumulus 1 -->
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/danse%20cumulus%201-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : Danse cumulus 1">
+                data-poster="img/cumulus1a.webp" role="button" tabindex="0" aria-label="Lire : Danse cumulus 1">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
@@ -23,7 +32,7 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/danse%20cumulus%202-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : Danse cumulus 2">
+                data-poster="img/cumulus2a.webp" role="button" tabindex="0" aria-label="Lire : Danse cumulus 2">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
@@ -36,7 +45,7 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/emprise%20du%20temps-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : Emprise du temps">
+                data-poster="img/emprise1.webp" role="button" tabindex="0" aria-label="Lire : Emprise du temps">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
@@ -49,7 +58,8 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Envole%CC%81e%20dansante-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : Envolée dansante">
+                data-poster="img/envolee-dansante-siteweb-mpeg-4.webp" role="button" tabindex="0"
+                aria-label="Lire : Envolée dansante">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
@@ -62,12 +72,13 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Eolienne%20souffle%20fort-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : Eolienne souffle fort">
+                data-poster="img/eolienne-souffle-fort-siteweb-mpeg-4.webp" role="button" tabindex="0"
+                aria-label="Lire : Eole">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
             <div class="video-info">
-                <h3>Eolienne souffle fort</h3>
+                <h3>Eole</h3>
             </div>
         </div>
 
@@ -75,7 +86,7 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Etretat-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : Etretat">
+                data-poster="img/etretat-siteweb-mpeg-4.webp" role="button" tabindex="0" aria-label="Lire : Etretat">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
@@ -88,7 +99,8 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Fondre%20le%20temps-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : Fondre le temps">
+                data-poster="img/fondre-le-temps-siteweb-mpeg-4.webp" role="button" tabindex="0"
+                aria-label="Lire : Fondre le temps">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
@@ -101,7 +113,7 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/griffe-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : Griffe">
+                data-poster="img/griffe-siteweb-mpeg-4.webp" role="button" tabindex="0" aria-label="Lire : Griffe">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
@@ -114,12 +126,13 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Harpe%20fene%CC%82tre-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : Harpe fenêtre">
+                data-poster="img/harpe-fenetre-siteweb-mpeg-4.webp" role="button" tabindex="0"
+                aria-label="Lire : Harpe fenêtre">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
             <div class="video-info">
-                <h3>Harpe fenêtre</h3>
+                <h3>Harpe</h3>
             </div>
         </div>
 
@@ -127,12 +140,13 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/MAPT%20Ra%CC%82to1-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : MAPT Râto1">
+                data-poster="img/mapt-rato1-siteweb-mpeg-4.webp" role="button" tabindex="0"
+                aria-label="Lire : MAPT Râto1">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
             <div class="video-info">
-                <h3>MAPT Râto1</h3>
+                <h3>Cueillir le temps</h3>
             </div>
         </div>
 
@@ -140,12 +154,13 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/MAPT%20Ra%CC%82to6-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : MAPT Râto6">
+                data-poster="img/mapt-rato6-siteweb-mpeg-4.webp" role="button" tabindex="0"
+                aria-label="Lire : MAPT Râto6">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
             <div class="video-info">
-                <h3>MAPT Râto6</h3>
+                <h3>Jardin</h3>
             </div>
         </div>
 
@@ -153,12 +168,13 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/MAPT%26LesGensDeLaVoix-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : MAPT&amp;LesGensDeLaVoix">
+                data-poster="img/mapt-lesgensdelavoix-siteweb-mpeg-4.webp" role="button" tabindex="0"
+                aria-label="Lire : MAPT&amp;LesGensDeLaVoix">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
             <div class="video-info">
-                <h3>MAPT&amp;LesGensDeLaVoix</h3>
+                <h3>avec Les Gens de la voix</h3>
             </div>
         </div>
 
@@ -166,12 +182,13 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/marteler%20nuage%20-%20copie-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : Marteler nuage">
+                data-poster="img/marteler-nuage-copie-siteweb-mpeg-4.webp" role="button" tabindex="0"
+                aria-label="Lire : Marteler nuage">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
             <div class="video-info">
-                <h3>Marteler nuage</h3>
+                <h3>Marteler le Temps</h3>
             </div>
         </div>
 
@@ -179,7 +196,7 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/mirage-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : Mirage">
+                data-poster="img/mirage-siteweb-mpeg-4.webp" role="button" tabindex="0" aria-label="Lire : Mirage">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
@@ -192,12 +209,13 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/N1-FaceAlaMer-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : N1-FaceAlaMer">
+                data-poster="img/n1-facealamer-siteweb-mpeg-4.webp" role="button" tabindex="0"
+                aria-label="Lire : N1-FaceAlaMer">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
             <div class="video-info">
-                <h3>N1-FaceAlaMer</h3>
+                <h3>Face à la mer</h3>
             </div>
         </div>
 
@@ -205,12 +223,13 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/N3-NappesDePlage-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : N3-NappesDePlage">
+                data-poster="img/n3-nappesdeplage-siteweb-mpeg-4.webp" role="button" tabindex="0"
+                aria-label="Lire : N3-NappesDePlage">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
             <div class="video-info">
-                <h3>N3-NappesDePlage</h3>
+                <h3>Nappes de plage</h3>
             </div>
         </div>
 
@@ -218,12 +237,12 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/NeigeC1-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : NeigeC1">
+                data-poster="img/neigec1-siteweb-mpeg-4.webp" role="button" tabindex="0" aria-label="Lire : NeigeC1">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
             <div class="video-info">
-                <h3>NeigeC1</h3>
+                <h3>Floconnade</h3>
             </div>
         </div>
 
@@ -231,7 +250,7 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/Penseur-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : Penseur">
+                data-poster="img/penseur-siteweb-mpeg-4.webp" role="button" tabindex="0" aria-label="Lire : Penseur">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
@@ -244,12 +263,13 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/phare%20StMathieu1%20PL%20web-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : Phare StMathieu">
+                data-poster="img/phare-stmathieu1-pl-web-siteweb-mpeg-4.webp" role="button" tabindex="0"
+                aria-label="Lire : Phare StMathieu">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
             <div class="video-info">
-                <h3>Phare StMathieu</h3>
+                <h3>Phare Saint-Mathieu</h3>
             </div>
         </div>
 
@@ -257,12 +277,13 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Vid%C3%A9os%20Format%20Insta%20Verti/TchinTchin_-SiteWeb%20MPEG-4.mp4"
-                role="button" tabindex="0" aria-label="Lire : TchinTchin">
+                data-poster="img/tchintchin-siteweb-mpeg-4.webp" role="button" tabindex="0"
+                aria-label="Lire : TchinTchin">
                 <video class="gallery-video" muted playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
                 <div class="play-button"></div>
             </div>
             <div class="video-info">
-                <h3>TchinTchin</h3>
+                <h3>Rencontre</h3>
             </div>
         </div>
     </div>
@@ -336,7 +357,22 @@
         background-color: #000;
     }
 
-    /* La vignette est la 1ère image de la vidéo (muette, sans lecture) */
+    /* Vignette en image (légère) ; la vidéo ne sert de vignette que si l'image est absente */
+    .custom-video-wrapper .poster {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        pointer-events: none;
+    }
+
+    .custom-video-wrapper.has-poster video {
+        display: none;
+    }
+
+    /* Repli : la vignette est la 1ère image de la vidéo (muette, sans lecture) */
     .custom-video-wrapper video {
         display: block;
         width: 100%;
@@ -516,12 +552,31 @@
         function setRatio(i, w, h) {
             if (!w || !h) return;
             ratios[i] = w / h;
-            wrappers[i].style.aspectRatio = w + ' / ' + h;                    // cadre exactement au format de la vidéo
+            wrappers[i].style.aspectRatio = w + ' / ' + h;                    // cadre exactement au format
             items[i].style.setProperty('--grow', String(Math.round(ratios[i] * 1000))); // largeur proportionnelle au format
         }
 
-        // Le format ne se connaît qu'en lisant le début de la vidéo : on le relit pour toutes, quelques-unes à la fois
-        // (métadonnées seulement, la vidéo n'est pas téléchargée), pour calculer la répartition en lignes.
+        // 1) Normal : le format se lit sur l'IMAGE de vignette (quelques dizaines de Ko), sans toucher à la vidéo.
+        function posterReady(i) {
+            return new Promise(resolve => {
+                const url = wrappers[i].dataset.poster;
+                if (!url) return resolve(false); // pas d'image pour cette vidéo : repli sur la vidéo (aucune requête d'image)
+                const img = new Image();
+                img.className = 'poster';
+                img.alt = '';
+                img.decoding = 'async';
+                img.onload = () => {
+                    wrappers[i].insertBefore(img, wrappers[i].firstChild);
+                    setRatio(i, img.naturalWidth, img.naturalHeight);
+                    wrappers[i].classList.add('has-poster');
+                    resolve(true);
+                };
+                img.onerror = () => resolve(false); // image introuvable : repli sur la vidéo
+                img.src = url;
+            });
+        }
+
+        // 2) Repli (image absente) : on lit le début de la vidéo, quelques-unes à la fois (métadonnées seulement).
         function probe(i) {
             return new Promise(resolve => {
                 const v = document.createElement('video');
@@ -540,6 +595,16 @@
                 setTimeout(finish, 8000);
                 v.src = wrappers[i].dataset.src;
             });
+        }
+
+        async function loadRatios() {
+            const found = await Promise.all(items.map((_, i) => posterReady(i)));
+            const missing = found.map((ok, i) => ok ? -1 : i).filter(i => i >= 0);
+            let next = 0;
+            const workers = Array.from({ length: 4 }, async () => {
+                while (next < missing.length) await probe(missing[next++]);
+            });
+            await Promise.all(workers);
         }
 
         // ================================================================ 2. RÉPARTITION EN LIGNES
@@ -569,6 +634,7 @@
 
         let lastKey = '';
         let lastWidth = 0;
+        let thumbsStarted = false;
 
         function buildRows() {
             const width = layout.clientWidth;
@@ -592,15 +658,12 @@
                 layout.appendChild(frag);
             }
             layout.classList.add('ready');
+            startVideoThumbs(); // seulement une fois les lignes en place (avant, tous les cadres sont empilés dans un petit espace)
         }
 
         // On calcule la répartition dès que tous les formats sont connus (ou au bout de 4 s au plus : les formats
         // qui arrivent ensuite ajustent seulement les largeurs, les lignes restent pleines et de même hauteur).
-        let nextProbe = 0;
-        const workers = Array.from({ length: 4 }, async () => {
-            while (nextProbe < items.length) await probe(nextProbe++);
-        });
-        Promise.race([Promise.all(workers), new Promise(r => setTimeout(r, 4000))]).then(buildRows);
+        Promise.race([loadRatios(), new Promise(r => setTimeout(r, 4000))]).then(buildRows);
 
         // Largeur de la page qui change (fenêtre, rotation) : nouvelle répartition si besoin
         let resizeTimer = null;
@@ -613,9 +676,9 @@
         }
         window.addEventListener('resize', onResize);
 
-        // ================================================================ 3. VIGNETTES (1ère image, en pause)
-        // Chargement économe : le début d'une vignette n'est téléchargé que lorsqu'elle approche de l'écran.
-        // Toutes les vidéos sont EN PAUSE à l'ouverture de la page.
+        // ================================================================ 3. VIGNETTES VIDÉO (repli seulement)
+        // Uniquement pour les vidéos SANS image de vignette. Chargement économe : le début d'une vignette n'est
+        // téléchargé que lorsqu'elle approche de l'écran. Toutes les vidéos sont EN PAUSE à l'ouverture de la page.
         function loadThumb(w) {
             const v = w.querySelector('video');
             if (!v || v.dataset.loaded) return;
@@ -629,15 +692,21 @@
             if (v) v.addEventListener('loadedmetadata', () => setRatio(i, v.videoWidth, v.videoHeight));
         });
 
-        if ('IntersectionObserver' in window) {
-            const io = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) { loadThumb(entry.target); io.unobserve(entry.target); }
-                });
-            }, { rootMargin: '400px 0px' });
-            wrappers.forEach(w => io.observe(w));
-        } else {
-            wrappers.forEach(loadThumb);
+        function startVideoThumbs() {
+            if (thumbsStarted) return;
+            thumbsStarted = true;
+            const todo = wrappers.filter(w => !w.classList.contains('has-poster'));
+            if (todo.length === 0) return;
+            if ('IntersectionObserver' in window) {
+                const io = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) { loadThumb(entry.target); io.unobserve(entry.target); }
+                    });
+                }, { rootMargin: '400px 0px' });
+                todo.forEach(w => io.observe(w));
+            } else {
+                todo.forEach(loadThumb);
+            }
         }
 
         // ================================================================ 4. CARROUSEL PLEIN ÉCRAN
@@ -651,6 +720,9 @@
         function show(index) {
             current = (index + items.length) % items.length; // boucle : après la dernière, la première
             video.setAttribute('aria-label', titles[current]);
+            // image de la vignette affichée pendant le démarrage de la vidéo (s'il y en a une)
+            if (wrappers[current].classList.contains('has-poster')) video.poster = wrappers[current].dataset.poster;
+            else video.removeAttribute('poster');
             video.muted = false;
             video.src = wrappers[current].dataset.src;
             const p = video.play();

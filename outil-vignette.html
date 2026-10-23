@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Créer une vignette</title>
+    <style>
+        :root {
+            color-scheme: dark;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 28px 20px 60px;
+            background: #121212;
+            color: #eee;
+            font-family: Arial, sans-serif;
+            line-height: 1.45;
+        }
+
+        main {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 0 0 4px;
+        }
+
+        .lead {
+            color: #aaa;
+            margin: 0 0 22px;
+        }
+
+        section {
+            background: #1b1b1b;
+            border: 1px solid #2e2e2e;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 16px;
+        }
+
+        h2 {
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #9fcdf7;
+            margin: 0 0 12px;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .row+.row {
+            margin-top: 10px;
+        }
+
+        label {
+            color: #bbb;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        input[type="number"] {
+            background: #101010;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 15px;
+        }
+
+        input[type="text"]:focus,
+        input[type="url"]:focus,
+        input[type="number"]:focus {
+            outline: 2px solid #4ea1ef;
+            border-color: #4ea1ef;
+        }
+
+        button,
+        .btn {
+            background: #2a2a2a;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        button:hover,
+        .btn:hover {
+            background: #3a3a3a;
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .primary {
+            background: #4ea1ef;
+            border-color: #4ea1ef;
+            color: #06182b;
+            font-weight: bold;
+        }
+
+        .primary:hover {
+            background: #6bb2f3;
+        }
+
+        #drop {
+            border: 2px dashed #555;
+            border-radius: 10px;
+            padding: 22px;
+            text-align: center;
+            color: #aaa;
+        }
+
+        #drop.over {
+            border-color: #4ea1ef;
+            color: #fff;
+            background: #17222c;
+        }
+
+        #msg {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .err {
+            color: #f06a6a;
+        }
+
+        .ok {
+            color: #6fcf8d;
+        }
+
+        .stage {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .stage>div {
+            flex: 1 1 320px;
+            min-width: 0;
+        }
+
+        video {
+            display: block;
+            width: 100%;
+            max-height: 52vh;
+            background: #000;
+            border-radius: 8px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 12px 0 4px;
+            accent-color: #4ea1ef;
+        }
+
+        .time {
+            font-variant-numeric: tabular-nums;
+            width: 120px;
+            text-align: center;
+        }
+
+        .steps button {
+            padding: 6px 10px;
+        }
+
+        canvas {
+            display: block;
+            max-width: 100%;
+            max-height: 52vh;
+            background: #000;
+            border-radius: 8px;
+            margin: 0 auto;
+        }
+
+        .info {
+            color: #bbb;
+            font-size: 14px;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        code {
+            background: #101010;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 2px 6px;
+            font-size: 13px;
+            word-break: break-all;
+        }
+
+        .hint {
+            color: #888;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1>Créer une vignette</h1>
+        <p class="lead">Choisis la vidéo, place-toi sur l'image qui t'intéresse (tu la vois tout de suite), puis
+            télécharge-la.
+            Tout se passe dans ton navigateur : rien n'est envoyé, rien à installer.</p>
+
+        <!-- 1. VIDÉO -->
+        <section>
+            <h2>1. La vidéo</h2>
+            <div id="drop">
+                <label class="btn" for="file">Choisir un fichier vidéo…</label>
+                <input id="file" type="file" accept="video/*" hidden>
+                <div class="hint" style="margin-top:10px">ou glisse-le ici (le fichier original, sur ton ordinateur :
+                    c'est le plus fiable)</div>
+            </div>
+            <div class="row" style="margin-top:12px">
+                <label for="url">ou une adresse :</label>
+                <input id="url" type="url" placeholder="https://MaptDiff.b-cdn.net/…/ma-video.mp4"
+                    style="flex:1 1 320px">
+                <button id="loadUrl" type="button">Charger</button>
+            </div>
+            <div class="hint">Une adresse Bunny ne fonctionne ici que si le CORS est activé sur ta zone Bunny ; sinon,
+                choisis le fichier sur ton ordinateur.</div>
+            <div id="msg" role="status"></div>
+        </section>
+
+        <!-- 2. IMAGE -->
+        <section id="step2" hidden>
+            <h2>2. L'image voulue</h2>
+            <div class="stage">
+                <div>
+                    <video id="v" playsinline muted preload="auto"></video>
+                    <input id="slider" type="range" min="0" max="1" step="0.01" value="0"
+                        aria-label="Position dans la vidéo">
+                    <div class="row steps" style="justify-content:center">
+                        <button type="button" data-step="-1">−1 s</button>
+                        <button type="button" data-step="-0.1">−0,1 s</button>
+                        <button type="button" data-step="-0.04" title="environ 1 image en arrière">◀ image</button>
+                        <input id="time" class="time" type="text" value="0:00.50" aria-label="Instant"
+                            title="Tape un instant : 12.5, 1:05 ou 0:01:05.5, puis Entrée">
+                        <button type="button" data-step="0.04" title="environ 1 image en avant">image ▶</button>
+                        <button type="button" data-step="0.1">+0,1 s</button>
+                        <button type="button" data-step="1">+1 s</button>
+                    </div>
+                    <div class="hint" style="text-align:center">Touches ← → : 1 image · Maj + ← → : 1 seconde · Durée :
+                        <span id="dur">–</span></div>
+                </div>
+                <div>
+                    <canvas id="c" width="10" height="10"></canvas>
+                    <div class="info" id="info">–</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TÉLÉCHARGER -->
+        <section id="step3" hidden>
+            <h2>3. Le fichier</h2>
+            <div class="row">
+                <label for="name">Nom :</label>
+                <input id="name" type="text" value="vignette" style="width:240px" spellcheck="false">
+                <span id="ext">.webp</span>
+                <label for="side" style="margin-left:14px">Plus grand côté :</label>
+                <input id="side" type="number" value="900" min="100" max="3000" step="50" style="width:90px"> px
+                <label for="q" style="margin-left:14px">Qualité :</label>
+                <input id="q" type="number" value="78" min="30" max="100" style="width:70px">
+            </div>
+            <div class="row">
+                <button id="dl" type="button" class="primary">Télécharger l'image</button>
+                <span id="dlmsg" class="ok"></span>
+            </div>
+            <div class="hint">Mets ensuite ce fichier dans le dossier <code>/img</code> de ton site, puis ajoute sur la
+                vidéo, dans la page :</div>
+            <div class="row">
+                <code id="attr">data-poster="img/vignette.webp"</code>
+                <button id="copy" type="button">Copier</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        (function () {
+            const $ = (id) => document.getElementById(id);
+            const v = $('v'), c = $('c'), ctx = c.getContext('2d');
+            const slider = $('slider'), timeBox = $('time'), msg = $('msg');
+            let objectUrl = null;
+            let blob = null;          // image courante (prête à être téléchargée)
+            let ext = '.webp';
+            let rendering = false, again = false;
+
+            function say(text, cls) { msg.textContent = text; msg.className = cls || ''; }
+
+            // ---------------------------------------------------------------- temps : 12.5 | 1:05 | 0:01:05.5
+            function parseTime(s) {
+                s = String(s).trim().replace(',', '.');
+                if (/^\d+(\.\d+)?$/.test(s)) return parseFloat(s);
+                const m = s.match(/^(\d+):(\d+(?:\.\d+)?)$/) || s.match(/^(\d+):(\d+):(\d+(?:\.\d+)?)$/);
+                if (!m) return NaN;
+                return m.length === 3 ? (+m[1]) * 60 + parseFloat(m[2]) : (+m[1]) * 3600 + (+m[2]) * 60 + parseFloat(m[3]);
+            }
+            function fmt(t) {
+                const m = Math.floor(t / 60), s = t - m * 60;
+                return m + ':' + (s < 10 ? '0' : '') + s.toFixed(2);
+            }
+
+            // ---------------------------------------------------------------- chargement de la vidéo
+            function reset() {
+                $('step2').hidden = true; $('step3').hidden = true; blob = null;
+            }
+            function slug(s) {
+                return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'vignette';
+            }
+            function freeUrl() {
+                if (objectUrl) { URL.revokeObjectURL(objectUrl); objectUrl = null; }
+            }
+            function useSource(src, nameHint, cors) {
+                reset();
+                say('Chargement de la vidéo…');
+                v.removeAttribute('src');
+                if (cors) v.crossOrigin = 'anonymous'; else v.removeAttribute('crossorigin');
+                v.src = src;
+                v.load();
+                if (nameHint) $('name').value = slug(nameHint);
+            }
+            function loadFile(file) {
+                if (!file) return;
+                if (file.type && !file.type.startsWith('video/')) { say('Ce fichier n\'est pas une vidéo.', 'err'); return; }
+                freeUrl(); // on libère la vidéo précédente avant d'en ouvrir une autre
+                objectUrl = URL.createObjectURL(file);
+                useSource(objectUrl, file.name.replace(/\.[^.]+$/, ''), false);
+            }
+
+            $('file').addEventListener('change', (e) => loadFile(e.target.files[0]));
+            const drop = $('drop');
+            ['dragenter', 'dragover'].forEach(n => drop.addEventListener(n, (e) => { e.preventDefault(); drop.classList.add('over'); }));
+            ['dragleave', 'drop'].forEach(n => drop.addEventListener(n, (e) => { e.preventDefault(); drop.classList.remove('over'); }));
+            drop.addEventListener('drop', (e) => loadFile(e.dataTransfer.files[0]));
+
+            $('loadUrl').addEventListener('click', () => {
+                const u = $('url').value.trim();
+                if (!u) { say('Colle d\'abord une adresse.', 'err'); return; }
+                let hint = 'vignette';
+                try { hint = decodeURIComponent(new URL(u).pathname.split('/').pop()).replace(/\.[^.]+$/, ''); } catch (e) { /* adresse bizarre : on garde "vignette" */ }
+                freeUrl();
+                useSource(u, hint, true);
+            });
+
+            v.addEventListener('error', () => {
+                reset();
+                say(v.crossOrigin
+                    ? 'Impossible de lire cette adresse. Si la vidéo existe, c\'est sûrement le CORS de Bunny qui est désactivé : choisis plutôt le fichier sur ton ordinateur.'
+                    : 'Ce navigateur ne sait pas lire cette vidéo.', 'err');
+            });
+
+            v.addEventListener('loadedmetadata', async () => {
+                slider.max = String(v.duration);
+                $('dur').textContent = fmt(v.duration);
+                $('step2').hidden = false; $('step3').hidden = false;
+                say('Vidéo chargée : ' + v.videoWidth + ' × ' + v.videoHeight + ' px.', 'ok');
+                await goTo(Math.min(0.5, v.duration / 2)); // on part de 0,5 s : la toute première image est souvent noire
+            });
+
+            // ---------------------------------------------------------------- se placer sur un instant
+            function seek(t) {
+                return new Promise(resolve => {
+                    const done = () => { v.removeEventListener('seeked', done); resolve(); };
+                    v.addEventListener('seeked', done);
+                    v.currentTime = t;
+                });
+            }
+            const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+            async function goTo(t) {
+                if (!isFinite(v.duration)) return;
+                t = Math.max(0, Math.min(v.duration - 0.001, t));
+                slider.value = String(t);
+                timeBox.value = fmt(t);
+                await seek(t);
+                await nextFrame();
+                render();
+            }
+
+            slider.addEventListener('input', () => goTo(parseFloat(slider.value)));
+            document.querySelectorAll('[data-step]').forEach(b => b.addEventListener('click', () => goTo(v.currentTime + parseFloat(b.dataset.step))));
+            timeBox.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter') return;
+                const t = parseTime(timeBox.value);
+                if (isNaN(t)) { say('Instant non valable : écris 12.5, 1:05 ou 0:01:05.5', 'err'); return; }
+                goTo(t);
+            });
+            timeBox.addEventListener('blur', () => { const t = parseTime(timeBox.value); if (!isNaN(t)) goTo(t); });
+            document.addEventListener('keydown', (e) => {
+                if (e.target.matches('input[type="text"], input[type="url"], input[type="number"]')) return;
+                if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+                e.preventDefault();
+                goTo(v.currentTime + (e.key === 'ArrowLeft' ? -1 : 1) * (e.shiftKey ? 1 : 0.04));
+            });
+
+            // ---------------------------------------------------------------- l'image : dessin, encodage, taille
+            async function render() {
+                if (rendering) { again = true; return; }
+                rendering = true;
+                do {
+                    again = false;
+                    const w = v.videoWidth, h = v.videoHeight;
+                    if (!w || !h) break;
+                    const side = Math.max(100, parseInt($('side').value, 10) || 900);
+                    const scale = Math.min(1, side / Math.max(w, h)); // jamais agrandie
+                    c.width = Math.round(w * scale);
+                    c.height = Math.round(h * scale);
+                    ctx.drawImage(v, 0, 0, c.width, c.height);
+                    const q = Math.min(1, Math.max(0.3, (parseInt($('q').value, 10) || 78) / 100));
+                    try {
+                        let b = await new Promise(res => c.toBlob(res, 'image/webp', q));
+                        ext = '.webp';
+                        if (!b || b.type !== 'image/webp') { // ce navigateur ne sait pas écrire du WebP (Safari) : JPEG
+                            b = await new Promise(res => c.toBlob(res, 'image/jpeg', q));
+                            ext = '.jpg';
+                        }
+                        blob = b;
+                        $('info').textContent = c.width + ' × ' + c.height + ' px · ' + Math.max(1, Math.round(b.size / 1024)) + ' Ko · à ' + fmt(v.currentTime) + ' s'
+                            + (ext === '.jpg' ? ' · format JPEG (ton navigateur n\'écrit pas le WebP ; Chrome ou Firefox le font)' : '');
+                    } catch (err) {
+                        blob = null;
+                        $('info').textContent = '';
+                        say('Impossible de lire l\'image de cette vidéo (accès refusé par le serveur : CORS). Choisis plutôt le fichier sur ton ordinateur.', 'err');
+                    }
+                    $('ext').textContent = ext;
+                    updateAttr();
+                } while (again);
+                rendering = false;
+            }
+            $('side').addEventListener('change', render);
+            $('q').addEventListener('change', render);
+
+            function cleanName() { return slug($('name').value); }
+            function updateAttr() { $('attr').textContent = 'data-poster="img/' + cleanName() + ext + '"'; }
+            $('name').addEventListener('input', updateAttr);
+
+            $('dl').addEventListener('click', () => {
+                if (!blob) { say('Aucune image prête.', 'err'); return; }
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = cleanName() + ext;
+                document.body.appendChild(a); a.click(); a.remove();
+                setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+                $('dlmsg').textContent = 'Téléchargé : ' + a.download + ' (dans ton dossier Téléchargements)';
+            });
+            $('copy').addEventListener('click', async () => {
+                try { await navigator.clipboard.writeText($('attr').textContent); $('copy').textContent = 'Copié'; setTimeout(() => $('copy').textContent = 'Copier', 1500); }
+                catch (e) { window.prompt('Copie ce texte :', $('attr').textContent); }
+            });
+        })();
+    </script>
+</body>
+
+</html>
