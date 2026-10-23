@@ -4,6 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Outil de travail : on demande aux moteurs de recherche de ne pas le référencer -->
+    <meta name="robots" content="noindex, nofollow">
     <title>Créer une vignette</title>
     <style>
         :root {
@@ -159,6 +161,14 @@
             min-width: 0;
         }
 
+        .stage.solo {
+            justify-content: center;
+        }
+
+        .stage.solo>div {
+            flex: 0 1 520px;
+        }
+
         video {
             display: block;
             width: 100%;
@@ -219,17 +229,17 @@
 <body>
     <main>
         <h1>Créer une vignette</h1>
-        <p class="lead">Choisis la vidéo, place-toi sur l'image qui t'intéresse (tu la vois tout de suite), puis
-            télécharge-la.
-            Tout se passe dans ton navigateur : rien n'est envoyé, rien à installer.</p>
+        <p class="lead">Choisis une vidéo (puis place-toi sur l'image qui t'intéresse, tu la vois tout de suite) ou
+            directement une image,
+            puis télécharge la vignette. Tout se passe dans ton navigateur : rien n'est envoyé, rien à installer.</p>
 
-        <!-- 1. VIDÉO -->
+        <!-- 1. VIDÉO OU IMAGE -->
         <section>
-            <h2>1. La vidéo</h2>
+            <h2>1. La vidéo ou l'image</h2>
             <div id="drop">
-                <label class="btn" for="file">Choisir un fichier vidéo…</label>
-                <input id="file" type="file" accept="video/*" hidden>
-                <div class="hint" style="margin-top:10px">ou glisse-le ici (le fichier original, sur ton ordinateur :
+                <label class="btn" for="file">Choisir une vidéo ou une image…</label>
+                <input id="file" type="file" accept="video/*,image/*" hidden>
+                <div class="hint" style="margin-top:10px">ou glisse-la ici (le fichier original, sur ton ordinateur :
                     c'est le plus fiable)</div>
             </div>
             <div class="row" style="margin-top:12px">
@@ -245,9 +255,9 @@
 
         <!-- 2. IMAGE -->
         <section id="step2" hidden>
-            <h2>2. L'image voulue</h2>
-            <div class="stage">
-                <div>
+            <h2 id="h2step2">2. L'image voulue</h2>
+            <div class="stage" id="stage">
+                <div id="videoCol">
                     <video id="v" playsinline muted preload="auto"></video>
                     <input id="slider" type="range" min="0" max="1" step="0.01" value="0"
                         aria-label="Position dans la vidéo">
@@ -305,6 +315,8 @@
             let blob = null;          // image courante (prête à être téléchargée)
             let ext = '.webp';
             let rendering = false, again = false;
+            let mode = 'video';       // 'video' : on choisit un instant ; 'image' : on part d'une image
+            let imgEl = null, imgUrl = null;
 
             function say(text, cls) { msg.textContent = text; msg.className = cls || ''; }
 
@@ -331,8 +343,20 @@
             function freeUrl() {
                 if (objectUrl) { URL.revokeObjectURL(objectUrl); objectUrl = null; }
             }
+            function freeImg() {
+                if (imgUrl) { URL.revokeObjectURL(imgUrl); imgUrl = null; }
+                imgEl = null;
+            }
+            function setMode(m) {
+                mode = m;
+                $('videoCol').hidden = (m === 'image');
+                $('stage').classList.toggle('solo', m === 'image');
+                $('h2step2').textContent = m === 'image' ? '2. L\'image' : '2. L\'image voulue';
+            }
             function useSource(src, nameHint, cors) {
                 reset();
+                freeImg();
+                setMode('video');
                 say('Chargement de la vidéo…');
                 v.removeAttribute('src');
                 if (cors) v.crossOrigin = 'anonymous'; else v.removeAttribute('crossorigin');
@@ -340,9 +364,37 @@
                 v.load();
                 if (nameHint) $('name').value = slug(nameHint);
             }
+            // vidéo ou image ? d'après le type du fichier, sinon d'après son extension
+            function kindOf(file) {
+                if (file.type.startsWith('video/')) return 'video';
+                if (file.type.startsWith('image/')) return 'image';
+                if (/\.(mp4|m4v|mov|webm|mkv|avi|ogv)$/i.test(file.name)) return 'video';
+                if (/\.(png|jpe?g|webp|gif|bmp|avif|svg|tiff?)$/i.test(file.name)) return 'image';
+                return '';
+            }
+            function loadImage(file) {
+                reset();
+                v.pause(); v.removeAttribute('src'); v.removeAttribute('crossorigin'); v.load(); // on libère la vidéo éventuelle
+                freeUrl(); freeImg();
+                say('Chargement de l\'image…');
+                imgUrl = URL.createObjectURL(file);
+                const im = new Image();
+                im.onload = () => {
+                    imgEl = im;
+                    setMode('image');
+                    $('name').value = slug(file.name.replace(/\.[^.]+$/, ''));
+                    $('step2').hidden = false; $('step3').hidden = false;
+                    say('Image chargée : ' + im.naturalWidth + ' × ' + im.naturalHeight + ' px.', 'ok');
+                    render();
+                };
+                im.onerror = () => { freeImg(); say('Ce navigateur ne sait pas lire cette image.', 'err'); };
+                im.src = imgUrl;
+            }
             function loadFile(file) {
                 if (!file) return;
-                if (file.type && !file.type.startsWith('video/')) { say('Ce fichier n\'est pas une vidéo.', 'err'); return; }
+                const kind = kindOf(file);
+                if (!kind) { say('Ce fichier n\'est ni une vidéo ni une image.', 'err'); return; }
+                if (kind === 'image') { loadImage(file); return; }
                 freeUrl(); // on libère la vidéo précédente avant d'en ouvrir une autre
                 objectUrl = URL.createObjectURL(file);
                 useSource(objectUrl, file.name.replace(/\.[^.]+$/, ''), false);
@@ -364,6 +416,7 @@
             });
 
             v.addEventListener('error', () => {
+                if (mode !== 'video' || !v.getAttribute('src')) return;
                 reset();
                 say(v.crossOrigin
                     ? 'Impossible de lire cette adresse. Si la vidéo existe, c\'est sûrement le CORS de Bunny qui est désactivé : choisis plutôt le fichier sur ton ordinateur.'
@@ -409,6 +462,7 @@
             timeBox.addEventListener('blur', () => { const t = parseTime(timeBox.value); if (!isNaN(t)) goTo(t); });
             document.addEventListener('keydown', (e) => {
                 if (e.target.matches('input[type="text"], input[type="url"], input[type="number"]')) return;
+                if (mode !== 'video' || !isFinite(v.duration)) return;
                 if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
                 e.preventDefault();
                 goTo(v.currentTime + (e.key === 'ArrowLeft' ? -1 : 1) * (e.shiftKey ? 1 : 0.04));
@@ -420,13 +474,15 @@
                 rendering = true;
                 do {
                     again = false;
-                    const w = v.videoWidth, h = v.videoHeight;
+                    const isImg = (mode === 'image' && imgEl);
+                    const w = isImg ? imgEl.naturalWidth : v.videoWidth, h = isImg ? imgEl.naturalHeight : v.videoHeight;
                     if (!w || !h) break;
                     const side = Math.max(100, parseInt($('side').value, 10) || 900);
                     const scale = Math.min(1, side / Math.max(w, h)); // jamais agrandie
                     c.width = Math.round(w * scale);
                     c.height = Math.round(h * scale);
-                    ctx.drawImage(v, 0, 0, c.width, c.height);
+                    if (isImg) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); } // image transparente : fond blanc
+                    ctx.drawImage(isImg ? imgEl : v, 0, 0, c.width, c.height);
                     const q = Math.min(1, Math.max(0.3, (parseInt($('q').value, 10) || 78) / 100));
                     try {
                         let b = await new Promise(res => c.toBlob(res, 'image/webp', q));
@@ -436,12 +492,12 @@
                             ext = '.jpg';
                         }
                         blob = b;
-                        $('info').textContent = c.width + ' × ' + c.height + ' px · ' + Math.max(1, Math.round(b.size / 1024)) + ' Ko · à ' + fmt(v.currentTime) + ' s'
+                        $('info').textContent = c.width + ' × ' + c.height + ' px · ' + Math.max(1, Math.round(b.size / 1024)) + ' Ko' + (isImg ? '' : ' · à ' + fmt(v.currentTime) + ' s')
                             + (ext === '.jpg' ? ' · format JPEG (ton navigateur n\'écrit pas le WebP ; Chrome ou Firefox le font)' : '');
                     } catch (err) {
                         blob = null;
                         $('info').textContent = '';
-                        say('Impossible de lire l\'image de cette vidéo (accès refusé par le serveur : CORS). Choisis plutôt le fichier sur ton ordinateur.', 'err');
+                        say(isImg ? 'Impossible de créer la vignette de cette image.' : 'Impossible de lire l\'image de cette vidéo (accès refusé par le serveur : CORS). Choisis plutôt le fichier sur ton ordinateur.', 'err');
                     }
                     $('ext').textContent = ext;
                     updateAttr();
