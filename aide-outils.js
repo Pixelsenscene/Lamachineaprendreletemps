@@ -70,14 +70,22 @@
             var top = Math.max(0, tb.bottom - hb.top + 8);
             overlay.style.top = top + 'px';
             overlay.style.minHeight = Math.max(160, holder.offsetHeight - top) + 'px';
+            fitPanel();
             fitVideo();
+        }
+
+        // La fenêtre ne dépasse jamais le bas de l'écran : si le texte est plus long, il se déroule DANS la fenêtre
+        function fitPanel() {
+            var panel = overlay.querySelector('.toolHelpPanel');
+            var top = Math.max(panel.getBoundingClientRect().top, 70); // 70 px : le bandeau du site
+            panel.style.maxHeight = Math.max(200, window.innerHeight - top - 24) + 'px';
         }
 
         // La vidéo ne dépasse pas le bas de l'écran (pour que la consigne en dessous reste visible)
         function fitVideo() {
             if (!video) return;
-            var panelTop = overlay.querySelector('.toolHelpPanel').getBoundingClientRect().top;
-            video.style.maxHeight = Math.max(220, Math.min(620, window.innerHeight - panelTop - 110)) + 'px';
+            var panelTop = Math.max(overlay.querySelector('.toolHelpPanel').getBoundingClientRect().top, 70);
+            video.style.maxHeight = Math.max(220, Math.min(620, window.innerHeight - panelTop - 130)) + 'px';
         }
 
         function stopVideo() {
@@ -163,12 +171,24 @@
         helps.push({
             close: close,
             reposition: function () { if (isOpen) place(); },
+            refit: function () { if (isOpen) fitPanel(); },
             isConnected: function () { return overlay.isConnected; }
         });
     }
 
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAll(); });
     window.addEventListener('resize', function () { helps.forEach(function (h) { h.reposition(); }); });
+    // Défilement de la page (le site défile dans un conteneur interne : on écoute en phase de capture, et on
+    // ignore le défilement à l'intérieur de la fenêtre d'explication elle-même)
+    var refitQueued = false;
+    document.addEventListener('scroll', function (e) {
+        if (refitQueued || (e.target && e.target.closest && e.target.closest('.toolHelpPanel'))) return;
+        refitQueued = true;
+        requestAnimationFrame(function () {
+            refitQueued = false;
+            helps.forEach(function (h) { h.refit(); });
+        });
+    }, true);
 
     window.MPTAide = { attach: attach };
 })();

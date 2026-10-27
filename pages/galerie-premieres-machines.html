@@ -138,8 +138,7 @@
         <div class="video-item">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/1%C3%A8res%20machines/Ma%CC%80PT%20-%20Ep10%20-%20Le%20Mirage%20du%20temps-SiteWeb%20MPEG-4.mp4"
-                data-poster="img/making-of-la-machine-a-prendre-le-temps-siteweb-mpeg-4.webp" role="button" tabindex="0"
-                aria-label="Lire : Episode 10">
+                role="button" tabindex="0" aria-label="Lire : Episode 10">
                 <img src="img/1eremachines/ep10-ok.webp" alt="Episode 10" class="video-poster" loading="lazy">
                 <div class="play-button"></div>
             </div>
@@ -154,13 +153,9 @@
         <div class="making-of-card">
             <div class="custom-video-wrapper"
                 data-src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/Making%20of%20%20La%20machine%20a%CC%80%20prendre%20le%20temps-SiteWeb%20MPEG-4.mp4"
-                data-poster="img/making-of-la-machine-a-prendre-le-temps-siteweb-mpeg-4.webp" role="button" tabindex="0"
-                aria-label="Lire : Making of">
-                <video class="gallery-video" muted playsinline preload="metadata" tabindex="-1" aria-hidden="true">
-                    <source
-                        src="https://MaptDiff.b-cdn.net/Montages%20compil%C3%A9s/Making%20of%20%20La%20machine%20a%CC%80%20prendre%20le%20temps-SiteWeb%20MPEG-4.mp4#t=0.1"
-                        type="video/mp4">
-                </video>
+                role="button" tabindex="0" aria-label="Lire : Making of">
+                <img src="img/making-of-la-machine-a-prendre-le-temps-siteweb-mpeg-4.webp"
+                    alt="Making of des premières machines" class="video-poster" loading="lazy">
                 <div class="play-button"></div>
             </div>
             <div class="video-info">
@@ -293,13 +288,6 @@
         background-color: rgba(0, 0, 0, 0.9);
         transform: translate(-50%, -50%) scale(1.1);
         border-color: #fff;
-    }
-
-    /* Seul le "Making of" garde une <video> visible dans sa vignette (aperçu de la 1ère image) */
-    .custom-video-wrapper video {
-        display: block;
-        width: 100%;
-        pointer-events: none;
     }
 
     .video-info {
@@ -447,7 +435,7 @@
 <script>
     // Lecteur agrandi : un clic sur une vignette ouvre la vidéo au centre de la page,
     // avec les flèches ◀ ▶ (à droite du titre) pour parcourir toutes les vidéos de la page.
-    // AUCUNE lecture automatique : la vidéo s'affiche à l'arrêt (1ère image) et démarre avec le bouton lecture du lecteur.
+    // AUCUNE lecture automatique : la vidéo s'affiche à l'arrêt, avec sa vignette, et démarre avec le bouton lecture du lecteur.
     // Un clic en dehors du lecteur (ou Échap) referme et revient à la page.
     (function () {
         // Nettoyage d'une éventuelle visite précédente de cette page
@@ -465,14 +453,17 @@
         const items = wrappers.map(w => {
             const card = w.closest('.video-item, .making-of-card');
             const h3 = card && card.querySelector('h3');
-            return { src: w.dataset.src, title: h3 ? h3.textContent.trim() : '' };
+            const img = w.querySelector('img.video-poster'); // la vignette de la page = l'image montrée dans le lecteur avant la lecture
+            return { src: w.dataset.src, title: h3 ? h3.textContent.trim() : '', poster: img ? img.getAttribute('src') : '' };
         });
         let current = -1;
 
         function show(index) {
             current = (index + items.length) % items.length; // boucle : après la dernière, la première
             titleEl.textContent = items[current].title;
-            video.preload = 'metadata'; // on ne charge que le début (1ère image) : la lecture démarre à la demande
+            // La vignette de la vidéo s'affiche dans le lecteur (comme dans la page) jusqu'au clic sur lecture
+            if (items[current].poster) video.poster = items[current].poster; else video.removeAttribute('poster');
+            video.preload = 'metadata'; // on ne charge que le début : la lecture démarre à la demande
             video.src = items[current].src;
         }
 

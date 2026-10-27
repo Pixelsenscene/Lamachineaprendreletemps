@@ -541,13 +541,12 @@
         function show(index) {
             current = (index + items.length) % items.length; // boucle : après la dernière, la première
             titleEl.textContent = items[current].title;
-            video.preload = 'auto';
-            // image de la vignette affichée pendant le démarrage de la vidéo (s'il y en a une)
-            if (wrappers[current].classList.contains('has-poster')) video.poster = wrappers[current].dataset.poster;
+            video.preload = 'metadata'; // on ne charge que le début : la lecture démarre quand le visiteur clique sur lecture
+            // La vignette de la vidéo s'affiche à l'ouverture : son image si elle en a une, sinon sa 1ère image (#t=0.1)
+            const hasPoster = wrappers[current].classList.contains('has-poster');
+            if (hasPoster) video.poster = wrappers[current].dataset.poster;
             else video.removeAttribute('poster');
-            video.src = items[current].src;
-            const p = video.play(); // lecture automatique (avec le son : le clic ou la touche de l'utilisateur l'autorise)
-            if (p && typeof p.catch === 'function') p.catch(() => { }); // si le navigateur refuse, le bouton lecture reste disponible
+            video.src = items[current].src + (hasPoster ? '' : '#t=0.1');
         }
 
         function openPlayer(index) {

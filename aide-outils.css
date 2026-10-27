@@ -118,6 +118,12 @@
     font-size: 16px;
     line-height: 1.6;
     text-align: left;
+    /* Le texte trop long se déroule DANS la fenêtre (la hauteur exacte est calculée par aide-outils.js ;
+       cette valeur sert de secours) */
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .toolHelpPanel p {
